@@ -1,0 +1,36 @@
+from flask import Flask
+from flask import render_template
+from flask import request, session
+from flask import abort, redirect, url_for, flash
+import AcConfiguration
+
+from functools import wraps
+
+#import sqlalchemy
+#import json
+#import db
+
+app = Flask(__name__)
+
+# set the secret key.  keep this really secret:
+c = AcConfiguration.AcConfiguration()
+app.secret_key = c.settings['flask']['secret_key']
+
+@app.route('/')
+def index():
+
+    return render_template('index.html')
+
+if __name__ == '__main__':
+    app.debug = True
+    app.run(host = '0.0.0.0', port = 8080)
+
+ADMINS = ['jonstjohn@gmail.com']
+if not app.debug:
+    import logging
+    from logging.handlers import SMTPHandler
+    mail_handler = SMTPHandler('127.0.0.1',
+                               'jonstjohn@gmail.com',
+                               ADMINS, 'Air Canary Error')
+    mail_handler.setLevel(logging.ERROR)
+    app.logger.addHandler(mail_handler)
