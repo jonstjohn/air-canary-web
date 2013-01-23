@@ -3,7 +3,8 @@ import urllib2
 import time
 
 import sys
-sys.path.append('../')
+import os
+sys.path.append('{0}/..'.format(os.path.dirname(os.path.abspath(__file__))))
 
 import db
 from model.models import Site, Data
@@ -12,6 +13,8 @@ session = db.session()
 sites = session.query(Site).all()
 
 for site in sites:
+
+    print("Retrieving data for '{0}'".format(site.name))
     url = 'http://www.airquality.utah.gov/aqp/xmlFeed.php?id={0}'.format(site.code)
 
     # Get XML string
@@ -50,3 +53,5 @@ for site in sites:
                 setattr(dp, col, val)
         session.merge(dp)
         session.commit()
+
+print('Done')
