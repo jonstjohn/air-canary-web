@@ -3,6 +3,7 @@ Base = declarative_base();
 from sqlalchemy import Column, Integer, String, VARCHAR, Text, Date, DATETIME, DECIMAL, CHAR, Integer, ForeignKey
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.schema import Table
+import db
 
 class Site(Base):
 
@@ -15,6 +16,25 @@ class Site(Base):
     state_province = Column(VARCHAR(5))
 
     data = relationship("Data", uselist = False, backref = "site")
+
+    def data(self, samples):
+
+        from flask import jsonify
+        session = db.session()
+        data = session.query(Data).filter(Data.site_id == self.site_id).order_by(Data.observed.desc()).limit(samples).all()
+        result = []
+        for d in data:
+            result.append(d.data())
+        return result
+
+
+    @staticmethod
+    def from_code(code):
+        """
+        Get site from code
+        """
+        session = db.session()
+        return session.query(Site).filter(Site.code == code).one()
 
 class Data(Base):
 
@@ -35,3 +55,20 @@ class Data(Base):
     co = Column(DECIMAL(5,2))
     solar_radiation = Column(Integer)
 
+    def data(self):
+
+        return {
+            'observed': str(self.observed),
+            'ozone': str(self.ozone),
+            'ozone_8hr_avg': str(self.ozone_8hr_avg),
+            'pm25': str(self.pm25),
+            'pm25_24hr_avg': str(self.pm25_24hr_avg),
+            'nox': str(self.nox),
+            'no2': str(self.no2),
+            'temperature': str(self.temperature),
+            'relative_humidity': str(self.relative_humidity),
+            'wind_speed': str(self.wind_speed),
+            'wind_direction': str(self.wind_direction),
+            'co': str(self.co),
+            'solar_radiation': str(self.solar_radiation)
+        }
