@@ -29,8 +29,11 @@ def index():
 @app.route('/api/<code>/<int:samples>')
 def api(code, samples):
 
-    site = Site.from_code(code)
-    site_data = site.data(samples)
+    if code == 'all':
+        site_data = Site.data_all(samples)
+    else:
+        site = Site.from_code(code)
+        site_data = site.data(samples)
     response = Response(json.dumps(site_data), status=200, mimetype='application/json')
     response.cache_control.no_cache = True
     return response

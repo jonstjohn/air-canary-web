@@ -19,7 +19,6 @@ class Site(Base):
 
     def data(self, samples):
 
-        from flask import jsonify
         session = db.session()
         data = session.query(Data).filter(Data.site_id == self.site_id).order_by(Data.observed.desc()).limit(samples).all()
         result = []
@@ -27,6 +26,19 @@ class Site(Base):
             result.append(d.data())
         return result
 
+    @staticmethod
+    def data_all(samples):
+
+        sites = Site.all_sites()
+        result = []
+        for site in sites:
+            result.append({'code': site.code, 'name': site.name, 'data': site.data(samples)})
+        return result
+            
+    @staticmethod
+    def all_sites():
+        session = db.session()
+        return session.query(Site).order_by(Site.name)
 
     @staticmethod
     def from_code(code):
