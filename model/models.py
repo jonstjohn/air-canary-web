@@ -1,6 +1,6 @@
 from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base();
-from sqlalchemy import Column, Integer, String, VARCHAR, Text, Date, DATETIME, DECIMAL, CHAR, Integer, ForeignKey
+from sqlalchemy import Column, Integer, String, VARCHAR, Text, Date, DATETIME, DATE, DECIMAL, CHAR, Integer, ForeignKey
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.schema import Table
 import db
@@ -24,6 +24,7 @@ class Site(Base):
         result = []
         for d in data:
             result.append(d.data())
+        session.close()
         return result
 
     @staticmethod
@@ -38,7 +39,9 @@ class Site(Base):
     @staticmethod
     def all_sites():
         session = db.session()
-        return session.query(Site).order_by(Site.name)
+        sites = session.query(Site).order_by(Site.name)
+        session.close()
+        return sites
 
     @staticmethod
     def from_code(code):
@@ -46,7 +49,9 @@ class Site(Base):
         Get site from code
         """
         session = db.session()
-        return session.query(Site).filter(Site.code == code).one()
+        site = session.query(Site).filter(Site.code == code).one()
+        session.close()
+        return site
 
 class Data(Base):
 
@@ -84,3 +89,15 @@ class Data(Base):
             'co': str(self.co),
             'solar_radiation': str(self.solar_radiation)
         }
+
+class Forecast(Base):
+
+    __tablename__ = 'forecast'
+
+    site_id = Column(Integer, primary_key = True, nullable = False)
+    forecast_date = Column(DATE, primary_key = True, nullable = False)
+    color = Column(VARCHAR(12), nullable = False)
+    description = Column(VARCHAR(100), nullable = False)
+    published = Column(DATETIME, nullable = False)
+
+

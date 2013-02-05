@@ -54,4 +54,6 @@ for site in sites:
         session.merge(dp)
         session.commit()
 
+session.close()
+
 print('Done')

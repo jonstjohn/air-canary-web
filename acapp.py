@@ -30,12 +30,12 @@ def index():
 def api(code, samples):
 
     if code == 'all':
-        site_data = Site.data_all(samples)
+        response_data = Site.data_all(samples)
     else:
         site = Site.from_code(code)
-        site_data = site.data(samples)
-    response = Response(json.dumps(site_data), status=200, mimetype='application/json')
-    response.cache_control.no_cache = True
+        response_data = {'code': site.code, 'name': site.name, 'data': site.data(samples)}
+    print(response_data)
+    response = Response(json.dumps(response_data), status=200, mimetype='application/json')
     return response
 
 if __name__ == '__main__':
