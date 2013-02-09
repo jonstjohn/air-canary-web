@@ -1,4 +1,6 @@
 import time
+from datetime import date
+import re
 
 import sys
 import os
@@ -19,68 +21,73 @@ def _get_soup_from_url(url):
     opener = urllib2.build_opener()
     return BeautifulSoup(opener.open(request).read())
 
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
 session = db.session()
 sites = session.query(Site).all()
 
+# Wind dirs
+wind_dirs = {'N': 0, 'NE': 45, 'E': 90, 'SE': 135, 'S': 180, 'SW': 225, 'W': 270, 'NW': 315}
+
+# Regex for stripping non-numeric
+non_numeric = re.compile(r'[^\d.]+')
+
+# Regex for wind
+wind_regex = re.compile(r'([A-Z]*)\s*([\d.]*) mph')
+
+current_year = date.today().year
 for site in sites:
 
-    url = 'http://www.airquality.utah.gov/aqp/{0}-currentconditions.html'.format(site.code)
+    code = site.code if site.code != 'washington' else 'wash'
+
+    url = 'http://www.airquality.utah.gov/aqp/{0}-currentconditions.html'.format(code)
     print("Retrieving data for '{0}' {1}".format(site.name, url))
     soup = _get_soup_from_url(url)
     date_str = soup.find('span', "style51").contents[1]
     comments = soup.findAll(text=lambda text:isinstance(text, Comment))
     for comment in comments:
         if str(comment) == 'DECurrentDateTime':
-            date_str = comment.next_sibling.string.strip()
+            observed_str = comment.next_sibling.string.strip()
+            observed = time.strftime('%Y-%m-%d %H:%M:%S', time.strptime("{0} {1}".format(current_year, observed_str), '%Y %A %B %d, %I:%M %p'))
         elif str(comment) == 'DEPM25Value':
-            pm25 = comment.next_sibling.string.strip()
+            pm25 = non_numeric.sub('', comment.next_sibling.string.strip())
         elif str(comment) == 'DEOzoneValue':
-            ozone = comment.next_sibling.string.strip()
+            ozone = non_numeric.sub('', comment.next_sibling.string.strip())
         elif str(comment) == 'DETempValue':
-            temp = comment.next_sibling.string.strip()
-    print('Date: {0}'.format(date_str))
+            temp = non_numeric.sub('', comment.next_sibling.string.strip())
+        elif str(comment) == 'DEWindValue':
+            wind = comment.next_sibling.string.strip()
+            wind_match = wind_regex.search(wind)
+            wind_dir_str = wind_match.group(1).strip()
+            wind_dir = wind_dirs[wind_dir_str]
+            wind_speed = wind_match.group(2).strip()
+    print('Date: {0}'.format(observed))
     print('PM 2.5: {0}'.format(pm25))
     print('Ozone: {0}'.format(ozone))
-    #print('Temp: {0}'.format(temp))
-    #print(comments)
-    break
+    print('Temp: {0}'.format(temp))
+    print('Wind: {0} - {1} - {2}'.format(wind, wind_dir, wind_speed))
 
-    # Get XML string
-    f = urllib2.urlopen(url)
-    xml_str = f.read()
-
-    # Parse using etree
-    tree = et.fromstring(xml_str)
-
-    dates = []
-    data = {}
-
-    # Loop over each data tag
-    for data_el in tree.iter('data'):
-
-        date_el = data_el.find('date')
-        date = date_el.text
-        dates.append(date)
-        data[date] = {}
-
-        # Loop over each child element
-        for child in data_el:
-            if child.tag != 'date':
-                data[date][child.tag] = child.text
-
-    cols = ('ozone', 'ozone_8hr_avg', 'pm25', 'pm25_24hr_avg', 'nox',
-        'no2', 'temperature', 'relative_humidity', 'wind_speed',
-        'wind_direction', 'co', 'solar_radiation')
-
-    for date, values in data.items():
-        dp = Data()
-        dp.site_id = site.site_id
-        dp.observed = time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(date, '%m/%d/%Y %H:%M:%S'))
-        for col, val in values.items():
-            if col in cols:
-                setattr(dp, col, val)
-        session.merge(dp)
-        session.commit()
+    dp = Data()
+    dp.site_id = site.site_id
+    dp.observed = observed
+    
+    if is_number(pm25):
+        dp.pm25 = pm25
+    if is_number(ozone):
+        dp.ozone = ozone
+    if is_number(temp):
+        dp.temp = temp
+    if is_number(wind_speed):
+        dp.wind_speed = wind_speed
+    if is_number(wind_dir):
+        dp.wind_direction = wind_dir
+    session.merge(dp)
+    session.commit()
 
 session.close()
 
