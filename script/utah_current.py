@@ -81,7 +81,7 @@ for site in sites:
     if is_number(ozone):
         dp.ozone = ozone
     if is_number(temp):
-        dp.temp = temp
+        dp.temperature = temp
     if is_number(wind_speed):
         dp.wind_speed = wind_speed
     if is_number(wind_dir):
