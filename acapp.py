@@ -25,6 +25,14 @@ def index():
 
     return render_template('index.html')
 
+@app.route('/api/forecast/<code>')
+def api_forecast(code):
+
+    site = Site.from_code(code)
+    response_data = site.forecast_data()
+    response = Response(json.dumps(response_data), status=200, mimetype='application/json')
+    return response
+
 @app.route('/api/<code>', defaults={'samples': 1})
 @app.route('/api/<code>/<int:samples>')
 def api(code, samples):

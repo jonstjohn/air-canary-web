@@ -27,6 +27,16 @@ class Site(Base):
         session.close()
         return result
 
+    def forecast_data(self):
+        session = db.session()
+        data = session.query(Forecast).filter(Forecast.site_id == self.site_id).order_by(Forecast.forecast_date.desc()).limit(3).all()
+        result = []
+        for d in data:
+            result.append(d.data())
+        result.reverse()
+        session.close()
+        return result
+
     @staticmethod
     def data_all(samples):
 
@@ -35,7 +45,7 @@ class Site(Base):
         for site in sites:
             result.append({'code': site.code, 'name': site.name, 'data': site.data(samples)})
         return result
-            
+
     @staticmethod
     def all_sites():
         session = db.session()
@@ -76,18 +86,18 @@ class Data(Base):
 
         return {
             'observed': str(self.observed),
-            'ozone': str(self.ozone),
-            'ozone_8hr_avg': str(self.ozone_8hr_avg),
-            'pm25': str(self.pm25),
-            'pm25_24hr_avg': str(self.pm25_24hr_avg),
-            'nox': str(self.nox),
-            'no2': str(self.no2),
-            'temperature': str(self.temperature),
-            'relative_humidity': str(self.relative_humidity),
-            'wind_speed': str(self.wind_speed),
-            'wind_direction': str(self.wind_direction),
-            'co': str(self.co),
-            'solar_radiation': str(self.solar_radiation)
+            'ozone': float(self.ozone) if self.ozone else '',
+            'ozone_8hr_avg': float(self.ozone_8hr_avg) if self.ozone_8hr_avg else '',
+            'pm25': float(self.pm25) if self.pm25 else '',
+            'pm25_24hr_avg': float(self.pm25_24hr_avg) if self.pm25_24hr_avg else '',
+            'nox': float(self.nox) if self.nox else '',
+            'no2': float(self.no2) if self.no2 else '',
+            'temperature': float(self.temperature) if self.temperature else '',
+            'relative_humidity': float(self.relative_humidity) if self.relative_humidity else '',
+            'wind_speed': float(self.wind_speed) if self.wind_speed else '',
+            'wind_direction': float(self.wind_direction) if self.wind_direction else '',
+            'co': float(self.co) if self.co else '',
+            'solar_radiation': float(self.solar_radiation) if self.solar_radiation else ''
         }
 
 class Forecast(Base):
@@ -100,4 +110,17 @@ class Forecast(Base):
     description = Column(VARCHAR(100), nullable = False)
     published = Column(DATETIME, nullable = False)
 
+    def data(self):
+
+        return {
+            'date': str(self.forecast_date),
+            'color': str(self.color) if self.color else '',
+            'description': str(self.description) if self.description else '',
+            'published': str(self.published)
+        }
+
+    @staticmethod
+    def data_3day(site_id):
+
+        pass
 
