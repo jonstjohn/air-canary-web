@@ -8,11 +8,17 @@ import AcConfiguration
 from functools import wraps
 from model.models import Site, Data
 
+from raven.contrib.flask import Sentry
+
 #import sqlalchemy
 #import json
 import db
 
 app = Flask(__name__)
+
+# Sentry config
+app.config['SENTRY_DSN'] = 'https://c4e3385afab54c018041e7a577a75374:966792c8e18a441f9429731b65c0f853@app.getsentry.com/6569'
+sentry = Sentry(app)
 
 # set the secret key.  keep this really secret:
 c = AcConfiguration.AcConfiguration()

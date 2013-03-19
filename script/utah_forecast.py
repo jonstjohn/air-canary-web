@@ -13,46 +13,52 @@ import db
 from model.models import Site, Data, Forecast
 
 session = db.session()
-sites = session.query(Site).all()
 
-title_date_regex = re.compile(r'(\d+)\/(\d+)\/(\d+)')
-description_regex = re.compile(r'Color: (.*) Condition: (.*)')
+try:
+    sites = session.query(Site).all()
 
-for site in sites:
+    title_date_regex = re.compile(r'(\d+)\/(\d+)\/(\d+)')
+    description_regex = re.compile(r'Color: (.*) Condition: (.*)')
 
-    print("Retrieving data for '{0}'".format(site.name))
-    url = 'http://www.airquality.utah.gov/aqp/rssFeed.php?id={0}'.format(site.code)
+    for site in sites:
 
-    d = feedparser.parse(url)
+        print("Retrieving data for '{0}'".format(site.name))
+        url = 'http://www.airquality.utah.gov/aqp/rssFeed.php?id={0}'.format(site.code)
 
-    for entry in d.entries:
-        forecast_date_match = title_date_regex.search(entry.title)
-        description_match = description_regex.search(entry.description)
-        
-        if forecast_date_match and description_match:
+        d = feedparser.parse(url)
 
-            forecast_date =  "{0}-{1}-{2}".format(forecast_date_match.group(3), forecast_date_match.group(1), forecast_date_match.group(2))
-            color = description_match.group(1).strip()
-            condition = description_match.group(2).strip()
+        for entry in d.entries:
+            forecast_date_match = title_date_regex.search(entry.title)
+            description_match = description_regex.search(entry.description)
+            
+            if forecast_date_match and description_match:
 
-            print('  Adding forecast {0}'.format(forecast_date))
-            published_date = "{0}-{1:02d}-{2:02d} {3:02d}:{4:02d}:{5:02d}".format(
-                entry.published_parsed[0], entry.published_parsed[1],
-                entry.published_parsed[2], entry.published_parsed[3],
-                entry.published_parsed[4], entry.published_parsed[5]
-            )
+                forecast_date =  "{0}-{1}-{2}".format(forecast_date_match.group(3), forecast_date_match.group(1), forecast_date_match.group(2))
+                color = description_match.group(1).strip()
+                condition = description_match.group(2).strip()
 
-            if color and condition:
+                print('  Adding forecast {0}'.format(forecast_date))
+                published_date = "{0}-{1:02d}-{2:02d} {3:02d}:{4:02d}:{5:02d}".format(
+                    entry.published_parsed[0], entry.published_parsed[1],
+                    entry.published_parsed[2], entry.published_parsed[3],
+                    entry.published_parsed[4], entry.published_parsed[5]
+                )
 
-                f = Forecast()
-                f.site_id = site.site_id
-                f.forecast_date = forecast_date
-                f.color = color
-                f.description = condition
-                f.published = published_date
+                if color and condition:
 
-                session.merge(f)
-                session.commit()
+                    f = Forecast()
+                    f.site_id = site.site_id
+                    f.forecast_date = forecast_date
+                    f.color = color
+                    f.description = condition
+                    f.published = published_date
+
+                    session.merge(f)
+                    session.commit()
+
+except:
+    session.close()
+    raise
 
 session.close()
 
