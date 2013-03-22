@@ -53,8 +53,12 @@ try:
                     f.description = condition
                     f.published = published_date
 
-                    session.merge(f)
-                    session.commit()
+                    try:
+                        session.merge(f)
+                        session.commit()
+                    except:
+                        session.rollback()
+                        raise
 
 except:
     session.close()

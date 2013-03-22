@@ -88,8 +88,12 @@ try:
             dp.wind_speed = wind_speed
         if is_number(wind_dir):
             dp.wind_direction = wind_dir
-        session.merge(dp)
-        session.commit()
+        try:
+            session.merge(dp)
+            session.commit()
+        except:
+            session.rollback()
+            raise
 
 except:
     session.close()

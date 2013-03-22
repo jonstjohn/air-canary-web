@@ -52,8 +52,12 @@ try:
             for col, val in values.items():
                 if col in cols:
                     setattr(dp, col, val)
-            session.merge(dp)
-            session.commit()
+            try:
+                session.merge(dp)
+                session.commit()
+            except:
+                session.rollback()
+                raise
 
 except:
     session.close()
