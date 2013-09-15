@@ -31,6 +31,14 @@ def index():
 
     return render_template('index.html')
 
+@app.route('/site/<code>')
+def site(code):
+
+   site = Site.from_code(code)
+
+   return render_template('site.html', site = site, data = site.data(10))
+    
+
 @app.route('/api/forecast/<code>')
 def api_forecast(code):
 
