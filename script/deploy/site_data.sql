@@ -42,4 +42,5 @@ INSERT INTO site (code, name, country_iso, state_province) VALUES
 ('tooele', 'Tooele', 'USA', 'UT'),
 ('vl', 'Uintah', 'USA', 'UT'),
 ('washington', 'Washington', 'USA', 'UT'),
-('weber', 'Weber', 'USA', 'UT');
+('weber', 'Weber', 'USA', 'UT'),
+( 'utah', 'Utah', 'USA', 'UT');
