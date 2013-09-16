@@ -31,6 +31,11 @@ def index():
 
     return render_template('index.html')
 
+@app.route('/site')
+def sites():
+
+    return render_template('sites.html', sites = Site.all_sites())
+
 @app.route('/site/<code>')
 def site(code):
 
