@@ -87,6 +87,7 @@ try:
         if is_number(wind_speed):
             dp.wind_speed = wind_speed
         if is_number(wind_dir):
+            print("Setting wind dir {0}".format(wind_dir))
             dp.wind_direction = wind_dir
         try:
             session.merge(dp)
