@@ -2,13 +2,20 @@
 
 {% block content %}
     <div class="container">
-        <div class="row">
+        <div class="row" ng-app="myApp">
             <section>
                 <div class="page-header">
+                    <div style="float: right">
+                        <select name="code" id="code">
+                            {% for s in sites %}
+                                <option value="{{s.code}}"{% if s.code == site.code %} selected{% endif %}>{{s.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                     <h1>{{ site.name }}</h1>
                 </div>
                 <h2>Data</h2>
-                <table class="table">
+                <table class="table" ng-controller="SiteCtrl" ng-init="loadData('{{site.code}}')">
                 <thead>
                 <tr>
                     <th>Observed</th>
@@ -27,25 +34,24 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for d in data %}
-                    <tr>
-                        <td>{{ d.observed }}</td>
-                        <td>{{ d.ozone }}</td>
-                        <td>{{ d.ozone_8hr_avg }}</td>
-                        <td>{{ d.pm25 }}</td>
-                        <td>{{ d.pm25_24hr_avg }}</td>
-                        <td>{{ d.nox }}</td>
-                        <td>{{ d.no2 }}</td>
-                        <td>{{ d.temperature }}</td>
-                        <td>{{ d.relative_humidity }}</td>
-                        <td>{{ d.wind_speed }}</td>
-                        <td>{{ d.wind_direction }}</td>
-                        <td>{{ d.co }}</td>
-                        <td>{{ d.solar_radiation }}</td>
+                    <tr ng-repeat="d in data">
+                        <td>{[{ d.observed }]}</td>
+                        <td>{[{ d.ozone }]}</td>
+                        <td>{[{ d.ozone_8hr_avg }]}</td>
+                        <td>{[{ d.pm25 }]}</td>
+                        <td>{[{ d.pm25_24hr_avg }]}</td>
+                        <td>{[{ d.nox }]}</td>
+                        <td>{[{ d.no2 }]}</td>
+                        <td>{[{ d.temperature }]}</td>
+                        <td>{[{ d.relative_humidity }]}</td>
+                        <td>{[{ d.wind_speed }]}</td>
+                        <td>{[{ d.wind_direction }]}</td>
+                        <td>{[{ d.co }]}</td>
+                        <td>{[{ d.solar_radiation }]}</td>
                     </tr>
-                {% endfor %}
                 </tbody>
                 </table>
+
             </section>
         </div>
     </div>

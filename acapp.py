@@ -41,7 +41,7 @@ def site(code):
 
    site = Site.from_code(code)
 
-   return render_template('site.html', site = site, data = site.data(10))
+   return render_template('site.html', site = site, sites = Site.all_sites())
 
 @app.route('/api/forecast/<code>')
 def api_forecast(code):
@@ -51,8 +51,8 @@ def api_forecast(code):
     response = Response(json.dumps(response_data), status=200, mimetype='application/json')
     return response
 
-@app.route('/api/<code>', defaults={'samples': 1})
-@app.route('/api/<code>/<int:samples>')
+@app.route('/api/site/<code>', defaults={'samples': 1})
+@app.route('/api/site/<code>/<int:samples>')
 def api(code, samples):
 
     if code == 'all':
@@ -63,6 +63,17 @@ def api(code, samples):
     print(response_data)
     response = Response(json.dumps(response_data), status=200, mimetype='application/json')
     return response
+
+@app.route('/api/site')
+def api_site():
+
+    sites = Site.all_sites()
+    response_data = []
+    for site in sites:
+        response_data.append({'code': site.code, 'name': site.name})
+    response = Response(json.dumps(response_data), status=200, mimetype='application/json')
+    return response
+
 
 if __name__ == '__main__':
     app.debug = True
