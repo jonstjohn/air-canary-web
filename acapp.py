@@ -59,7 +59,7 @@ def api(code, samples):
         response_data = Site.data_all(samples)
     else:
         site = Site.from_code(code)
-        response_data = {'code': site.code, 'name': site.name, 'data': site.data(samples)}
+        response_data = {'code': site.code, 'name': site.name, 'data': site.data(samples), 'forecast': site.forecast_data()}
     print(response_data)
     response = Response(json.dumps(response_data), status=200, mimetype='application/json')
     return response

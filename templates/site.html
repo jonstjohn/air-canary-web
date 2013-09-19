@@ -1,21 +1,38 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="container">
-        <div class="row" ng-app="myApp">
+    <div class="container" ng-app="myApp" ng-controller="SiteCtrl" ng-init="init('{{site.code}}')">
+        <div class="row">
             <section>
                 <div class="page-header">
                     <div style="float: right">
-                        <select name="code" id="code">
-                            {% for s in sites %}
-                                <option value="{{s.code}}"{% if s.code == site.code %} selected{% endif %}>{{s.name}}</option>
-                            {% endfor %}
-                        </select>
+                        <select name="code" id="code" ng-model="code" ng-options="s.code as s.name for s in sites"></select>
                     </div>
-                    <h1>{{ site.name }}</h1>
+                    <h1>{[{ name }]}</h1>
                 </div>
+
+                <h2>Forecast</h2>
+                <table class="table">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Color</th>
+                    <th>Description</th>
+                    <th>Published</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="f in forecast">
+                    <td>{[{f.date}]}</td>
+                    <td>{[{f.color}]}</td>
+                    <td>{[{f.description}]}</td>
+                    <td>{[{f.published}]}</td>
+                </tr>
+                </tbody>
+                </table>
+
                 <h2>Data</h2>
-                <table class="table" ng-controller="SiteCtrl" ng-init="loadData('{{site.code}}')">
+                <table class="table">
                 <thead>
                 <tr>
                     <th>Observed</th>
@@ -35,7 +52,7 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="d in data">
-                        <td>{[{ d.observed }]}</td>
+                        <td>{[{ d.observed | date:'short' }]}</td>
                         <td>{[{ d.ozone }]}</td>
                         <td>{[{ d.ozone_8hr_avg }]}</td>
                         <td>{[{ d.pm25 }]}</td>
