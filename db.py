@@ -1,35 +1,23 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.ext.declarative import declarative_base
 import AcConfiguration
 
-_engine = None
-_session = None
+c = AcConfiguration.AcConfiguration()
+username = c.settings['database']['username']
+password = c.settings['database']['password']
+host = c.settings['database']['host']
+database = c.settings['database']['database']
+engine = create_engine("mysql://{0}:{1}@{2}/{3}".format(username, password, host, database))
 
-def engine():
+db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
 
-    global _engine
-    if _engine == None:
-       
-        c = AcConfiguration.AcConfiguration()
-        username = c.settings['database']['username']
-        password = c.settings['database']['password']
-        host = c.settings['database']['host']
-        database = c.settings['database']['database']
-        _engine = create_engine("mysql://{0}:{1}@{2}/{3}".format(username, password, host, database))
-    return _engine
+Base = declarative_base()
+Base.query = db_session.query_property()
 
-def session():
-
-    Session = sessionmaker(bind=engine())
-    return Session()
-
-    """
-    global _session, engine
-    if _session == None:
-
-        engine = engine()
-        Session = sessionmaker(bind=engine)
-        _session = Session()
-
-    return _session
-    """
+def init_db():
+    # import all modules here that might define models so that
+    # they will be registered properly on the metadata.  Otherwise
+    # you will have to import them first before calling init_db()
+    import models.models
+    Base.metadata.create_all(bind=engine)

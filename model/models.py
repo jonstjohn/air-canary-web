@@ -1,5 +1,5 @@
-from sqlalchemy.ext.declarative import declarative_base
-Base = declarative_base();
+from db import Base
+from db import db_session
 from sqlalchemy import Column, Integer, String, VARCHAR, Text, Date, DATETIME, DATE, DECIMAL, CHAR, Integer, ForeignKey
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.schema import Table
@@ -19,22 +19,18 @@ class Site(Base):
 
     def data(self, samples):
 
-        session = db.session()
-        data = session.query(Data).filter(Data.site_id == self.site_id).order_by(Data.observed.desc()).limit(samples).all()
+        data = db_session.query(Data).filter(Data.site_id == self.site_id).order_by(Data.observed.desc()).limit(samples).all()
         result = []
         for d in data:
             result.append(d.data())
-        session.close()
         return result
 
     def forecast_data(self):
-        session = db.session()
-        data = session.query(Forecast).filter(Forecast.site_id == self.site_id).order_by(Forecast.forecast_date.desc()).limit(3).all()
+        data = db_session.query(Forecast).filter(Forecast.site_id == self.site_id).order_by(Forecast.forecast_date.desc()).limit(3).all()
         result = []
         for d in data:
             result.append(d.data())
         result.reverse()
-        session.close()
         return result
 
     @staticmethod
@@ -48,9 +44,7 @@ class Site(Base):
 
     @staticmethod
     def all_sites():
-        session = db.session()
-        sites = session.query(Site).order_by(Site.name)
-        session.close()
+        sites = db_session.query(Site).order_by(Site.name)
         return sites
 
     @staticmethod
@@ -58,9 +52,7 @@ class Site(Base):
         """
         Get site from code
         """
-        session = db.session()
-        site = session.query(Site).filter(Site.code == code).one()
-        session.close()
+        site = db_session.query(Site).filter(Site.code == code).one()
         return site
 
 class Data(Base):

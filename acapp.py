@@ -12,7 +12,7 @@ from raven.contrib.flask import Sentry
 
 #import sqlalchemy
 #import json
-import db
+from db import db_session
 
 app = Flask(__name__)
 
@@ -60,7 +60,6 @@ def api(code, samples):
     else:
         site = Site.from_code(code)
         response_data = {'code': site.code, 'name': site.name, 'data': site.data(samples), 'forecast': site.forecast_data()}
-    print(response_data)
     response = Response(json.dumps(response_data), status=200, mimetype='application/json')
     return response
 
@@ -74,6 +73,9 @@ def api_site():
     response = Response(json.dumps(response_data), status=200, mimetype='application/json')
     return response
 
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    db_session.remove()
 
 if __name__ == '__main__':
     app.debug = True
