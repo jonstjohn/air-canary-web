@@ -5,7 +5,7 @@ app.config(function($interpolateProvider) {
     $interpolateProvider.endSymbol('}]}');
     });
 
-function SiteCtrl($scope, $http) {
+function SiteCtrl($scope, $http, $location) {
 
     $scope.data = [];
 
@@ -14,6 +14,8 @@ function SiteCtrl($scope, $http) {
     $scope.forecast = [];
 
     $scope.init = function(code) {
+
+        console.log($location);
         $scope.code = code;
         $scope.loadData();
         $scope.loadSites();

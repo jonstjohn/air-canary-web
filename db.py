@@ -20,6 +20,10 @@ def engine():
 
 def session():
 
+    Session = sessionmaker(bind=engine())
+    return Session()
+
+    """
     global _session, engine
     if _session == None:
 
@@ -28,3 +32,4 @@ def session():
         _session = Session()
 
     return _session
+    """
