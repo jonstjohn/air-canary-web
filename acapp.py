@@ -12,7 +12,7 @@ from raven.contrib.flask import Sentry
 
 #import sqlalchemy
 #import json
-from db import db_session
+from db import Session
 
 app = Flask(__name__)
 
@@ -75,7 +75,7 @@ def api_site():
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
-    db_session.remove()
+    Session.remove()
 
 if __name__ == '__main__':
     app.debug = True

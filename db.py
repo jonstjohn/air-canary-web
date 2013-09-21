@@ -10,10 +10,10 @@ host = c.settings['database']['host']
 database = c.settings['database']['database']
 engine = create_engine("mysql://{0}:{1}@{2}/{3}".format(username, password, host, database))
 
-db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
+Session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
 
 Base = declarative_base()
-Base.query = db_session.query_property()
+Base.query = Session.query_property()
 
 def init_db():
     # import all modules here that might define models so that

@@ -1,5 +1,5 @@
 from db import Base
-from db import db_session
+from db import Session
 from sqlalchemy import Column, Integer, String, VARCHAR, Text, Date, DATETIME, DATE, DECIMAL, CHAR, Integer, ForeignKey
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.schema import Table
@@ -19,7 +19,7 @@ class Site(Base):
 
     def data(self, samples):
 
-        session = db_session()
+        session = Session()
         data = session.query(Data).filter(Data.site_id == self.site_id).order_by(Data.observed.desc()).limit(samples).all()
         result = []
         for d in data:
@@ -28,7 +28,7 @@ class Site(Base):
         return result
 
     def forecast_data(self):
-        session = db_session()
+        session = Session()
         data = session.query(Forecast).filter(Forecast.site_id == self.site_id).order_by(Forecast.forecast_date.desc()).limit(3).all()
         result = []
         for d in data:
@@ -48,7 +48,7 @@ class Site(Base):
 
     @staticmethod
     def all_sites():
-        session = db_session()
+        session = Session()
         sites = session.query(Site).order_by(Site.name)
         session.close()
         return sites
@@ -58,7 +58,7 @@ class Site(Base):
         """
         Get site from code
         """
-        session = db_session()
+        session = Session()
         site = session.query(Site).filter(Site.code == code).one()
         session.close() 
         return site
