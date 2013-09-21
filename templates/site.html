@@ -5,14 +5,15 @@
         <div class="row">
             <section>
                 <div class="page-header">
-                    <div style="float: right">
-                        <select name="code" id="code" ng-model="code" ng-options="s.code as s.name for s in sites"></select>
+                    <div style="float: right">  
+                        <select class="form-control" name="code" id="code" ng-model="code" ng-options="s.code as s.name for s in sites"></select>
                     </div>
                     <h1>{[{ name }]}</h1>
                 </div>
 
                 <h2>Forecast</h2>
-                <table class="table">
+                <div class="table-responsive">
+                <table class="table table-condensed table-striped">
                 <thead>
                 <tr>
                     <th>Date</th>
@@ -30,9 +31,11 @@
                 </tr>
                 </tbody>
                 </table>
+                </div><!-- table-responsive -->
 
                 <h2>Data</h2>
-                <table class="table">
+                <div class="table-responsive">
+                <table class="table table-condensed table-striped">
                 <thead>
                 <tr>
                     <th>Observed</th>
@@ -68,6 +71,7 @@
                     </tr>
                 </tbody>
                 </table>
+                </div><!-- table-responsive -->
 
             </section>
         </div>
