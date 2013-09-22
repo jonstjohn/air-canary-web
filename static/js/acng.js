@@ -1,4 +1,4 @@
-var app = angular.module('acApp', ['ngRoute']).config( function($routeProvider, $locationProvider, $interpolateProvider) {
+var app = angular.module('acApp', []).config( function($routeProvider, $locationProvider, $interpolateProvider) {
     $routeProvider.when('/', {
         templateUrl: '/ng/home',
         controller: HomeCntl
@@ -13,6 +13,10 @@ var app = angular.module('acApp', ['ngRoute']).config( function($routeProvider, 
     $interpolateProvider.endSymbol('}]}');
 
 });
+
+function MainCntl($scope) {
+
+}
 
 function HomeCntl($scope, $route, $routeParams, $location) {
     $scope.$route = $route;
@@ -30,6 +34,8 @@ function SiteCntl($scope, $route, $routeParams, $http, $location) {
     $scope.sites = [];
     $scope.forecast = [];
 
+    $scope.code = $routeParams.code;
+
     $scope.init = function(code) {
 
         console.log($location);
@@ -38,10 +44,13 @@ function SiteCntl($scope, $route, $routeParams, $http, $location) {
         $scope.loadSites();
     }
 
+    //$scope.init($routeParams.code);
+
     $scope.$watch('code', function() { $scope.setSiteName(); $scope.loadData(); });
 
     $scope.loadData = function() {
         $scope.data = [];
+        //$location.path('/site/' + $scope.code);
         var httpRequest = $http({
             method: 'GET',
             url: '/api/site/' + $scope.code + '/10'
@@ -69,5 +78,12 @@ function SiteCntl($scope, $route, $routeParams, $http, $location) {
             }
         }
     };
+
+    //console.log($location);
+    //$scope.code = code;
+    console.log('Controller');
+    console.log($scope.sites);
+    $scope.loadData();
+    $scope.loadSites();
 
 }

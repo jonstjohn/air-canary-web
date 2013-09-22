@@ -31,6 +31,16 @@ def index():
 
     return render_template('ng/index.html')
 
+@app.route('/ng/home')
+def ng_home():
+
+    return render_template('ng/home.html')
+
+@app.route('/ng/site')
+def ng_site():
+
+    return render_template('ng/site.html')
+
 @app.route('/site')
 def sites():
 
