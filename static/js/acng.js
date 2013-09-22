@@ -14,24 +14,45 @@ var app = angular.module('acApp', []).config( function($routeProvider, $location
 
 });
 
-function MainCntl($scope) {
+angular.module("acApp").factory("siteService", function(){
 
+  return {sharedObject: {data: null } }
+});
+
+function MainCntl($scope, $http, siteService) {
+
+    $scope.sites = siteService.sharedObject.data;
+
+    $scope.loadSites = function() {
+
+        var httpRequest = $http({
+            method: 'GET',
+            url: '/api/site'
+        }).success(function(data, status) {
+            $scope.sites = data;
+            siteService.sharedObject.data = data;
+        });
+    };
+
+    $scope.loadSites();
+
+    
 }
 
-function HomeCntl($scope, $route, $routeParams, $location) {
+function HomeCntl($scope, $route, $routeParams, $location, siteService) {
     $scope.$route = $route;
     $scope.$location = $location;
     $scope.$routeParams = $routeParams;
 }
 
-function SiteCntl($scope, $route, $routeParams, $http, $location) {
+function SiteCntl($scope, $route, $routeParams, $http, $location, siteService) {
 
     $scope.$route = $route;
     $scope.$location = $location;
     $scope.$routeParams = $routeParams;
 
     $scope.data = [];
-    $scope.sites = [];
+    $scope.sites = siteService.sharedObject.data;
     $scope.forecast = [];
 
     $scope.code = $routeParams.code;
@@ -44,30 +65,17 @@ function SiteCntl($scope, $route, $routeParams, $http, $location) {
         $scope.loadSites();
     }
 
-    //$scope.init($routeParams.code);
-
     $scope.$watch('code', function() { $scope.setSiteName(); $scope.loadData(); });
 
     $scope.loadData = function() {
         $scope.data = [];
-        //$location.path('/site/' + $scope.code);
+        $location.path('/site/' + $scope.code);
         var httpRequest = $http({
             method: 'GET',
             url: '/api/site/' + $scope.code + '/10'
         }).success(function(data, status) {
             $scope.data = data.data;
             $scope.forecast = data.forecast;
-        });
-    };
-
-    $scope.loadSites = function() {
-
-        var httpRequest = $http({
-            method: 'GET',
-            url: '/api/site'
-        }).success(function(data, status) {
-            $scope.sites = data;
-            $scope.setSiteName();
         });
     };
 
@@ -79,11 +87,6 @@ function SiteCntl($scope, $route, $routeParams, $http, $location) {
         }
     };
 
-    //console.log($location);
-    //$scope.code = code;
-    console.log('Controller');
-    console.log($scope.sites);
     $scope.loadData();
-    $scope.loadSites();
 
 }
