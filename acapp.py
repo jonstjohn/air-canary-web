@@ -41,6 +41,18 @@ def ng_site():
 
     return render_template('ng/site.html')
 
+@app.route('/ng/api')
+def ng_api():
+    return render_template('ng/api.html')
+
+@app.route('/ng/about')
+def ng_about():
+    return render_template('ng/about.html')
+
+@app.route('/ng/contact')
+def ng_contact():
+    return render_template('ng/contact.html')
+
 @app.route('/site')
 def sites():
 
@@ -53,6 +65,7 @@ def site(code):
 
    return render_template('site.html', site = site, sites = Site.all_sites())
 
+@app.route('/forecast/<code>', subdomain='api')
 @app.route('/api/forecast/<code>')
 def api_forecast(code):
 
@@ -61,6 +74,8 @@ def api_forecast(code):
     response = Response(json.dumps(response_data), status=200, mimetype='application/json')
     return response
 
+@app.route('/site/<code>', defaults={'samples': 1}, subdomain='api')
+@app.route('/site/<code>/<int:samples>', subdomain='api')
 @app.route('/api/site/<code>', defaults={'samples': 1})
 @app.route('/api/site/<code>/<int:samples>')
 def api(code, samples):
@@ -73,6 +88,7 @@ def api(code, samples):
     response = Response(json.dumps(response_data), status=200, mimetype='application/json')
     return response
 
+@app.route('/site', subdomain='api')
 @app.route('/api/site')
 def api_site():
 

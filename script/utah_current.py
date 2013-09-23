@@ -7,6 +7,7 @@ import os
 sys.path.append('{0}/..'.format(os.path.dirname(os.path.abspath(__file__))))
 
 import db
+from db import Session
 from bs4 import BeautifulSoup, Comment
 
 from model.models import Site, Data
@@ -28,7 +29,7 @@ def is_number(s):
     except ValueError:
         return False
 
-session = db.session()
+session = Session()
 
 try:
     sites = session.query(Site).all()

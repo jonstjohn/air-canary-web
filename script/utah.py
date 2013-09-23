@@ -7,9 +7,10 @@ import os
 sys.path.append('{0}/..'.format(os.path.dirname(os.path.abspath(__file__))))
 
 import db
+from db import Session
 from model.models import Site, Data
 
-session = db.session()
+session = Session()
 sites = session.query(Site).all()
 
 try:

@@ -9,6 +9,21 @@ var app = angular.module('acApp', []).config( function($routeProvider, $location
         controller: SiteCntl
     });
 
+    $routeProvider.when('/api', {
+        templateUrl: '/ng/api',
+        controller: ApiCntl
+    });
+
+    $routeProvider.when('/about', {
+        templateUrl: '/ng/about',
+        controller: AboutCntl
+    });
+
+    $routeProvider.when('/contact', {
+        templateUrl: '/ng/contact',
+        controller: ContactCntl
+    });
+
     $interpolateProvider.startSymbol('{[{');
     $interpolateProvider.endSymbol('}]}');
 
@@ -88,5 +103,19 @@ function SiteCntl($scope, $route, $routeParams, $http, $location, siteService) {
     };
 
     $scope.loadData();
+
+}
+
+function ApiCntl($scope) {
+
+
+}
+
+function AboutCntl($scope) {
+
+
+}
+function ContactCntl($scope) {
+
 
 }
