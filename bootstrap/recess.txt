@@ -1,0 +1,1 @@
+recess custom-bootstrap.less --compress > ../static/css/bootstrap.css
