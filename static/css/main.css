@@ -1065,3 +1065,8 @@ form.bs-docs-example {
     padding-bottom: 20px;
   }
 }
+
+.chart rect {
+    stroke: white;
+    fill: steelblue;
+}

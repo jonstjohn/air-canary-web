@@ -95,7 +95,8 @@ function SiteCntl($scope, $route, $routeParams, $http, $location, siteService, d
             method: 'GET',
             url: '/api/site/' + $scope.code + '/10'
         }).success(function(data, status) {
-            siteService.sharedObject.data = data.data;
+            dataService.sharedObject.data = data.data;
+            $scope.data = data.data;
             $scope.forecast = data.forecast;
         });
     };
@@ -154,6 +155,7 @@ app.directive('sampleGraph', function(dataService) {
             // set up initial svg object
             var vis = d3.select(element[0])
                 .append("svg")
+                .attr('class', 'chart')
                 .attr("width", width)
                 .attr("height", height + margin + 100);
             // A label for the current year.
