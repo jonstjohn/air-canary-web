@@ -52,9 +52,9 @@
                 <tbody>
                     <tr ng-repeat="d in data">
                         <td>{[{ d.observed | date:'short' }]}</td>
-                        <td>{[{ d.ozone }]}</td>
+                        <td class="ozone">{[{ d.ozone }]}</td>
                         <td>{[{ d.ozone_8hr_avg }]}</td>
-                        <td>{[{ d.pm25 }]}</td>
+                        <td class="pm25">{[{ d.pm25 }]}</td>
                         <td>{[{ d.pm25_24hr_avg }]}</td>
                         <td>{[{ d.nox }]}</td>
                         <td>{[{ d.no2 }]}</td>

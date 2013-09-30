@@ -137,6 +137,8 @@ app.directive('sampleGraph', function(dataService) {
 
     // create a simple data array that we'll plot with a line (this array represents only the Y values, X will just be the index location)
     var data = [3, 6, 2, 7, 5, 2, 0, 3, 8, 9, 2, 5, 9, 3, 6, 3, 6, 2, 7, 5, 2, 1, 3, 8, 9, 2, 5, 9, 2, 7];
+    //var data = d3.selectAll('pm25').length;
+    //console.log(data);
 
     // X scale will fit all values from data[] within pixels 0-w
     var x = d3.scale.linear().domain([0, data.length]).range([0, width]);
