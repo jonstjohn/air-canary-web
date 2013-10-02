@@ -143,10 +143,6 @@ app.directive('sampleGraph', function(dataService) {
     //var data = d3.selectAll('pm25').length;
     //console.log(data);
 
-    $('.pm25').each( function(el) {
-        console.log(el);
-    });
-
     // X scale will fit all values from data[] within pixels 0-w
     var x = d3.scale.linear().domain([0, data.length]).range([0, width]);
     // Y scale will fit values from 0-10 within pixels h-0 (Note the inverted domain for the y-scale: bigger is up!)
@@ -178,15 +174,6 @@ app.directive('sampleGraph', function(dataService) {
                 .attr('width', x)
                 .attr('height', 20);
 
-            scope.$watch('exp', function(newVal, oldVal) {
-
-            });
-
-            scope.$watch('tmp', function(newVal, oldVal) {
-                console.log(newVal);
-                console.log(oldVal);
-                console.log(dataService.sharedObject.data);
-            });
         }
     };
 
