@@ -134,9 +134,6 @@ function ContactCntl($scope) {
 
 app.directive('sampleGraph', function(dataService) {
 
-    // create a simple data array that we'll plot with a line (this array represents only the Y values, X will just be the index location)
-        var data = [3, 6, 2, 7, 5, 2, 0, 3, 8, 9, 2, 5, 9, 3, 6, 3, 6, 2, 7, 5, 2, 1, 3, 8, 9, 2, 5, 9, 2, 7];
-
     // constants
     var margin = 20,
         width = 960,
@@ -144,12 +141,6 @@ app.directive('sampleGraph', function(dataService) {
         barPadding = 1,
         color = d3.interpolateRgb("#f77", "#77f");
 
-    // X scale will fit all values from data[] within pixels 0-w
-    var x = d3.scale.linear().domain([0, data.length]).range([0, width]);
-    // Y scale will fit values from 0-10 within pixels h-0 (Note the inverted domain for the y-scale: bigger is up!)
-    var y = d3.scale.linear().domain([0, 10]).range([height, 0]);
-        // automatically determining max range can work something like this
-        // var y = d3.scale.linear().domain([0, d3.max(data)]).range([h, 0]);
 
     return {
         restrict: 'E',
@@ -179,18 +170,17 @@ app.directive('sampleGraph', function(dataService) {
 
                 var data = [];
                 for (var i = 0; i < newVal.length; i++) {
-                    console.log(newVal[i].pm25);
                     var val = newVal[i].pm25 ? newVal[i].pm25 : 0;
                     data.push(val);
                 }
 
-                console.log(data);
+                var scale = d3.scale.linear().domain([0, d3.max(data)]).range([0, height]);
 
                 vis.selectAll("rect").data(data).enter().append('rect')
                     .attr('x', function(d, i) { return i * (width / data.length); })
                     .attr('width', function(d, i) { return width / data.length - barPadding; })
-                    .attr('height', function(d, i) { return d * 20; })
-                    .attr('y', function(d, i) { return height - (d * 20); })
+                    .attr('height', function(d, i) { return scale(d); })
+                    .attr('y', function(d, i) { return height - scale(d); })
                 .attr("fill", function(d) {
                     return "rgb(0, 0, " + (d * 100) + ")";
                 });
@@ -204,7 +194,7 @@ app.directive('sampleGraph', function(dataService) {
                         return i * (width / data.length) + (width / data.length - barPadding) / 2;
                     })
                     .attr("y", function(d) {
-                        return height - (d * 20) + 14;
+                        return height - scale(d) + 14;
                     })
                     .attr('font-family', 'sans-serif')
                     .attr('font-size', '11px')
