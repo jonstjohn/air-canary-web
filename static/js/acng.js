@@ -98,7 +98,7 @@ function SiteCntl($scope, $route, $routeParams, $http, $location, siteService, d
         $location.path('/site/' + $scope.code);
         var httpRequest = $http({
             method: 'GET',
-            url: '/api/site/' + $scope.code + '/10'
+            url: '/api/site/' + $scope.code + '/24'
         }).success(function(data, status) {
             dataService.sharedObject.data = data.data;
             $scope.data = data.data;
@@ -107,7 +107,6 @@ function SiteCntl($scope, $route, $routeParams, $http, $location, siteService, d
     };
 
     $scope.setSiteName = function() {
-        console.log($scope.sites);
         for (var i = 0; i < $scope.sites.length; i++) {
             if ($scope.sites[i].code == $scope.code) {
                 $scope.name = $scope.sites[i].name;
@@ -141,7 +140,7 @@ app.directive('sampleGraph', function(dataService) {
     // constants
     var margin = 20,
         width = 960,
-        height = Math.max.apply(Math, data) * 20 + .5 * margin,
+        height = 300,
         barPadding = 1,
         color = d3.interpolateRgb("#f77", "#77f");
 
@@ -170,30 +169,49 @@ app.directive('sampleGraph', function(dataService) {
                 .attr("dy", ".71em")
                 .text(2000);
 
-            vis.selectAll("rect").data(data).enter().append('rect')
-                .attr('x', function(d, i) { return i * (width / data.length); })
-                .attr('width', function(d, i) { return width / data.length - barPadding; })
-                .attr('height', function(d, i) { return d * 20; })
-                .attr('y', function(d, i) { return height - (d * 20); })
+            scope.$watch('val', function(newVal, oldVal) {
+
+                vis.selectAll('*').remove();
+
+                if (!newVal) {
+                    return;
+                }
+
+                var data = [];
+                for (var i = 0; i < newVal.length; i++) {
+                    console.log(newVal[i].pm25);
+                    var val = newVal[i].pm25 ? newVal[i].pm25 : 0;
+                    data.push(val);
+                }
+
+                console.log(data);
+
+                vis.selectAll("rect").data(data).enter().append('rect')
+                    .attr('x', function(d, i) { return i * (width / data.length); })
+                    .attr('width', function(d, i) { return width / data.length - barPadding; })
+                    .attr('height', function(d, i) { return d * 20; })
+                    .attr('y', function(d, i) { return height - (d * 20); })
                 .attr("fill", function(d) {
                     return "rgb(0, 0, " + (d * 100) + ")";
                 });
 
-            vis.selectAll("text")
-                .data(data)
-                .enter()
-                .append("text")
-                .text(function(d) { return d; })
-                .attr("x", function(d, i) {
-                    return i * (width / data.length) + (width / data.length - barPadding) / 2;
-                })
-                .attr("y", function(d) {
-                    return height - (d * 20) + 14;
-                })
-                .attr('font-family', 'sans-serif')
-                .attr('font-size', '11px')
-                .attr('fill', 'white')
-                .attr('text-anchor', 'middle')
+                vis.selectAll("text")
+                    .data(data)
+                    .enter()
+                    .append("text")
+                    .text(function(d) { return d; })
+                    .attr("x", function(d, i) {
+                        return i * (width / data.length) + (width / data.length - barPadding) / 2;
+                    })
+                    .attr("y", function(d) {
+                        return height - (d * 20) + 14;
+                    })
+                    .attr('font-family', 'sans-serif')
+                    .attr('font-size', '11px')
+                    .attr('fill', 'white')
+                    .attr('text-anchor', 'middle')
+
+            });
 
         }
     };
