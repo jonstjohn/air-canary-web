@@ -31,12 +31,22 @@ var app = angular.module('acApp', []).config( function($routeProvider, $location
 
 angular.module("acApp").factory("siteService", function(){
 
-  return {sharedObject: {data: null } }
+    return {
+        sharedObject: {
+            data: null,
+            echo: function() { console.log('echo'); }
+        }
+    }
 });
 
 angular.module("acApp").factory('dataService', function() {
 
-    return { sharedObject: { data: null } };
+    return { 
+        sharedObject: {
+            data: null,
+            echo: function() { console.log('echo'); }
+        }
+    };
 
 });
 
@@ -78,18 +88,13 @@ function SiteCntl($scope, $route, $routeParams, $http, $location, siteService, d
 
     $scope.code = $routeParams.code;
 
-    $scope.init = function(code) {
-
-        console.log($location);
-        $scope.code = code;
-        $scope.loadData();
-        $scope.loadSites();
-    }
-
-    $scope.$watch('code', function() { $scope.setSiteName(); $scope.loadData(); });
+    $scope.$watch('code', function() {
+        $scope.setSiteName();
+        $scope.loadData(); 
+    });
 
     $scope.loadData = function() {
-        siteService.sharedObject.data = [];
+        dataService.sharedObject.data = [];
         $location.path('/site/' + $scope.code);
         var httpRequest = $http({
             method: 'GET',
@@ -102,6 +107,7 @@ function SiteCntl($scope, $route, $routeParams, $http, $location, siteService, d
     };
 
     $scope.setSiteName = function() {
+        console.log($scope.sites);
         for (var i = 0; i < $scope.sites.length; i++) {
             if ($scope.sites[i].code == $scope.code) {
                 $scope.name = $scope.sites[i].name;
@@ -109,7 +115,7 @@ function SiteCntl($scope, $route, $routeParams, $http, $location, siteService, d
         }
     };
 
-    $scope.loadData();
+    //$scope.loadData();
 
 }
 
@@ -138,12 +144,6 @@ app.directive('sampleGraph', function(dataService) {
         height = Math.max.apply(Math, data) * 20 + .5 * margin,
         barPadding = 1,
         color = d3.interpolateRgb("#f77", "#77f");
-
-    var tmp = dataService.sharedObject.data;
-    console.log(tmp);
-    //var data = [];
-    //var data = d3.selectAll('pm25').length;
-    //console.log(data);
 
     // X scale will fit all values from data[] within pixels 0-w
     var x = d3.scale.linear().domain([0, data.length]).range([0, width]);
