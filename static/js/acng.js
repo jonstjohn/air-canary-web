@@ -182,7 +182,15 @@ app.directive('sampleGraph', function(dataService) {
                     .attr('height', function(d, i) { return scale(d); })
                     .attr('y', function(d, i) { return height - scale(d); })
                 .attr("fill", function(d) {
-                    return "rgb(0, 0, " + (d * 100) + ")";
+                    if (d > 12.0 && d < 35.5) {
+                        return "rgb(255, 255, 0)"; // yellow
+                    } else if (d >= 35.5 && d <= 55.4) {
+                        return "rgb(255, 128, 0)"; // orange
+                    } else if (d > 55.4) {
+                        return "rgb(0, 0, 204)"; // red
+                    } else {
+                        return "rgb(102, 204, 0)"; // green
+                    }
                 });
 
                 vis.selectAll("text")
