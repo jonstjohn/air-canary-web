@@ -181,17 +181,26 @@ app.directive('sampleGraph', function(dataService) {
                     .attr('width', function(d, i) { return width / data.length - barPadding; })
                     .attr('height', function(d, i) { return scale(d); })
                     .attr('y', function(d, i) { return height - scale(d); })
-                .attr("fill", function(d) {
-                    if (d > 12.0 && d < 35.5) {
-                        return "rgb(255, 255, 0)"; // yellow
-                    } else if (d >= 35.5 && d <= 55.4) {
-                        return "rgb(255, 128, 0)"; // orange
-                    } else if (d > 55.4) {
-                        return "rgb(0, 0, 204)"; // red
-                    } else {
-                        return "rgb(102, 204, 0)"; // green
-                    }
-                });
+                    .attr("fill", function(d) {
+                        if (d > 12.0 && d < 35.5) {
+                            return "rgb(255, 255, 0)"; // yellow
+                        } else if (d >= 35.5 && d <= 55.4) {
+                            return "rgb(255, 128, 0)"; // orange
+                        } else if (d > 55.4) {
+                            return "rgb(0, 0, 204)"; // red
+                        } else if (d >= 6.0) {
+                            return "rgb(138, 185, 11)"; // light green
+                        } else {
+                            return "rgb(66, 134, 49)"; // green
+                        }
+                    });
+
+                // Green 66,134,49
+                // Light green 138, 185, 11
+                // Yellow 255, 211, 88
+                // Orange 255, 159, 38
+                // Light red 255, 49, 0
+                // Red 254, 0, 0
 
                 vis.selectAll("text")
                     .data(data)
