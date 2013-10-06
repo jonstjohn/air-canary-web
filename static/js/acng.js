@@ -174,6 +174,8 @@ app.directive('sampleGraph', function(dataService) {
                     data.push(val);
                 }
 
+                data.reverse();
+
                 var scale = d3.scale.linear().domain([0, d3.max(data)]).range([0, height]);
 
                 vis.selectAll("rect").data(data).enter().append('rect')
