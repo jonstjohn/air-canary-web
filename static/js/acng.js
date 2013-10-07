@@ -107,6 +107,10 @@ function SiteCntl($scope, $route, $routeParams, $http, $location, siteService, d
     };
 
     $scope.setSiteName = function() {
+        if ($scope.sites === null) {
+            return "";
+        }
+
         for (var i = 0; i < $scope.sites.length; i++) {
             if ($scope.sites[i].code == $scope.code) {
                 $scope.name = $scope.sites[i].name;
@@ -135,7 +139,7 @@ function ContactCntl($scope) {
 app.directive('sampleGraph', function(dataService) {
 
     // constants
-    var margin = 20,
+    var margin = {top: 20, right: 10, bottom: 40, left: 10},
         width = 960,
         height = 300,
         barPadding = 1,
@@ -152,14 +156,11 @@ app.directive('sampleGraph', function(dataService) {
             // set up initial svg object
             var vis = d3.select(element[0])
                 .append("svg")
-                .attr("width", width)
-                .attr("height", height + margin + 100);
-            // A label for the current year.
-            var title = vis.append("text")
-                .attr("class", "title")
-                .attr("dy", ".71em")
-                .text(2000);
-
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append('g')
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+ 
             scope.$watch('val', function(newVal, oldVal) {
 
                 vis.selectAll('*').remove();
@@ -169,28 +170,29 @@ app.directive('sampleGraph', function(dataService) {
                 }
 
                 var data = [];
-                for (var i = 0; i < newVal.length; i++) {
+                for (var i = newVal.length - 1; i >= 0; i--) {
                     var val = newVal[i].pm25 ? newVal[i].pm25 : 0;
-                    data.push(val);
+                    data.push([val, newVal[i].observed]);
                 }
 
-                data.reverse();
+                var scale = d3.scale.linear().domain([0, d3.max(data, function(d) { return d[0]; })]).range([0, height]);
+                var xScale = d3.scale.linear().domain([0, 24]).range([0, width]);
 
-                var scale = d3.scale.linear().domain([0, d3.max(data)]).range([0, height]);
+                var axis = d3.svg.axis().scale(scale).orient('left');
 
                 vis.selectAll("rect").data(data).enter().append('rect')
                     .attr('x', function(d, i) { return i * (width / data.length); })
                     .attr('width', function(d, i) { return width / data.length - barPadding; })
-                    .attr('height', function(d, i) { return scale(d); })
-                    .attr('y', function(d, i) { return height - scale(d); })
+                    .attr('height', function(d, i) { return scale(d[0]); })
+                    .attr('y', function(d, i) { return height - scale(d[0]); })
                     .attr("fill", function(d) {
-                        if (d > 12.0 && d < 35.5) {
-                            return "rgb(255, 255, 0)"; // yellow
-                        } else if (d >= 35.5 && d <= 55.4) {
-                            return "rgb(255, 128, 0)"; // orange
-                        } else if (d > 55.4) {
-                            return "rgb(0, 0, 204)"; // red
-                        } else if (d >= 6.0) {
+                        if (d[0] > 12.0 && d[0] < 35.5) {
+                            return "rgb(255, 211, 88)"; // yellow
+                        } else if (d[0] >= 35.5 && d[0] <= 55.4) {
+                            return "rgb(255, 159, 38)"; // orange
+                        } else if (d[0] > 55.4) {
+                            return "rgb(254, 0, 0)"; // red
+                        } else if (d[0] >= 6.0) {
                             return "rgb(138, 185, 11)"; // light green
                         } else {
                             return "rgb(66, 134, 49)"; // green
@@ -204,21 +206,80 @@ app.directive('sampleGraph', function(dataService) {
                 // Light red 255, 49, 0
                 // Red 254, 0, 0
 
+                var formatTime = function(dateTime) {
+                    var parts = dateTime.split(" ");
+                    var timeParts = parts[1].split(":");
+                    var hour = parseInt(timeParts[0], 10);
+                    var min = timeParts[1];
+                    var ampm = " AM";
+
+                    if (hour > 12) {
+                        hour = hour - 12;
+                        ampm = ' PM';
+                    }
+
+                    return hour + ":" + min + ampm;
+                };
+
+                var formatDate = function(dateTime) {
+                    var parts = dateTime.split(" ");
+                    var dateParts = parts[0].split("-");
+                    return dateParts[1] + "/" + dateParts[2];
+                }
+
                 vis.selectAll("text")
                     .data(data)
                     .enter()
                     .append("text")
-                    .text(function(d) { return d; })
+                    .text(function(d) { return d[0]; })
                     .attr("x", function(d, i) {
                         return i * (width / data.length) + (width / data.length - barPadding) / 2;
                     })
                     .attr("y", function(d) {
-                        return height - scale(d) + 14;
+                        return height - scale(d[0]) + 14;
                     })
                     .attr('font-family', 'sans-serif')
                     .attr('font-size', '11px')
                     .attr('fill', 'white')
-                    .attr('text-anchor', 'middle')
+                    .attr('text-anchor', 'middle');
+
+                vis.selectAll("text.yaxis")
+                    .data(data)
+                    .enter()
+                    .append("text")
+                    .text(function(d, i) { return i == data.length - 1 || i % 4 == 0 ? formatTime(d[1]) : ""; })
+                    .attr("x", function(d, i) {
+                        return i * (width / data.length) + (width / data.length - barPadding) / 2;
+                    })
+                    .attr("y", function(d) {
+                        return height + 15;
+//                        return height - scale(d) + 14;
+                    })
+                    .attr('font-family', 'sans-serif')
+                    .attr('font-size', '10px')
+                    .attr('fill', 'black')
+                    .attr('text-anchor', 'middle');
+
+                vis.selectAll("text.yaxis")
+                    .data(data)
+                    .enter()
+                    .append("text")
+                    .text(function(d, i) { return i == data.length - 1 || i % 4 == 0 ? formatDate(d[1]) : ""; })
+                    .attr("x", function(d, i) {
+                        return i * (width / data.length) + (width / data.length - barPadding) / 2;
+                    })
+                    .attr("y", function(d) {
+                        return height + 30;
+//                        return height - scale(d) + 14;
+                    })
+                    .attr('font-family', 'sans-serif')
+                    .attr('font-size', '10px')
+                    .attr('fill', 'black')
+                    .attr('text-anchor', 'middle');
+
+//                vis.append('g').call(axis);
+
+
 
             });
 
