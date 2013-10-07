@@ -11,7 +11,7 @@
 <body>
     <div class="container" ng-controller="MainCntl" >
         <!-- Static navbar -->
-        <div class="navbar navbar-default">
+        <div class="navbar navbar-default navbar-fixed-top">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="icon-bar"></span>
@@ -36,7 +36,9 @@
                 </ul>
             </div><!--/.nav-collapse -->
         </div>
-        <div ng-view></div>
+        <div style="padding-top: 50px">
+            <div ng-view></div>
+        </div>
 
         <footer>
             <div class="container">

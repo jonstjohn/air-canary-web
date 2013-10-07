@@ -7,22 +7,33 @@
                     <h1>{[{ name }]}</h1>
                 </div>
 
-                <h2>3 Day Forecast</h2>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h2 class="panel-title">3 Day Forecast</h2>
+                    </div>
+                    <div class="panel-body">
 
-                <div class="row">
-                    <div ng-repeat="f in forecast" class="col-md-4" style="padding: 10px">
-                        <div style="background-color: {[{f.color}]}; width: 100%; color: #fff">
-                            <div style="padding: 10px" class="row">
-                                <div class="col-md-6">{[{ f.date }]}</div>
-                                <div class="col-md-6" style="text-align: right">{[{ f.description }]}</div>  
+                        <div class="row">
+                            <div ng-repeat="f in forecast" class="col-md-4" style="padding: 10px">
+                                <div style="background-color: {[{f.color}]}; width: 100%; color: #fff">
+                                    <div style="padding: 10px" class="row">
+                                        <div class="col-md-6">{[{ f.date }]}</div>
+                                        <div class="col-md-6" style="text-align: right">{[{ f.description }]}</div>  
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <h2>PM 2.5 - Past 24 hours</h2>
-
-                <sample-graph val="data"></sample-graph>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h2 class="panel-title">PM 2.5 - Past 24 hours</h2>
+                    </div>
+                    <div class="panel-body">
+                        <sample-graph val="data"></sample-graph>
+                    </div>
+                </div>
 
                 <div class="table-responsive">
                 <table class="table table-condensed table-striped">
