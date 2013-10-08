@@ -145,6 +145,13 @@ app.directive('sampleGraph', function(dataService) {
         barPadding = 1,
         color = d3.interpolateRgb("#f77", "#77f");
 
+    var ranges = [
+        {label: 'Good', max: 12.0, color: '#5E8C6F', width: 20, x: 0},
+        {label: 'Moderate', max: 35.4, color: '#F0C866', width: 70, x: 80},
+        {label: 'Unhealthy for Sensitive People', max: 55.4, color: '#DC9C5E', width: 150, x: 190},
+        {label: 'Unhealthy', max: 1000.0, color: '#DC4358', width: 100, x: 430}
+    ];
+
 
     return {
         restrict: 'E',
@@ -158,6 +165,13 @@ app.directive('sampleGraph', function(dataService) {
                 .append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
+                .append('g')
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            var legendSvg = d3.select(element[0])
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", 25)
                 .append('g')
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
  
@@ -187,15 +201,15 @@ app.directive('sampleGraph', function(dataService) {
                     .attr('y', function(d, i) { return height - scale(d[0]); })
                     .attr("fill", function(d) {
                         if (d[0] > 12.0 && d[0] < 35.5) {
-                            return "rgb(255, 211, 88)"; // yellow
+                            return '#F0C866'; // "rgb(255, 211, 88)"; // yellow
                         } else if (d[0] >= 35.5 && d[0] <= 55.4) {
-                            return "rgb(255, 159, 38)"; // orange
+                            return '#DC9C5E'; // "rgb(255, 159, 38)"; // orange
                         } else if (d[0] > 55.4) {
-                            return "rgb(254, 0, 0)"; // red
+                            return '#DC4358'; // "rgb(254, 0, 0)"; // red
                         } else if (d[0] >= 6.0) {
-                            return "rgb(138, 185, 11)"; // light green
+                            return "#5E8C6F"; // "rgb(138, 185, 11)"; // light green
                         } else {
-                            return "rgb(66, 134, 49)"; // green
+                            return "#5E8C6F"; // "rgb(66, 134, 49)"; // green
                         }
                     });
 
@@ -276,6 +290,30 @@ app.directive('sampleGraph', function(dataService) {
                     .attr('font-size', '10px')
                     .attr('fill', 'black')
                     .attr('text-anchor', 'middle');
+
+                var legend = legendSvg.append('g')
+                    .attr('class', 'legend')
+                    .attr('height', 100)
+                    .attr('widgth', 100)
+                    .attr('tranform', 'translate(-20, 50)');
+
+                legend.selectAll('rect')
+                    .data(ranges)
+                    .enter()
+                    .append('rect')
+                    .attr('x', function(d, i) { return d.x; }) //return i * 270; })
+                    .attr('y', -10)
+                    .attr('width', 10)
+                    .attr('height', 10)
+                    .style('fill', function(d) { return d.color; });
+
+                legend.selectAll('text')
+                    .data(ranges)
+                    .enter()
+                    .append('text')
+                    .attr('x', function(d, i) { return d.x + 20; })
+                    .attr('y', 0)
+                    .text(function(d) { return d.label; });
 
 //                vis.append('g').call(axis);
 
