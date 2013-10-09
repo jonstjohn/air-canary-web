@@ -145,12 +145,20 @@ app.directive('sampleGraph', function(dataService) {
         barPadding = 1,
         color = d3.interpolateRgb("#f77", "#77f");
 
-    var ranges = [
-        {label: 'Good', max: 12.0, color: '#5E8C6F', width: 20, x: 0},
-        {label: 'Moderate', max: 35.4, color: '#F0C866', width: 70, x: 80},
-        {label: 'Unhealthy for Sensitive People', max: 55.4, color: '#DC9C5E', width: 150, x: 190},
-        {label: 'Unhealthy', max: 1000.0, color: '#DC4358', width: 100, x: 430}
-    ];
+    var ranges = {
+        'pm25': [
+            {label: 'Good', max: 12.0, color: '#5E8C6F', width: 20, x: 0, class: 'bar-green'},
+            {label: 'Moderate', max: 35.4, color: '#F0C866', width: 70, x: 80, class: 'bar-yellow'},
+            {label: 'Unhealthy for Sensitive People', max: 55.4, color: '#DC9C5E', width: 150, x: 190, class: 'bar-orange'},
+            {label: 'Unhealthy', max: 1000.0, color: '#DC4358', width: 100, x: 430, class: 'bar-red'}
+        ],
+        'ozone': [
+            {label: 'Good', max: 0.059, color: '#5E8C6F', width: 20, x: 0, class: 'bar-green'},
+            {label: 'Moderate', max: 0.075, color: '#F0C866', width: 70, x: 80, class: 'bar-yellow'},
+            {label: 'Unhealthy for Sensitive People', max: 0.095, color: '#DC9C5E', width: 150, x: 190, class: 'bar-orange'},
+            {label: 'Unhealthy', max: 1000.0, color: '#DC4358', width: 100, x: 430, class: 'bar-red'}
+        ]
+    };
 
 
     return {
@@ -185,7 +193,7 @@ app.directive('sampleGraph', function(dataService) {
 
                 var data = [];
                 for (var i = newVal.length - 1; i >= 0; i--) {
-                    var val = newVal[i].pm25 ? newVal[i].pm25 : 0;
+                    var val = newVal[i][attrs.type] ? newVal[i][attrs.type] : 0;
                     data.push([val, newVal[i].observed]);
                 }
 
@@ -194,31 +202,22 @@ app.directive('sampleGraph', function(dataService) {
 
                 var axis = d3.svg.axis().scale(scale).orient('left');
 
+                var barColor = function(val) {
+                    for (var i = 0; i < ranges[attrs.type].length; i++) {
+                        if (parseFloat(val) <= ranges[attrs.type][i].max) {
+                            return ranges[attrs.type][i].class;
+                        }
+                    }
+
+                    return '';
+                };
+
                 vis.selectAll("rect").data(data).enter().append('rect')
                     .attr('x', function(d, i) { return i * (width / data.length); })
                     .attr('width', function(d, i) { return width / data.length - barPadding; })
                     .attr('height', function(d, i) { return scale(d[0]); })
                     .attr('y', function(d, i) { return height - scale(d[0]); })
-                    .attr("fill", function(d) {
-                        if (d[0] > 12.0 && d[0] < 35.5) {
-                            return '#F0C866'; // "rgb(255, 211, 88)"; // yellow
-                        } else if (d[0] >= 35.5 && d[0] <= 55.4) {
-                            return '#DC9C5E'; // "rgb(255, 159, 38)"; // orange
-                        } else if (d[0] > 55.4) {
-                            return '#DC4358'; // "rgb(254, 0, 0)"; // red
-                        } else if (d[0] >= 6.0) {
-                            return "#5E8C6F"; // "rgb(138, 185, 11)"; // light green
-                        } else {
-                            return "#5E8C6F"; // "rgb(66, 134, 49)"; // green
-                        }
-                    });
-
-                // Green 66,134,49
-                // Light green 138, 185, 11
-                // Yellow 255, 211, 88
-                // Orange 255, 159, 38
-                // Light red 255, 49, 0
-                // Red 254, 0, 0
+                    .attr("class", function(d) { return barColor(d[0]); });
 
                 var formatTime = function(dateTime) {
                     var parts = dateTime.split(" ");
@@ -298,17 +297,17 @@ app.directive('sampleGraph', function(dataService) {
                     .attr('tranform', 'translate(-20, 50)');
 
                 legend.selectAll('rect')
-                    .data(ranges)
+                    .data(ranges[attrs.type])
                     .enter()
                     .append('rect')
                     .attr('x', function(d, i) { return d.x; }) //return i * 270; })
                     .attr('y', -10)
                     .attr('width', 10)
                     .attr('height', 10)
-                    .style('fill', function(d) { return d.color; });
+                    .attr('class', function(d) { return d.class; });
 
                 legend.selectAll('text')
-                    .data(ranges)
+                    .data(ranges[attrs.type])
                     .enter()
                     .append('text')
                     .attr('x', function(d, i) { return d.x + 20; })
