@@ -1,8 +1,22 @@
 <div style="padding-top: 30px">
     <div class="jumbotron">
         <div class="container">
-            <h1>Air Canary</h1>
-            <p class="lead">Real-time Air Quality Updates</p>
+            <div class="row">
+                <div class="col-md-6">
+                    <h1>Air Canary</h1>
+                    <p class="lead">Real-time Air Quality Reports</p>
+                </div>
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h2 class="panel-title">PM 2.5 - Salt Lake City</h2>
+                    </div>
+                    <div class="panel-body">
+                        <sample-graph val="data" width="400" height="100" type="pm25" nolegend=1></sample-graph>
+                    </div>
+                </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="container">

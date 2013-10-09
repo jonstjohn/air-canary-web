@@ -6,48 +6,74 @@
 
             <p>The Air Canary REST API provides access to air quality data through HTTP REST requests.</p>
 
-            <h2>Base URL</h2>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Base URL</h2>
+                </div>
+                <div class="panel-body">
+                    <code>http://api.aircanary.com</code>
+                </div>
+            </div>
 
-            <code>http://api.aircanary.com</code>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Authentication</h2>
+                </div>
+                <div class="panel-body">
+                    <p>Currently no authentication is required.</p>
+                </div>
+            </div>
 
-            <h2>Authentication</h2>
 
-            <p>Currently no authentication is required.</p>
 
-            <h2>Request Limit</h2>
+           <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Request Limit</h2>
+                </div>
+                <div class="panel-body">
+                    <p>API requests are limited to 1000 per day per IP address.</p>
+                </div>
+            </div>
 
-            <p>API requests are limited to 1000 per day per IP address.</p>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Resource: Site</h2>
+                </div>
+                <div class="panel-body">
+                    <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Request</th>
+                        <th>Description</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>GET /site</td>
+                        <td>Get all sites</td>
+                    </tr>
+                    <tr>
+                        <td>GET /site/:code</td>
+                        <td>Get data for individual site</td>
+                    </tr>
+                    </tbody>
+                    </table>
+                </div>
+            </div>
 
-            <h2>Site Resource</h2>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="panel-title">GET /site</h2>
+                </div>
+                <div class="panel-body">
 
-            <table class="table">
-            <thead>
-            <tr>
-                <th>Request</th>
-                <th>Description</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>GET /site</td>
-                <td>Get all sites</td>
-            </tr>
-            <tr>
-                <td>GET /site/:code</td>
-                <td>Get data for individual site</td>
-            </tr>
-            </tbody>
-            </table>
+                    <p>Gets all sites</p>
 
-            <h3>GET /site</h3>
+                    <pre>GET http://api.aircanary.com/site</pre>
 
-            <p>Gets all sites</p>
+                    <p>Sample response:</p>
 
-            <code>GET http://api.aircanary.com/site</code>
-
-            <p>Sample response:</p>
-
-            <pre>
+                    <pre>
 [
     {"code": "boxelder", "name": "Box Elder"},
     {"code": "cache", "name": "Cache"}, 
@@ -60,16 +86,26 @@
     {"code": "washington", "name": "Washington"},
     {"code": "weber", "name": "Weber"}
 ]
-            </pre>
+                    </pre>
+
+                </div>
+
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="panel-title">GET /site/:code</h2>
+                </div>
+                <div class="panel-body">
 
 
-            <h3>GET /site/:code</h3>
+                <p>Get data for single site</p>
 
-            <p>Get data for single site</p>
+                <pre>GET http://api.aircanary.com/site/slc</pre>
 
-            <code>GET http://api.aircanary.com/site/slc</code>
+                <p>Sample response</p>
 
-            <pre>
+                <pre>
 {
     "code": "slc",
     "data": [
@@ -111,5 +147,8 @@
         }
     ]
 }
+                </pre>
+            </div>
+        </div>
     </div>
 </div>

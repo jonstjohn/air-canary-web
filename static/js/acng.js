@@ -70,10 +70,22 @@ function MainCntl($scope, $http, siteService) {
     
 }
 
-function HomeCntl($scope, $route, $routeParams, $location, siteService) {
+function HomeCntl($scope, $route, $routeParams, $http, $location, siteService, dataService) {
     $scope.$route = $route;
     $scope.$location = $location;
     $scope.$routeParams = $routeParams;
+
+    dataService.sharedObject.data = [];
+    var httpRequest = $http({
+        method: 'GET',
+        url: '/api/site/slc/12'
+    }).success(function(data, status) {
+        dataService.sharedObject.data = data.data;
+        $scope.data = data.data;
+        $scope.forecast = data.forecast;
+    });
+
+
 }
 
 function SiteCntl($scope, $route, $routeParams, $http, $location, siteService, dataService) {
@@ -147,16 +159,16 @@ app.directive('sampleGraph', function(dataService) {
 
     var ranges = {
         'pm25': [
-            {label: 'Good', max: 12.0, color: '#5E8C6F', width: 20, x: 0, class: 'bar-green'},
-            {label: 'Moderate', max: 35.4, color: '#F0C866', width: 70, x: 80, class: 'bar-yellow'},
-            {label: 'Unhealthy for Sensitive People', max: 55.4, color: '#DC9C5E', width: 150, x: 190, class: 'bar-orange'},
-            {label: 'Unhealthy', max: 1000.0, color: '#DC4358', width: 100, x: 430, class: 'bar-red'}
+            {label: 'Good (<12)', max: 12.0, color: '#5E8C6F', width: 20, x: 0, class: 'bar-green'},
+            {label: 'Moderate (12.1-35.4)', max: 35.4, color: '#F0C866', width: 70, x: 130, class: 'bar-yellow'},
+            {label: 'Unhealthy for Sensitive People (35.5-55.4)', max: 55.4, color: '#DC9C5E', width: 150, x: 310, class: 'bar-orange'},
+            {label: 'Unhealthy (>55.5)', max: 1000.0, color: '#DC4358', width: 100, x: 620, class: 'bar-red'}
         ],
         'ozone': [
-            {label: 'Good', max: 0.059, color: '#5E8C6F', width: 20, x: 0, class: 'bar-green'},
-            {label: 'Moderate', max: 0.075, color: '#F0C866', width: 70, x: 80, class: 'bar-yellow'},
-            {label: 'Unhealthy for Sensitive People', max: 0.095, color: '#DC9C5E', width: 150, x: 190, class: 'bar-orange'},
-            {label: 'Unhealthy', max: 1000.0, color: '#DC4358', width: 100, x: 430, class: 'bar-red'}
+            {label: 'Good (<0.059)', max: 0.059, color: '#5E8C6F', width: 20, x: 0, class: 'bar-green'},
+            {label: 'Moderate (0.06-0.075)', max: 0.075, color: '#F0C866', width: 70, x: 150, class: 'bar-yellow'},
+            {label: 'Unhealthy for Sensitive People (0.076-0.095)', max: 0.095, color: '#DC9C5E', width: 150, x: 350, class: 'bar-orange'},
+            {label: 'Unhealthy (>0.096)', max: 1000.0, color: '#DC4358', width: 100, x: 680, class: 'bar-red'}
         ]
     };
 
@@ -168,6 +180,14 @@ app.directive('sampleGraph', function(dataService) {
         },
         link: function (scope, element, attrs) {
 
+            if (attrs.width) {
+                var width = parseInt(attrs.width, 10);
+            }
+
+            if (attrs.height) {
+                var height = parseInt(attrs.height, 10);
+            }
+
             // set up initial svg object
             var vis = d3.select(element[0])
                 .append("svg")
@@ -176,12 +196,14 @@ app.directive('sampleGraph', function(dataService) {
                 .append('g')
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-            var legendSvg = d3.select(element[0])
-                .append("svg")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", 25)
-                .append('g')
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            if (attrs.nolegend !== '1') {
+                var legendSvg = d3.select(element[0])
+                    .append("svg")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", 25)
+                    .append('g')
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            }
  
             scope.$watch('val', function(newVal, oldVal) {
 
@@ -192,7 +214,7 @@ app.directive('sampleGraph', function(dataService) {
                 }
 
                 var data = [];
-                for (var i = newVal.length - 1; i >= 0; i--) {
+                for (var i = 0; i < newVal.length; i++) {
                     var val = newVal[i][attrs.type] ? newVal[i][attrs.type] : 0;
                     data.push([val, newVal[i].observed]);
                 }
@@ -203,6 +225,9 @@ app.directive('sampleGraph', function(dataService) {
                 var axis = d3.svg.axis().scale(scale).orient('left');
 
                 var barColor = function(val) {
+                    if (val == 0) {
+                        return 'bar-none';
+                    }
                     for (var i = 0; i < ranges[attrs.type].length; i++) {
                         if (parseFloat(val) <= ranges[attrs.type][i].max) {
                             return ranges[attrs.type][i].class;
@@ -215,8 +240,8 @@ app.directive('sampleGraph', function(dataService) {
                 vis.selectAll("rect").data(data).enter().append('rect')
                     .attr('x', function(d, i) { return i * (width / data.length); })
                     .attr('width', function(d, i) { return width / data.length - barPadding; })
-                    .attr('height', function(d, i) { return scale(d[0]); })
-                    .attr('y', function(d, i) { return height - scale(d[0]); })
+                    .attr('height', function(d, i) { return d[0] == 0 ? 30 : scale(d[0]); })
+                    .attr('y', function(d, i) { return height - (d[0] == 0 ? 30 : scale(d[0])); })
                     .attr("class", function(d) { return barColor(d[0]); });
 
                 var formatTime = function(dateTime) {
@@ -240,21 +265,25 @@ app.directive('sampleGraph', function(dataService) {
                     return dateParts[1] + "/" + dateParts[2];
                 }
 
-                vis.selectAll("text")
-                    .data(data)
-                    .enter()
-                    .append("text")
-                    .text(function(d) { return d[0]; })
-                    .attr("x", function(d, i) {
-                        return i * (width / data.length) + (width / data.length - barPadding) / 2;
-                    })
-                    .attr("y", function(d) {
-                        return height - scale(d[0]) + 14;
-                    })
-                    .attr('font-family', 'sans-serif')
-                    .attr('font-size', '11px')
-                    .attr('fill', 'white')
-                    .attr('text-anchor', 'middle');
+                if (attrs.nolabels !== "1") {
+
+                    vis.selectAll("text")
+                        .data(data)
+                        .enter()
+                        .append("text")
+                        .text(function(d) { return d[0] == 0 ? 'n/a' : d[0]; })
+                        .attr("x", function(d, i) {
+                            return i * (width / data.length) + (width / data.length - barPadding) / 2;
+                        })
+                        .attr("y", function(d) {
+                            return height - (d[0] == 0 ? 30 : scale(d[0])) + 14;
+                        })
+                        .attr('font-family', 'sans-serif')
+                        .attr('font-size', '11px')
+                        .attr('fill', 'white')
+                        .attr('text-anchor', 'middle');
+
+                }
 
                 vis.selectAll("text.yaxis")
                     .data(data)
@@ -290,29 +319,33 @@ app.directive('sampleGraph', function(dataService) {
                     .attr('fill', 'black')
                     .attr('text-anchor', 'middle');
 
-                var legend = legendSvg.append('g')
-                    .attr('class', 'legend')
-                    .attr('height', 100)
-                    .attr('widgth', 100)
-                    .attr('tranform', 'translate(-20, 50)');
+                if (attrs.nolegend !== "1") {
 
-                legend.selectAll('rect')
-                    .data(ranges[attrs.type])
-                    .enter()
-                    .append('rect')
-                    .attr('x', function(d, i) { return d.x; }) //return i * 270; })
-                    .attr('y', -10)
-                    .attr('width', 10)
-                    .attr('height', 10)
-                    .attr('class', function(d) { return d.class; });
+                    var legend = legendSvg.append('g')
+                        .attr('class', 'legend')
+                        .attr('height', 100)
+                        .attr('widgth', 100)
+                        .attr('tranform', 'translate(-20, 50)');
 
-                legend.selectAll('text')
-                    .data(ranges[attrs.type])
-                    .enter()
-                    .append('text')
-                    .attr('x', function(d, i) { return d.x + 20; })
-                    .attr('y', 0)
-                    .text(function(d) { return d.label; });
+                    legend.selectAll('rect')
+                        .data(ranges[attrs.type])
+                        .enter()
+                        .append('rect')
+                        .attr('x', function(d, i) { return d.x; }) //return i * 270; })
+                        .attr('y', -10)
+                        .attr('width', 10)
+                        .attr('height', 10)
+                        .attr('class', function(d) { return d.class; });
+
+                    legend.selectAll('text')
+                        .data(ranges[attrs.type])
+                        .enter()
+                        .append('text')
+                        .attr('x', function(d, i) { return d.x + 20; })
+                        .attr('y', 0)
+                        .text(function(d) { return d.label; });
+
+                }
 
 //                vis.append('g').call(axis);
 
