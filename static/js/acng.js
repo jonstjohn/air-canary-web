@@ -226,7 +226,20 @@ app.directive('sampleGraph', function(dataService) {
                     data.push([val, newVal[i].observed]);
                 }
 
-                var yScale = d3.scale.linear().domain([0, d3.max(data, function(d) { return d[0]; })]).range([0, height]);
+                var range = ranges[attrs.type];
+
+                var yMax = d3.max(data, function(d) { return d[0]; });
+                var yTicks = [];
+                for (var i = 0; i < range.length; i++) {
+                    yTicks.push(range[i]);
+                    if (range[i].max >= yMax) {
+//                        yTicks.push(range[i]);
+                        yMax = range[i].max;
+                        break;
+                    }
+                }
+
+                var yScale = d3.scale.linear().domain([0, yMax]).range([0, height]);
                 var xScale = d3.scale.linear().domain([0, 24]).range([0, width]);
 
                 var yAxis = d3.svg.axis().scale(yScale).tickSize(width).orient('right');
@@ -245,20 +258,34 @@ app.directive('sampleGraph', function(dataService) {
                 };
 
                 vis.selectAll('line')
-                    .data(yScale.ticks(5))
+                    .data(yTicks)
                     .enter().append('line')
                         .attr('x1', 0)
                         .attr('x2', width)
-                        .attr('y1', yScale)
-                        .attr('y2', yScale)
+                        .attr('y1', function(d, i) { return height - yScale(d.max); })
+                        .attr('y2', function(d, i) { return height - yScale(d.max); })
                         .style('stroke', '#ccc');
 
-                vis.selectAll("rect").data(data).enter().append('rect')
-                    .attr('x', function(d, i) { return i * (width / data.length); })
-                    .attr('width', function(d, i) { return width / data.length - barPadding; })
-                    .attr('height', function(d, i) { return d[0] == 0 ? 30 : yScale(d[0]); })
-                    .attr('y', function(d, i) { return height - (d[0] == 0 ? 30 : yScale(d[0])); })
-                    .attr("class", function(d) { return barColor(d[0]); });
+                vis.selectAll('.rule')
+                        .data(yTicks)
+                    .enter().append('text')
+                        .attr('class', 'rule')
+                        .attr('x', function(d, i) { return 0; })
+                        .attr('y', function(d, i) { return height - yScale(d.max); })
+                        .attr('dy', '15')
+                        .attr('text-anchor', 'right')
+                        .style('font-size', '10px')
+                        .style('fill', '#999')
+                        .text(function(d, i) { return d.label; });
+                
+                vis.selectAll("rect")
+                        .data(data)
+                    .enter().append('rect')
+                        .attr('x', function(d, i) { return i * (width / data.length); })
+                        .attr('width', function(d, i) { return width / data.length - barPadding; })
+                        .attr('height', function(d, i) { return d[0] == 0 ? 30 : yScale(d[0]); })
+                        .attr('y', function(d, i) { return height - (d[0] == 0 ? 30 : yScale(d[0])); })
+                        .attr("class", function(d) { return barColor(d[0]); });
 
                 var formatTime = function(dateTime) {
                     var parts = dateTime.split(" ");
