@@ -169,7 +169,14 @@ app.directive('sampleGraph', function(dataService) {
             {label: 'Moderate (0.06-0.075)', max: 0.075, color: '#F0C866', width: 70, x: 150, class: 'bar-yellow'},
             {label: 'Unhealthy for Sensitive People (0.076-0.095)', max: 0.095, color: '#DC9C5E', width: 150, x: 350, class: 'bar-orange'},
             {label: 'Unhealthy (>0.096)', max: 1000.0, color: '#DC4358', width: 100, x: 680, class: 'bar-red'}
-        ]
+        ],
+        'nox': [
+            {label: 'Good (<0.059)', max: 0.059, color: '#5E8C6F', width: 20, x: 0, class: 'bar-green'},
+            {label: 'Moderate (0.06-0.075)', max: 0.075, color: '#F0C866', width: 70, x: 150, class: 'bar-yellow'},
+            {label: 'Unhealthy for Sensitive People (0.076-0.095)', max: 0.095, color: '#DC9C5E', width: 150, x: 350, class: 'bar-orange'},
+            {label: 'Unhealthy (>0.096)', max: 1000.0, color: '#DC4358', width: 100, x: 680, class: 'bar-red'}
+        ],
+
     };
 
 
@@ -219,10 +226,10 @@ app.directive('sampleGraph', function(dataService) {
                     data.push([val, newVal[i].observed]);
                 }
 
-                var scale = d3.scale.linear().domain([0, d3.max(data, function(d) { return d[0]; })]).range([0, height]);
+                var yScale = d3.scale.linear().domain([0, d3.max(data, function(d) { return d[0]; })]).range([0, height]);
                 var xScale = d3.scale.linear().domain([0, 24]).range([0, width]);
 
-                var axis = d3.svg.axis().scale(scale).orient('left');
+                var yAxis = d3.svg.axis().scale(yScale).tickSize(width).orient('right');
 
                 var barColor = function(val) {
                     if (val == 0) {
@@ -237,11 +244,20 @@ app.directive('sampleGraph', function(dataService) {
                     return '';
                 };
 
+                vis.selectAll('line')
+                    .data(yScale.ticks(5))
+                    .enter().append('line')
+                        .attr('x1', 0)
+                        .attr('x2', width)
+                        .attr('y1', yScale)
+                        .attr('y2', yScale)
+                        .style('stroke', '#ccc');
+
                 vis.selectAll("rect").data(data).enter().append('rect')
                     .attr('x', function(d, i) { return i * (width / data.length); })
                     .attr('width', function(d, i) { return width / data.length - barPadding; })
-                    .attr('height', function(d, i) { return d[0] == 0 ? 30 : scale(d[0]); })
-                    .attr('y', function(d, i) { return height - (d[0] == 0 ? 30 : scale(d[0])); })
+                    .attr('height', function(d, i) { return d[0] == 0 ? 30 : yScale(d[0]); })
+                    .attr('y', function(d, i) { return height - (d[0] == 0 ? 30 : yScale(d[0])); })
                     .attr("class", function(d) { return barColor(d[0]); });
 
                 var formatTime = function(dateTime) {
@@ -276,7 +292,7 @@ app.directive('sampleGraph', function(dataService) {
                             return i * (width / data.length) + (width / data.length - barPadding) / 2;
                         })
                         .attr("y", function(d) {
-                            return height - (d[0] == 0 ? 30 : scale(d[0])) + 14;
+                            return height - (d[0] == 0 ? 30 : yScale(d[0])) + 14;
                         })
                         .attr('font-family', 'sans-serif')
                         .attr('font-size', '11px')
@@ -295,7 +311,7 @@ app.directive('sampleGraph', function(dataService) {
                     })
                     .attr("y", function(d) {
                         return height + 15;
-//                        return height - scale(d) + 14;
+//                        return height - yScale(d) + 14;
                     })
                     .attr('font-family', 'sans-serif')
                     .attr('font-size', '10px')
@@ -312,7 +328,7 @@ app.directive('sampleGraph', function(dataService) {
                     })
                     .attr("y", function(d) {
                         return height + 30;
-//                        return height - scale(d) + 14;
+//                        return height - yScale(d) + 14;
                     })
                     .attr('font-family', 'sans-serif')
                     .attr('font-size', '10px')
@@ -346,10 +362,16 @@ app.directive('sampleGraph', function(dataService) {
                         .text(function(d) { return d.label; });
 
                 }
+/*
+                var gy = vis.append('g').call(yAxis);
 
-//                vis.append('g').call(axis);
+                gy.selectAll("g").filter(function(d) { return d; })
+                    .classed("minor", true);
 
-
+                gy.selectAll("text")
+                    .attr("x", 4)
+                    .attr("dy", -4);
+*/
 
             });
 

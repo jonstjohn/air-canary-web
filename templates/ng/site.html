@@ -1,12 +1,14 @@
     <div class="container">
         <div class="row">
+            <div class="col-md-12">
                 <div class="page-header">
                     <div style="float: right">  
                         <select class="form-control" name="code" id="code" ng-model="code" ng-options="s.code as s.name for s in sites"></select>
                     </div>
                     <h1>{[{ name }]}</h1>
                 </div>
-
+            </div>
+            <div class="col-md-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h2 class="panel-title">3 Day Forecast</h2>
@@ -25,22 +27,23 @@
                         </div>
                     </div>
                 </div>
-
+            </div>
+            <div class="col-md-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h2 class="panel-title">PM 2.5 - &micro;g/m<sup>3</sup>- Past 24 hours</h2>
+                        <h2 class="panel-title">Particular Matter (PM2.5)<div class="pull-right">&micro;g/m<sup>3</sup></div></h2>
                     </div>
                     <div class="panel-body" style="overflow: scroll">
-                        <sample-graph val="data" width="1080" height="300" type="pm25"></sample-graph>
+                        <sample-graph val="data" width="1040" height="300" type="pm25"></sample-graph>
                     </div>
                 </div>
 
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h2 class="panel-title">Ozone - PPM - Past 24 hours</h2>
+                        <h2 class="panel-title">Ozone<div class="pull-right">Parts Per Million (PPM)</h2>
                     </div>
                     <div class="panel-body" style="overflow: scroll">
-                        <sample-graph val="data" width="1080" height="300" type="ozone"></sample-graph>
+                        <sample-graph val="data" width="1040" height="300" type="ozone"></sample-graph>
                     </div>
                 </div>
 
@@ -104,6 +107,18 @@
                 </tbody>
                 </table>
                 </div><!-- table-responsive -->
-
+            </div>
+            <!--
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h2 class="panel-title">PM 2.5 - &micro;g/m<sup>3</sup>- Past 24 hours</h2>
+                    </div>
+                    <div class="panel-body" style="overflow: scroll">
+                        <sample-graph val="data" width="400" height="200" type="nox"></sample-graph>
+                    </div>
+                </div>
+            </div>
+            -->
         </div>
     </div>
