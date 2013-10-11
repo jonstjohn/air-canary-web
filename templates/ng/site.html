@@ -11,7 +11,7 @@
             <div class="col-md-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h2 class="panel-title">3 Day Forecast</h2>
+                        <h2 class="panel-title">Air Quality Forecast</h2>
                     </div>
                     <div class="panel-body">
 
@@ -19,7 +19,7 @@
                             <div ng-repeat="f in forecast" class="col-md-4" style="padding: 10px">
                                 <div class="forecast-{[{ f.color|lowercase }]}" style="width: 100%; color: #fff">
                                     <div style="padding: 10px" class="row">
-                                        <div class="col-md-6">{[{ f.date }]}</div>
+                                        <div class="col-md-6">{[{ f.date|date:'EEEE' }]}</div>
                                         <div class="col-md-6" style="text-align: right">{[{ f.description }]}</div>  
                                     </div>
                                 </div>

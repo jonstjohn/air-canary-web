@@ -113,7 +113,7 @@ class Forecast(Base):
     def data(self):
 
         return {
-            'date': str(self.forecast_date),
+            'date': str(self.forecast_date) + 'T08:00:00.000Z',
             'color': str(self.color) if self.color else '',
             'description': str(self.description) if self.description else '',
             'published': str(self.published)
