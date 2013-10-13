@@ -145,7 +145,9 @@ function AboutCntl($scope) {
 }
 function ContactCntl($scope) {
 
-
+    $scope.send = function(contact) {
+        console.log(contact);
+    }
 }
 
 app.directive('sampleGraph', function(dataService) {
