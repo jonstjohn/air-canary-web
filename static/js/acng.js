@@ -143,10 +143,13 @@ function AboutCntl($scope) {
 
 
 }
-function ContactCntl($scope) {
+function ContactCntl($scope, $http) {
 
     $scope.send = function(contact) {
-        console.log(contact);
+        $http.post('/contact', contact)
+            .success( function() {
+                console.log('Success');
+            });
     }
 }
 

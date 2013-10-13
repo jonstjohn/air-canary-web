@@ -53,6 +53,13 @@ def ng_about():
 def ng_contact():
     return render_template('ng/contact.html')
 
+@app.route('/contact', methods=['POST'])
+def contact():
+    if request.method == 'POST':
+        response_data = []
+        response = Response(json.dumps(response_data), status=200, mimetype='application/json')
+        return response
+
 @app.route('/site')
 def sites():
 
