@@ -56,6 +56,21 @@ def ng_contact():
 @app.route('/contact', methods=['POST'])
 def contact():
     if request.method == 'POST':
+        from email.mime.text import MIMEText
+        from subprocess import Popen, PIPE
+
+        data = json.loads(request.data)
+        name = data['name']
+        email = data['email']
+        comment = data['comment']
+
+        msg = MIMEText("Name: {0}\nEmail: {1}\nComment:\n{2}".format(name, email, comment))
+        msg["From"] = 'jonstjohn@dev.aircanary.com'
+        msg["To"] = "jonstjohn@gmail.com"
+        msg["Subject"] = "Air Canary Comment from {0}".format(name)
+        p = Popen(["/usr/sbin/sendmail", "-t"], stdin=PIPE)
+        p.communicate(msg.as_string())
+
         response_data = []
         response = Response(json.dumps(response_data), status=200, mimetype='application/json')
         return response
