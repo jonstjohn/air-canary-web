@@ -2,6 +2,7 @@ from flask import Flask
 from flask import render_template
 from flask import request, session
 from flask import abort, redirect, url_for, flash, jsonify, Response
+from flask import g
 import json
 import AcConfiguration
 
@@ -60,9 +61,10 @@ def contact():
         from subprocess import Popen, PIPE
 
         data = json.loads(request.data)
-        name = data['name']
-        email = data['email']
-        comment = data['comment']
+        contact = data['contact']
+        name = contact['name']
+        email = contact['email']
+        comment = contact['comment']
 
         msg = MIMEText("Name: {0}\nEmail: {1}\nComment:\n{2}".format(name, email, comment))
         msg["From"] = 'jonstjohn@dev.aircanary.com'
@@ -124,6 +126,43 @@ def api_site():
 @app.teardown_appcontext
 def shutdown_session(exception=None):
     Session.remove()
+
+def after_this_request(f):
+    if not hasattr(g, 'after_request_callbacks'):
+        g.after_request_callbacks = []
+    g.after_request_callbacks.append(f)
+    return f
+
+@app.after_request
+def call_after_request_callbacks(response):
+    for callback in getattr(g, 'after_request_callbacks', ()):
+        callback(response)
+    return response
+
+@app.before_request
+def csrf_protect():
+    if request.method == "POST":
+        # Compare header token to cookie token that only our domain can read
+        print("X-XSRF-TOKEN: {0}".format(request.headers['X-XSRF-TOKEN']))
+        print("XSRF-TOKEN: {0}".format(request.cookies.get('XSRF-TOKEN')))
+        if request.headers['X-XSRF-TOKEN'] != request.cookies.get('XSRF-TOKEN'):
+            abort(403)
+    elif request.method == 'GET':
+        # If XSRF token is not set in cookie, set it
+        if 'XSRF-TOKEN' not in request.cookies:
+            @after_this_request
+            def set_csrf_cookie(response):
+                response.set_cookie('XSRF-TOKEN', generate_csrf_token())
+       
+def generate_csrf_token():
+    if '_csrf_token' not in session:
+        import string
+        import random
+        session['_csrf_token'] = "".join([random.choice(string.ascii_letters + string.digits) for n in xrange(30)])
+    return session['_csrf_token']
+
+app.jinja_env.globals['csrf_token'] = generate_csrf_token 
+
 
 if __name__ == '__main__':
     app.debug = True

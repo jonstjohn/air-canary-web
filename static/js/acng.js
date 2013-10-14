@@ -143,12 +143,14 @@ function AboutCntl($scope) {
 
 
 }
-function ContactCntl($scope, $http) {
+function ContactCntl($scope, $http, $timeout) {
 
     $scope.send = function(contact) {
-        $http.post('/contact', contact)
+        $http.post('/contact', {'contact': contact })
             .success( function() {
-                console.log('Success');
+                contact.success = true;
+                contact.comment = "";
+                $timeout(function() { contact.success = false; }, 5000);
             });
     }
 }
