@@ -1,13 +1,16 @@
+from __future__ import print_function
 from flask.ext.script import Command
 
 class Current(Command):
     "prints hello world"
 
     def run(self):
-        print "hello world"
+        print("hello world")
 
 class ParseData(Command):
     "Downloads and parses primary data"
+
+    debug = False
 
     def url2xml(self, url):
         """ Get XML from URL """
@@ -45,13 +48,18 @@ class ParseData(Command):
         from db import Session
         from model.models import Site, Data
 
+        if self.debug:
+            import logging
+            logging.basicConfig()
+            logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+
         session = Session()
         sites = session.query(Site).all()
 
         try:
             for site in sites:
 
-                print("Retrieving data for '{0}'".format(site.name))
+                print("\nRetrieving data for '{0}'".format(site.name))
                 xml_str = self.url2xml('http://www.airquality.utah.gov/aqp/xmlFeed.php?id={0}'.format(site.code))
                 data = self.xml2data(xml_str)
 
@@ -68,12 +76,15 @@ class ParseData(Command):
                     dp.observed = datetime.datetime.strftime(adjusted_raw, '%Y-%m-%d %H:%M:%S')
                     for col, val in values.items():
                         if col in cols:
-                            setattr(dp, col, val)
+                            if val and val[0] != '-':
+                                setattr(dp, col, val)
                     try:
                         session.merge(dp)
                         session.commit()
+                        print('.', end='')
                     except:
                         session.rollback()
+                        print('x', end='')
                         raise
 
         except:
@@ -81,4 +92,4 @@ class ParseData(Command):
             raise
 
         session.close()
-        print('Done')
+        print('\nDone')
