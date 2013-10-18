@@ -71,6 +71,9 @@ class ParseData(Command):
                     dp = Data()
                     dp.site_id = site.site_id
                     observed_raw =  datetime.datetime.strptime(date, '%m/%d/%Y %H:%M:%S')
+
+                    # One hour is added by default, plus another hour if this is daylight savings time
+                    # TODO convert this to UTC and store as UTC
                     adjusted_raw = observed_raw + datetime.timedelta(hours=2)
 
                     dp.observed = datetime.datetime.strftime(adjusted_raw, '%Y-%m-%d %H:%M:%S')
