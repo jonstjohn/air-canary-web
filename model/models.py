@@ -84,10 +84,13 @@ class Data(Base):
 
     def data(self):
 
+        # Convert datetime to mountain, which is local for all existing sites
         import pytz
+        from pytz import timezone
+        mountain = timezone('America/Denver')
 
         return {
-            'observed': str(pytz.utc.localize(self.observed).isoformat()),
+            'observed': str(pytz.utc.localize(self.observed).astimezone(mountain).isoformat()),
             'ozone': float(self.ozone) if self.ozone else '',
             'ozone_8hr_avg': float(self.ozone_8hr_avg) if self.ozone_8hr_avg else '',
             'pm25': float(self.pm25) if self.pm25 else '',
@@ -114,11 +117,15 @@ class Forecast(Base):
 
     def data(self):
 
+        import pytz
+        from pytz import timezone
+        mountain = timezone('America/Denver')
+
         return {
             'date': str(self.forecast_date) + 'T08:00:00.000Z',
             'color': str(self.color) if self.color else '',
             'description': str(self.description) if self.description else '',
-            'published': str(self.published)
+            'published': str(pytz.utc.localize(self.published).astimezone(mountain).isoformat())
         }
 
     @staticmethod
