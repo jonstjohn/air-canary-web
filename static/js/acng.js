@@ -230,7 +230,9 @@ app.directive('sampleGraph', function(dataService) {
                 var data = [];
                 for (var i = 0; i < newVal.length; i++) {
                     var val = newVal[i][attrs.type] ? newVal[i][attrs.type] : 0;
-                    data.push([val, newVal[i].observed]);
+
+                    // For now, just format everything in mountain time
+                    data.push([val, moment(newVal[i].observed).tz("America/Denver").format()]);
                 }
 
                 var range = ranges[attrs.type];
@@ -295,7 +297,7 @@ app.directive('sampleGraph', function(dataService) {
                         .attr("class", function(d) { return barColor(d[0]); });
 
                 var formatTime = function(dateTime) {
-                    var parts = dateTime.split(" ");
+                    var parts = dateTime.split("T");
                     var timeParts = parts[1].split(":");
                     var hour = parseInt(timeParts[0], 10);
                     var min = timeParts[1];
@@ -310,7 +312,7 @@ app.directive('sampleGraph', function(dataService) {
                 };
 
                 var formatDate = function(dateTime) {
-                    var parts = dateTime.split(" ");
+                    var parts = dateTime.split("T");
                     var dateParts = parts[0].split("-");
                     return dateParts[1] + "/" + dateParts[2];
                 }

@@ -43,7 +43,9 @@ class ParseData(Command):
 
     def run(self):
         """ Run command """
-        import datetime
+        from datetime import datetime, timedelta
+        from pytz import timezone
+        import pytz
         import db
         from db import Session
         from model.models import Site, Data
@@ -56,9 +58,13 @@ class ParseData(Command):
         session = Session()
         sites = session.query(Site).all()
 
+        mst = timezone('MST')
+
         try:
+            # Loop over each site
             for site in sites:
 
+                # Get XML and convert to data
                 print("\nRetrieving data for '{0}'".format(site.name))
                 xml_str = self.url2xml('http://www.airquality.utah.gov/aqp/xmlFeed.php?id={0}'.format(site.code))
                 data = self.xml2data(xml_str)
@@ -68,15 +74,22 @@ class ParseData(Command):
                     'wind_direction', 'co', 'solar_radiation')
 
                 for date, values in data.items():
+
                     dp = Data()
                     dp.site_id = site.site_id
-                    observed_raw =  datetime.datetime.strptime(date, '%m/%d/%Y %H:%M:%S')
 
-                    # One hour is added by default, plus another hour if this is daylight savings time
-                    # TODO convert this to UTC and store as UTC
-                    adjusted_raw = observed_raw + datetime.timedelta(hours=2)
+                    # Adjust datetime by 1 hour according to DEQ
+                    dt =  datetime.strptime(date, '%m/%d/%Y %H:%M:%S') + timedelta(hours=1)
 
-                    dp.observed = datetime.datetime.strftime(adjusted_raw, '%Y-%m-%d %H:%M:%S')
+                    # Convert to MST, which is what the observed datetime is always in, regardless of DST
+                    dt_mst = mst.localize(dt)
+
+                    # Convert to UTC for storage
+                    dt_utc = dt_mst.astimezone(pytz.utc)
+
+                    # Format UTC date/time for storage
+                    dp.observed = datetime.strftime(dt_utc, '%Y-%m-%d %H:%M:%S')
+
                     for col, val in values.items():
                         if col in cols:
                             if val and val[0] != '-':

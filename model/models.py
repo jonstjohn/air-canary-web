@@ -84,8 +84,10 @@ class Data(Base):
 
     def data(self):
 
+        import pytz
+
         return {
-            'observed': str(self.observed),
+            'observed': str(pytz.utc.localize(self.observed).isoformat()),
             'ozone': float(self.ozone) if self.ozone else '',
             'ozone_8hr_avg': float(self.ozone_8hr_avg) if self.ozone_8hr_avg else '',
             'pm25': float(self.pm25) if self.pm25 else '',
