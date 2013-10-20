@@ -52,6 +52,20 @@ angular.module("acApp").factory('dataService', function() {
 
 function MainCntl($scope, $http, siteService) {
 
+    var success_callback = function(p) {
+        console.log(p);
+    };
+
+    var error_callback = function(p) {
+        console.log(p);
+    };
+
+    if (geoPosition.init()){  // Geolocation Initialisation
+        geoPosition.getCurrentPosition(success_callback,error_callback,{enableHighAccuracy:true});
+    } else {
+        // You cannot use Geolocation in this device
+    }
+
     $scope.sites = siteService.sharedObject.data;
 
     $scope.loadSites = function() {
