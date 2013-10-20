@@ -1,4 +1,4 @@
-var app = angular.module('acApp', []).config( function($routeProvider, $locationProvider, $interpolateProvider) {
+var app = angular.module('acApp', []).config( function($routeProvider, $locationProvider, $interpolateProvider, $httpProvider) {
     $routeProvider.when('/', {
         templateUrl: '/ng/home',
         controller: HomeCntl
@@ -53,7 +53,16 @@ angular.module("acApp").factory('dataService', function() {
 function MainCntl($scope, $http, siteService) {
 
     var success_callback = function(p) {
-        console.log(p);
+        var latitude = p.coords.latitude;
+        var longitude = p.coords.longitude;
+        console.log(latitude);
+        console.log(longitude)
+        var url = '/location/' + latitude + '/' + longitude;
+        $http.get(url)
+            .success(function(data, status) {
+                console.log(status);
+                console.log(data);
+            });
     };
 
     var error_callback = function(p) {
@@ -345,7 +354,6 @@ app.directive('sampleGraph', function(dataService) {
                         .append("text")
                         .text(function(d) {
                             var label = d[0] == 0 ? 'n/a' : d[0];
-                            console.log(label);
                             return label;
                         })
                         .attr("x", function(d, i) {
@@ -423,7 +431,6 @@ app.directive('sampleGraph', function(dataService) {
                         .attr('x', function(d, i) { return d.x + 20; })
                         .attr('y', 0)
                         .text(function(d) {
-                            console.log(d.label);
                             return d.label; 
                         });
 

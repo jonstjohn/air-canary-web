@@ -54,6 +54,32 @@ def ng_about():
 def ng_contact():
     return render_template('ng/contact.html')
 
+@app.route('/location/<latitude>/<longitude>')
+def county(latitude, longitude):
+
+    import requests
+    url = "http://maps.googleapis.com/maps/api/geocode/json?latlng={0},{1}&sensor=false".format(latitude, longitude)
+    resultStr = requests.get(url)
+    results = resultStr.json()
+    city = None
+    county = None
+    state = None
+    zipcode = None
+    for r in results['results']:
+        for comp in r['address_components']:
+            if 'administrative_area_level_2' in comp['types']:
+                county = comp['long_name']
+            elif 'administrative_area_level_1' in comp['types']:
+                state = comp['long_name']
+            elif 'locality' in comp['types']:
+                city = comp['long_name']
+            elif 'postal_code' in comp['types']:
+                zipcode = comp['long_name']
+
+    response = Response(json.dumps({'city': city, 'county': county, 'state': state, 'zipcode': zipcode}), status=200, mimetype='application/json')
+    return response
+
+    
 @app.route('/contact', methods=['POST'])
 def contact():
     if request.method == 'POST':
