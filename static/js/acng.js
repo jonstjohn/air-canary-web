@@ -224,6 +224,7 @@ app.directive('sampleGraph', function(dataService) {
                 .append('g')
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+            // Create legend
             if (attrs.nolegend !== '1') {
                 var legendSvg = d3.select(element[0])
                     .append("svg")
@@ -232,11 +233,13 @@ app.directive('sampleGraph', function(dataService) {
                     .append('g')
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
             }
- 
+
+            // Watch for data changes
             scope.$watch('val', function(newVal, oldVal) {
 
                 vis.selectAll('*').remove();
 
+                // Clear existing graph
                 if (!newVal) {
                     return;
                 }
@@ -280,6 +283,7 @@ app.directive('sampleGraph', function(dataService) {
                     return '';
                 };
 
+                // Horizontal threshold lines
                 vis.selectAll('line')
                     .data(yTicks)
                     .enter().append('line')
@@ -300,7 +304,8 @@ app.directive('sampleGraph', function(dataService) {
                         .style('font-size', '10px')
                         .style('fill', '#999')
                         .text(function(d, i) { return d.label; });
-                
+               
+                // Bars
                 vis.selectAll("rect")
                         .data(data)
                     .enter().append('rect')
@@ -331,13 +336,18 @@ app.directive('sampleGraph', function(dataService) {
                     return dateParts[1] + "/" + dateParts[2];
                 }
 
+                // Bar labels
                 if (attrs.nolabels !== "1") {
 
-                    vis.selectAll("text")
+                    vis.selectAll("text.labels")
                         .data(data)
                         .enter()
                         .append("text")
-                        .text(function(d) { return d[0] == 0 ? 'n/a' : d[0]; })
+                        .text(function(d) {
+                            var label = d[0] == 0 ? 'n/a' : d[0];
+                            console.log(label);
+                            return label;
+                        })
                         .attr("x", function(d, i) {
                             return i * (width / data.length) + (width / data.length - barPadding) / 2;
                         })
@@ -355,7 +365,10 @@ app.directive('sampleGraph', function(dataService) {
                     .data(data)
                     .enter()
                     .append("text")
-                    .text(function(d, i) { return i == data.length - 1 || i % 4 == 0 ? formatTime(d[1]) : ""; })
+                    .text(function(d, i) {
+                        var label = i == data.length - 1 || i % 4 == 0 ? formatTime(d[1]) : ""; 
+                        return label;
+                    })
                     .attr("x", function(d, i) {
                         return i * (width / data.length) + (width / data.length - barPadding) / 2;
                     })
@@ -409,7 +422,10 @@ app.directive('sampleGraph', function(dataService) {
                         .append('text')
                         .attr('x', function(d, i) { return d.x + 20; })
                         .attr('y', 0)
-                        .text(function(d) { return d.label; });
+                        .text(function(d) {
+                            console.log(d.label);
+                            return d.label; 
+                        });
 
                 }
 /*
