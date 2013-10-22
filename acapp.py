@@ -76,7 +76,13 @@ def county(latitude, longitude):
             elif 'postal_code' in comp['types']:
                 zipcode = comp['long_name']
 
-    response = Response(json.dumps({'city': city, 'county': county, 'state': state, 'zipcode': zipcode}), status=200, mimetype='application/json')
+    codes = {'Box Elder': 'boxelder', 'Cache': 'cache', 'Duchesne': 'rs', 'Price': 'p2',
+        'Salt Lake': 'slc', 'Davis': 'slc', 'Tooele': 'tooele', 'Uintah': 'vl',
+        'Utah': 'utah', 'Washington': 'washington', 'Weber': 'weber'}
+
+    county_short = county.replace(' County', '')
+    code = codes[county_short] if county_short in codes else 'slc'
+    response = Response(json.dumps({'city': city, 'county': county, 'state': state, 'zipcode': zipcode, 'code': code}), status=200, mimetype='application/json')
     return response
 
     

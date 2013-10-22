@@ -50,7 +50,7 @@ angular.module("acApp").factory('dataService', function() {
 
 });
 
-function MainCntl($scope, $http, siteService) {
+function MainCntl($scope, $http, siteService, $location) {
 
     var success_callback = function(p) {
         var latitude = p.coords.latitude;
@@ -60,8 +60,9 @@ function MainCntl($scope, $http, siteService) {
         var url = '/location/' + latitude + '/' + longitude;
         $http.get(url)
             .success(function(data, status) {
-                console.log(status);
-                console.log(data);
+                if ($location.path() === '/') {
+                    $location.path('/site/' + data.code);
+                }
             });
     };
 
