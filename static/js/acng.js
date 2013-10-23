@@ -29,6 +29,16 @@ var app = angular.module('acApp', []).config( function($routeProvider, $location
 
 });
 
+app.filter('dir', function() {
+    return function(degrees) {
+        var directions = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
+            'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+
+        var i = parseInt((degrees + 11.25) / 22.5);
+        return directions[i % 16];
+    }
+});
+
 angular.module("acApp").factory("siteService", function(){
 
     return {
@@ -58,8 +68,10 @@ function MainCntl($scope, $http, siteService, $location) {
         console.log(latitude);
         console.log(longitude)
         var url = '/location/' + latitude + '/' + longitude;
+        console.log(url);
         $http.get(url)
             .success(function(data, status) {
+                console.log($location.path());
                 if ($location.path() === '/') {
                     $location.path('/site/' + data.code);
                 }
@@ -67,12 +79,15 @@ function MainCntl($scope, $http, siteService, $location) {
     };
 
     var error_callback = function(p) {
+        console.log('failed location');
         console.log(p);
     };
 
     if (geoPosition.init()){  // Geolocation Initialisation
+        console.log("Checking geoposition");
         geoPosition.getCurrentPosition(success_callback,error_callback,{enableHighAccuracy:true});
     } else {
+        console.log("Geoposition not available");
         // You cannot use Geolocation in this device
     }
 
