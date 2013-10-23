@@ -69,15 +69,15 @@
                 <tbody>
                     <tr ng-repeat="d in data">
                         <td>{[{ d.observed | date:'short' }]}</td>
-                        <td class="ozone">{[{ d.ozone }]} &micro;g/m<sup>3</sup></td>
-                        <td>{[{ d.ozone_8hr_avg }]} &micro;g/m<sup>3</sup></td>
-                        <td class="pm25">{[{ d.pm25 }]} ppm</td>
-                        <td>{[{ d.pm25_24hr_avg }]} ppm</td>
-                        <td>{[{ d.nox }]} ppm</td>
-                        <td>{[{ d.no2 }]} ppm</td>
-                        <td>{[{ d.temperature }]}&deg;</td>
-                        <td>{[{ d.relative_humidity }]}%</td>
-                        <td>{[{ d.wind_speed }]} mph {[{ d.wind_direction | dir }]}</td>
+                        <td class="ozone">{[{ d.ozone }]}<span ng-show="d.ozone"> &micro;g/m<sup>3</sup></span></td>
+                        <td>{[{ d.ozone_8hr_avg }]}<span ng-show="d.ozone_8hr_avg"> &micro;g/m<sup>3</sup></span></td>
+                        <td class="pm25">{[{ d.pm25 }]}<span ng-show="d.pm25"> ppm</span></td>
+                        <td>{[{ d.pm25_24hr_avg }]}<span ng-show="d.pm25_24hr_avg"> ppm</span></td>
+                        <td>{[{ d.nox }]}<span ng-show="d.nox"> ppm</span></td>
+                        <td>{[{ d.no2 }]}<span ng-show="d.no2"> ppm</span></td>
+                        <td>{[{ d.temperature | number:0 }]}<span ng-show="d.temperature">&deg;</span></td>
+                        <td>{[{ d.relative_humidity }]}<span ng-show="d.relative_humidity">%</span></td>
+                        <td>{[{ d.wind_speed }]}<span ng-show="d.wind_speed"> mph {[{ d.wind_direction | dir }]}</span></td>
                         <td>{[{ d.co }]}</td>
                         <td>{[{ d.solar_radiation }]}</td>
                     </tr>
