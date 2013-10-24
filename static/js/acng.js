@@ -81,6 +81,7 @@ function MainCntl($scope, $http, siteService, $location) {
     var error_callback = function(p) {
         console.log('failed location');
         console.log(p);
+        $location.path('/site/slc');
     };
 
     if (geoPosition.init()){  // Geolocation Initialisation
@@ -88,6 +89,7 @@ function MainCntl($scope, $http, siteService, $location) {
         geoPosition.getCurrentPosition(success_callback,error_callback,{enableHighAccuracy:true});
     } else {
         console.log("Geoposition not available");
+        $location.path('/site/slc');
         // You cannot use Geolocation in this device
     }
 
