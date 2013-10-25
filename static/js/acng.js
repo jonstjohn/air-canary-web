@@ -45,6 +45,22 @@ app.filter('boxName', function() {
     }
 });
 
+app.filter('forecastColor', function() {
+    return function(description) {
+        if (description == 'Good') {
+            return 'green';
+        } else if (description == 'Moderate') {
+            return 'yellow';
+        } else if (description == 'Unhealthy for Sensitive Groups') {
+            return 'orange';
+        } else if (description == 'Unhealthy') {
+            return 'red';
+        } else {
+            return 'unknown';
+        }
+    };
+});
+
 angular.module("acApp").factory("siteService", function(){
 
     return {
