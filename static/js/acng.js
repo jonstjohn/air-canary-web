@@ -39,6 +39,12 @@ app.filter('dir', function() {
     }
 });
 
+app.filter('boxName', function() {
+    return function(name) {
+        return name.substring(0, 3);
+    }
+});
+
 angular.module("acApp").factory("siteService", function(){
 
     return {
@@ -169,6 +175,10 @@ function SiteCntl($scope, $route, $routeParams, $http, $location, siteService, d
                 $scope.name = $scope.sites[i].name;
             }
         }
+    };
+
+    $scope.loadSite = function(code) {
+        $location.path('/site/' + code);
     };
 
     //$scope.loadData();

@@ -1,4 +1,9 @@
     <div class="container">
+        <div class="row" style="margin-top: 10px">
+                <div class="" style="padding: 2px; width: 50px; height: 40px; float: left; margin: 3px" ng-repeat="s in sites">
+                    <div style="color: #fff; text-align:center; line-height: 40px; width: 50px; height: 40px; cursor: pointer" ng-click="loadSite(s.code)" class="forecast-green">{[{ s.name | boxName }]}</div>
+                </div>
+        </div>
         <div class="row">
             <div class="col-md-12">
                 <div class="page-header">
@@ -16,11 +21,11 @@
                     <div class="panel-body">
 
                         <div class="row">
-                            <div ng-repeat="f in forecast" class="col-md-4" style="padding: 10px">
+                            <div ng-repeat="f in forecast" class="col-xs-4" style="padding: 5px">
                                 <div class="forecast-{[{ f.color|lowercase }]}" style="width: 100%; color: #fff">
                                     <div style="padding: 10px" class="row">
-                                        <div class="col-md-6">{[{ f.date|date:'EEEE' }]}</div>
-                                        <div class="col-md-6" style="text-align: right">{[{ f.description }]}</div>  
+                                        <div class="col-xs-6">{[{ f.date|date:'EEEE' }]}</div>
+                                        <div class="col-xs-6 hidden-xs" style="text-align: right">{[{ f.description }]}</div>  
                                     </div>
                                 </div>
                             </div>
