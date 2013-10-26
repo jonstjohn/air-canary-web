@@ -162,10 +162,25 @@ function SiteCntl($scope, $route, $routeParams, $http, $location, siteService, d
     $scope.forecast = [];
 
     $scope.code = $routeParams.code;
-
+    
+    /*
+    var setReload = function() {
+        // Refresh every 5 minutes
+        $scope.timeout = setInterval(function() {
+            $scope.loadData();
+        }, 10000); // 300000);
+    };
+    */
     $scope.$watch('code', function() {
         $scope.setSiteName();
         $scope.loadData(); 
+    /*
+        if ($scope.timeout) {
+            console.log('clear interval');
+            window.clearInterval($scope.timeout);
+        }
+        setReload();
+    */
     });
 
     $scope.loadData = function() {
@@ -180,7 +195,12 @@ function SiteCntl($scope, $route, $routeParams, $http, $location, siteService, d
             $scope.forecast = data.forecast;
         });
     };
-
+/*
+    // Refresh every 5 minutes
+    timeout = setInterval(function() {
+        $scope.loadData(); 
+    }, 10000); // 300000);
+*/
     $scope.setSiteName = function() {
         if ($scope.sites === null) {
             return "";
