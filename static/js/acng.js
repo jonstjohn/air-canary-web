@@ -61,6 +61,16 @@ app.filter('forecastColor', function() {
     };
 });
 
+app.filter('ago', function() {
+
+    return function(datetime) {
+
+        return moment(datetime).fromNow();
+
+    };
+
+});
+
 angular.module("acApp").factory("siteService", function(){
 
     return {

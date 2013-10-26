@@ -16,7 +16,7 @@
             <div class="col-md-6">
                 <div class="panel panel-default" ng-repeat="d in data" ng-show="$first">
                     <div class="panel-heading">
-                        <h2 class="panel-title">Current Conditions<div class="pull-right">{[{ d.observed | date: 'shortTime' }]}</div></h2>
+                        <h2 class="panel-title">Current Conditions<div class="pull-right">{[{ d.observed | ago }]}</div></h2>
                     </div>
                     <div class="panel-body">
                         <div class="row">
