@@ -20,14 +20,16 @@
                     </div>
                     <div class="panel-body">
                         <div class="row">
-                            <div class="col-xs-3">Temp:</div><div class="col-xs-3">{[{ d.temperature | number: 0 }]}&deg;F</div>
+                            <div class="col-xs-3">Temp:</div>
+                            <div class="col-xs-3">{[{ d.temperature | number: 0 }]}&deg;F</div>
                             <div class="col-xs-3">Humidity:</div>
                             <div class="col-xs-3">{[{ d.relative_humidity }]}<span ng-show="d.relative_humidity">%</span><span ng-hide="d.relative_humidity">--</span></div>
                         </div>
                         <div class="row">
-                            <div class="col-xs-3">PM 2.5:</div><div class="col-xs-3">{[{ d.pm25 }]}<span ng-show="d.pm25"> &micro;g/m<sup>3</sup></span></div>
+                            <div class="col-xs-3">PM 2.5:</div>
+                            <div class="col-xs-3">{[{ d.pm25 }]}<span ng-show="d.pm25" style="font-size: 10px"> &micro;g/m<sup>3</sup></span></div>
                             <div class="col-xs-3">Ozone:</div>
-                            <div class="col-xs-3">{[{ d.ozone }]}<span ng-show="d.ozone"> ppm</span><span ng-hide="d.ozone">--</span></div>
+                            <div class="col-xs-3">{[{ d.ozone }]}<span ng-show="d.ozone" style="font-size: 10px"> ppm</span><span ng-hide="d.ozone">--</span></div>
                         </div>
                     </div>
                 </div>
