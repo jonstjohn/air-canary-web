@@ -29,34 +29,21 @@ app.debug = True
 
 @app.route('/')
 def index():
-
+    """ Home page """
     return render_template('ng/index.html')
 
-@app.route('/ng/home')
-def ng_home():
+@app.route('/ng/<template>')
+def ng_template(template):
+    """ Render angular template """
+    allowed_templates = ['home', 'site', 'api', 'about', 'contact']
+    if template not in allowed_templates:
+        abort(404)
 
-    return render_template('ng/home.html')
-
-@app.route('/ng/site')
-def ng_site():
-
-    return render_template('ng/site.html')
-
-@app.route('/ng/api')
-def ng_api():
-    return render_template('ng/api.html')
-
-@app.route('/ng/about')
-def ng_about():
-    return render_template('ng/about.html')
-
-@app.route('/ng/contact')
-def ng_contact():
-    return render_template('ng/contact.html')
+    return render_template('ng/{0}.html'.format(template))
 
 @app.route('/location/<latitude>/<longitude>')
 def county(latitude, longitude):
-
+    """ Get city/state/zip/code from latitude and longitude """
     import requests
     url = "http://maps.googleapis.com/maps/api/geocode/json?latlng={0},{1}&sensor=false".format(latitude, longitude)
     resultStr = requests.get(url)
@@ -88,6 +75,7 @@ def county(latitude, longitude):
     
 @app.route('/contact', methods=['POST'])
 def contact():
+    """ Contact form """
     if request.method == 'POST':
         from email.mime.text import MIMEText
         from subprocess import Popen, PIPE
@@ -109,22 +97,10 @@ def contact():
         response = Response(json.dumps(response_data), status=200, mimetype='application/json')
         return response
 
-@app.route('/site')
-def sites():
-
-    return render_template('sites.html', sites = Site.all_sites())
-
-@app.route('/site/<code>')
-def site(code):
-
-   site = Site.from_code(code)
-
-   return render_template('site.html', site = site, sites = Site.all_sites())
-
 @app.route('/forecast/<code>', subdomain='api')
 @app.route('/api/forecast/<code>')
 def api_forecast(code):
-
+    """ API forecast """
     site = Site.from_code(code)
     response_data = site.forecast_data()
     response = Response(json.dumps(response_data), status=200, mimetype='application/json')
@@ -135,7 +111,7 @@ def api_forecast(code):
 @app.route('/api/site/<code>', defaults={'samples': 1})
 @app.route('/api/site/<code>/<int:samples>')
 def api(code, samples):
-
+    """ API site """
     if code == 'all':
         response_data = Site.data_all(samples)
     else:
@@ -147,7 +123,7 @@ def api(code, samples):
 @app.route('/site', subdomain='api')
 @app.route('/api/site')
 def api_site():
-
+    """ API all sites """
     sites = Site.all_sites()
     response_data = []
     for site in sites:
