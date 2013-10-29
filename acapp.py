@@ -3,6 +3,7 @@ from flask import render_template
 from flask import request, session
 from flask import abort, redirect, url_for, flash, jsonify, Response
 from flask import g
+from werkzeug.contrib.cache import RedisCache
 import json
 import AcConfiguration
 
@@ -26,6 +27,31 @@ c = AcConfiguration.AcConfiguration()
 app.secret_key = c.settings['flask']['secret_key']
 #app.debug = True if c.settings['configuration']['debug'] == 1 else False
 app.debug = True
+
+def generate_csrf_token():
+    if '_csrf_token' not in session:
+        import string
+        import random
+        session['_csrf_token'] = "".join([random.choice(string.ascii_letters + string.digits) for n in xrange(30)])
+    return session['_csrf_token']
+
+app.jinja_env.globals['csrf_token'] = generate_csrf_token
+
+def cache(timeout=300, key='view:{0}'):
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            cache = RedisCache()
+            cache_key = 'view:{0}'.format(request.path)
+            response = cache.get(cache_key)
+            if response is None:
+                response = f(*args, **kwargs)
+                cache.set(cache_key, response, timeout)
+            return response
+        return decorated_function
+    return decorator
+
+app.jinja_env.globals['csrf_token'] = generate_csrf_token
 
 @app.route('/')
 def index():
@@ -110,6 +136,7 @@ def api_forecast(code):
 @app.route('/site/<code>/<int:samples>', subdomain='api')
 @app.route('/api/site/<code>', defaults={'samples': 1})
 @app.route('/api/site/<code>/<int:samples>')
+@cache()
 def api(code, samples):
     """ API site """
     if code == 'all':
