@@ -125,6 +125,7 @@ def contact():
 
 @app.route('/forecast/<code>', subdomain='api')
 @app.route('/api/forecast/<code>')
+@cache()
 def api_forecast(code):
     """ API forecast """
     site = Site.from_code(code)
@@ -149,6 +150,7 @@ def api(code, samples):
 
 @app.route('/site', subdomain='api')
 @app.route('/api/site')
+@cache()
 def api_site():
     """ API all sites """
     sites = Site.all_sites()
