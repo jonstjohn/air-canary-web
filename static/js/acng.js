@@ -161,7 +161,7 @@ function HomeCntl($scope, $route, $routeParams, $http, $location, siteService, d
 
 }
 
-function SiteCntl($scope, $route, $routeParams, $http, $location, siteService, dataService) {
+function SiteCntl($scope, $route, $routeParams, $http, $location, siteService, dataService, $timeout) {
 
     $scope.$route = $route;
     $scope.$location = $location;
@@ -205,6 +205,20 @@ function SiteCntl($scope, $route, $routeParams, $http, $location, siteService, d
             $scope.forecast = data.forecast;
         });
     };
+
+    // Function to replicate setInterval using $timeout service.
+/*
+    $scope.intervalFunction = function() {
+        $timeout(function() {
+            $scope.loadData();
+            $scope.intervalFunction();
+        }, 1000)
+    };
+
+    // Kick off the interval
+    $scope.intervalFunction();
+*/
+
 /*
     // Refresh every 5 minutes
     timeout = setInterval(function() {
@@ -320,6 +334,7 @@ app.directive('sampleGraph', function(dataService) {
             // Watch for data changes
             scope.$watch('val', function(newVal, oldVal) {
 
+                // Clear all existing graph elements
                 vis.selectAll('*').remove();
 
                 // Clear existing graph
@@ -327,6 +342,7 @@ app.directive('sampleGraph', function(dataService) {
                     return;
                 }
 
+                // Build array of data
                 var data = [];
                 for (var i = 0; i < newVal.length; i++) {
                     var val = newVal[i][attrs.type] ? newVal[i][attrs.type] : 0;
@@ -348,11 +364,14 @@ app.directive('sampleGraph', function(dataService) {
                     }
                 }
 
+                // Setup scales for x and y
                 var yScale = d3.scale.linear().domain([0, yMax]).range([0, height]);
                 var xScale = d3.scale.linear().domain([0, 24]).range([0, width]);
 
+                // Set y axis
                 var yAxis = d3.svg.axis().scale(yScale).tickSize(width).orient('right');
 
+                // Determine bar color
                 var barColor = function(val) {
                     if (val == 0) {
                         return 'bar-none';
@@ -398,6 +417,7 @@ app.directive('sampleGraph', function(dataService) {
                         .attr('y', function(d, i) { return height - (d[0] == 0 ? 30 : yScale(d[0])); })
                         .attr("class", function(d) { return barColor(d[0]); });
 
+                // Format time
                 var formatTime = function(dateTime) {
                     var parts = dateTime.split("T");
                     var timeParts = parts[1].split(":");
@@ -413,6 +433,7 @@ app.directive('sampleGraph', function(dataService) {
                     return hour + ":" + min + ampm;
                 };
 
+                // Format date
                 var formatDate = function(dateTime) {
                     var parts = dateTime.split("T");
                     var dateParts = parts[0].split("-");
@@ -443,7 +464,9 @@ app.directive('sampleGraph', function(dataService) {
 
                 }
 
-                vis.selectAll("text.yaxis")
+                // Labels for x axis
+                // Time
+                vis.selectAll("text.xaxis")
                     .data(data)
                     .enter()
                     .append("text")
@@ -456,14 +479,14 @@ app.directive('sampleGraph', function(dataService) {
                     })
                     .attr("y", function(d) {
                         return height + 15;
-//                        return height - yScale(d) + 14;
                     })
                     .attr('font-family', 'sans-serif')
                     .attr('font-size', '10px')
                     .attr('fill', 'black')
                     .attr('text-anchor', 'middle');
 
-                vis.selectAll("text.yaxis")
+                // Date label
+                vis.selectAll("text.xaxis")
                     .data(data)
                     .enter()
                     .append("text")
@@ -473,13 +496,13 @@ app.directive('sampleGraph', function(dataService) {
                     })
                     .attr("y", function(d) {
                         return height + 30;
-//                        return height - yScale(d) + 14;
                     })
                     .attr('font-family', 'sans-serif')
                     .attr('font-size', '10px')
                     .attr('fill', 'black')
                     .attr('text-anchor', 'middle');
 
+                // Legend
                 if (attrs.nolegend !== "1") {
 
                     var legend = legendSvg.append('g')
@@ -509,17 +532,6 @@ app.directive('sampleGraph', function(dataService) {
                         });
 
                 }
-/*
-                var gy = vis.append('g').call(yAxis);
-
-                gy.selectAll("g").filter(function(d) { return d; })
-                    .classed("minor", true);
-
-                gy.selectAll("text")
-                    .attr("x", 4)
-                    .attr("dy", -4);
-*/
-
             });
 
         }
