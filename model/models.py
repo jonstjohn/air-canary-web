@@ -133,3 +133,48 @@ class Forecast(Base):
 
         pass
 
+class AirNowForecastArea(Base):
+
+    __tablename__ = 'air_now_forecast_area'
+
+    reporting_area = Column(VARCHAR(45), primary_key = True, nullable = False)
+    state_code = Column(CHAR(2), primary_key = True, nullable = False)
+    country_code = Column(CHAR(2), primary_key = True, nullable = False)
+    forecasts = Column(VARCHAR(3))
+    action_day = Column(VARCHAR(50))
+    latitude = Column(VARCHAR(9))
+    longitude = Column(VARCHAR(11))
+    gmt_offset = Column(Integer)
+    daylight_savings = Column(VARCHAR(3))
+    standard_time_label = Column(VARCHAR(3))
+    daylight_time_label = Column(VARCHAR(3))
+    twc_code = Column(VARCHAR(5))
+    usa_today = Column(VARCHAR(3))
+    forecast_source = Column(VARCHAR(100))
+
+class AirNowMonitoringSite(Base):
+
+    __tablename__ = 'air_now_monitoring_site'
+
+    aqsid = Column(CHAR(9), primary_key = True, nullable = False) # id
+    parameter = Column(VARCHAR(10), primary_key = True, nullable = False) # parameter, eg OZONE
+    site_code = Column(CHAR(4)) # last 4 digits of aqsid
+    site_name = Column(VARCHAR(20)) # site name
+    status = Column(VARCHAR(8)) # operational status
+    agency_id = Column(VARCHAR(4)) # 4-digit agency id assigned by AirNow
+    agency_name = Column(VARCHAR(60)) # Agency name
+    epa_region = Column(CHAR(2)) # EPA region
+    latitude = Column(VARCHAR(9))
+    longitude = Column(VARCHAR(11))
+    elevation = Column(Integer)
+    gmt_offset = Column(Integer)
+    country_code = Column(CHAR(2)) # FIPS
+    cmsa_code = Column(CHAR(4)) # 4 digit consolidate metro stat area FIPS
+    cmsa_name = Column(VARCHAR(50))
+    msa_code = Column(CHAR(4)) # FIPS metro stat area
+    msa_name = Column(VARCHAR(50))
+    state_code = Column(CHAR(2)) # two digit FIPS code
+    state_name = Column(CHAR(2)) # Abbrev, e.g., UT
+    county_code = Column(CHAR(9)) # Nine-digit GNIS Feature ID of the named populated place in which site is located.
+    county_name = Column(VARCHAR(25))
+    city_code = Column(CHAR(9)) # Nine-digit GNIS Feature ID of the named population place in which site is located
