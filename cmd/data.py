@@ -1,12 +1,6 @@
 from __future__ import print_function
 from flask.ext.script import Command
 
-class Current(Command):
-    "prints hello world"
-
-    def run(self):
-        print("hello world")
-
 class ParseData(Command):
     "Downloads and parses primary data"
 
