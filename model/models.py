@@ -1,6 +1,6 @@
 from db import Base
 from db import Session
-from sqlalchemy import Column, Integer, String, VARCHAR, Text, Date, DATETIME, DATE, DECIMAL, CHAR, Integer, ForeignKey
+from sqlalchemy import Column, Integer, String, VARCHAR, Text, Date, DATETIME, DATE, DECIMAL, CHAR, Integer, ForeignKey, TIME
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.schema import Table
 import db
@@ -178,3 +178,17 @@ class AirNowMonitoringSite(Base):
     county_code = Column(CHAR(9)) # Nine-digit GNIS Feature ID of the named populated place in which site is located.
     county_name = Column(VARCHAR(25))
     city_code = Column(CHAR(9)) # Nine-digit GNIS Feature ID of the named population place in which site is located
+
+class AirNowHourly(Base):
+
+    __tablename__ = 'air_now_hourly'
+
+    valid_date = Column(DATE, primary_key = True, nullable = False)
+    valid_time = Column(TIME, primary_key = True, nullable = False)
+    aqsid = Column(CHAR(9), primary_key = True, nullable = False)
+    site_name = Column(VARCHAR(20))
+    gmt_offset = Column(Integer)
+    parameter = Column(VARCHAR(10))
+    units = Column(VARCHAR(10))
+    value = Column(VARCHAR(6))
+    data_source = Column(VARCHAR(100))
