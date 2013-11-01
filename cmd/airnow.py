@@ -101,7 +101,6 @@ class ParseCommand(Command):
         files = [f for f in files if f[-4:] == '.dat']
 
         files.sort()
-        print(files)
         return files.pop()
         
 
