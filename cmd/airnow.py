@@ -1,6 +1,6 @@
 from __future__ import print_function
 from flask.ext.script import Command
-from model.models import AirNowForecastArea, AirNowMonitoringSite
+from model.models import AirNowForecastArea, AirNowMonitoringSite, AirNowHourly
 import sqlalchemy.orm
 
 class ParseCommand(Command):
@@ -13,6 +13,10 @@ class ParseCommand(Command):
 
         from db import Session
         session = Session()
+
+        # Special filename for most recent file
+        if self.filename == 'recent':
+            self.filename = self.recent()
 
         lines = self.get_lines()
         attrs = self.attributes()
@@ -72,18 +76,34 @@ class ParseCommand(Command):
         return content
 
     def download_file(self):
+        ftp = self.ftp()
+        ftp.cwd(self.ftp_dir)
+        ftp.retrbinary('RETR {0}'.format(self.filename), open('{0}/{1}'.format(self.tmpdir, self.filename), 'wb').write)
+        ftp.quit()
+
+    def ftp(self):
+
         from ftplib import FTP
         import AcConfiguration
-
         c = AcConfiguration.AcConfiguration()
         ftp_user = c.settings['airnow']['username']
         ftp_pass = c.settings['airnow']['password']
 
         ftp = FTP('ftp.airnowapi.org', ftp_user, ftp_pass)
+        return ftp
 
-        ftp.cwd(self.ftp_dir)
-        ftp.retrbinary('RETR {0}'.format(self.filename), open('{0}/{1}'.format(self.tmpdir, self.filename), 'wb').write)
+    def recent(self):
+
+        ftp = self.ftp()
+        files = ftp.nlst(self.ftp_dir)
         ftp.quit()
+        
+        files = [f for f in files if f[-4:] == '.dat']
+
+        files.sort()
+        print(files)
+        return files.pop()
+        
 
 class ForecastAreas(ParseCommand):
 
@@ -96,3 +116,9 @@ class MonitoringSites(ParseCommand):
     ftp_dir = 'Locations'
     filename = 'monitoring_site_locations.dat'
     model = AirNowMonitoringSite
+
+class Hourly(ParseCommand):
+
+    ftp_dir = 'HourlyData'
+    filename = 'recent'
+    model = AirNowHourly
