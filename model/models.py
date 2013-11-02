@@ -192,3 +192,25 @@ class AirNowHourly(Base):
     units = Column(VARCHAR(10))
     value = Column(VARCHAR(6))
     data_source = Column(VARCHAR(100))
+
+class AirNowReportingArea(Base):
+
+    __tablename__ = 'air_now_reporting_area'
+
+    valid_date = Column(DATE, primary_key = True, nullable = False)
+    valid_time = Column(TIME, primary_key = True, nullable = False)
+    issue_date = Column(DATE)
+    time_zone = Column(CHAR(3))
+    record_sequence = Column(Integer)
+    data_type = Column(CHAR(1))
+    primary = Column(CHAR(1))
+    reporting_area = Column(VARCHAR(45), primary_key = True)
+    state_code = Column(CHAR(2))
+    latitude = Column(VARCHAR(7))
+    longitude = Column(VARCHAR(9))
+    parameter_name = Column(VARCHAR(10), primary_key = True)
+    aqi_value = Column(Integer)
+    aqi_category = Column(VARCHAR(40))
+    action_day = Column(VARCHAR(3))
+    discussion = Column(VARCHAR(500))
+    forecast_source = Column(VARCHAR(100))
