@@ -203,7 +203,7 @@ class AirNowReportingArea(Base):
     time_zone = Column(CHAR(3))
     record_sequence = Column(Integer)
     data_type = Column(CHAR(1))
-    primary = Column(CHAR(1))
+    is_primary = Column(CHAR(1))
     reporting_area = Column(VARCHAR(45), primary_key = True)
     state_code = Column(CHAR(2))
     latitude = Column(VARCHAR(7))
