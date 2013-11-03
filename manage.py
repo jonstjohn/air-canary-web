@@ -1,7 +1,7 @@
 from flask import Flask
 from flask.ext.script import Manager
 from cmd.data import ParseData, ParseForecast
-from cmd.airnow import ForecastAreas, MonitoringSites, Hourly
+from cmd.airnow import ForecastAreas, MonitoringSites, Hourly, ReportingAreas
 
 app = Flask(__name__)
 # configure your app
@@ -13,6 +13,7 @@ manager.add_command('parse_forecast', ParseForecast())
 manager.add_command('airnow_forecast_areas', ForecastAreas())
 manager.add_command('airnow_monitoring_sites', MonitoringSites())
 manager.add_command('airnow_hourly', Hourly())
+manager.add_command('airnow_reporting_areas', ReportingAreas())
 
 if __name__ == "__main__":
     manager.run()

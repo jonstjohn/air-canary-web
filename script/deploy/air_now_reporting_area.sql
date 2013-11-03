@@ -16,7 +16,7 @@ CREATE TABLE air_canary.air_now_reporting_area (
     action_day varchar(3),
     discussion varchar(500),
     forecast_source varchar(100),
-    primary key (valid_date, valid_time, reporting_area, parameter_name),
+    primary key (valid_date, valid_time, issue_date, reporting_area, parameter_name, state_code),
     index (reporting_area, parameter_name),
     index (parameter_name),
     index (latitude, longitude)

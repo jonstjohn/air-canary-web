@@ -1,6 +1,6 @@
 from __future__ import print_function
 from flask.ext.script import Command
-from model.models import AirNowForecastArea, AirNowMonitoringSite, AirNowHourly
+from model.models import AirNowForecastArea, AirNowMonitoringSite, AirNowHourly, AirNowReportingArea
 import sqlalchemy.orm
 
 class ParseCommand(Command):
@@ -26,12 +26,13 @@ class ParseCommand(Command):
                 vals = line.strip().split('|')
                 kvals = dict(zip(attrs, vals))
 
-                area = self.model()
+                model_inst = self.model()
                 for col, val in kvals.items():
-                    setattr(area, col, val)
+                    val = self.cleanval(val)
+                    setattr(model_inst, col, val)
                 
                 try:
-                    session.merge(area)
+                    session.merge(model_inst)
                     session.commit()
                     print('.', end='')
                 except Exception as inst:
@@ -102,6 +103,16 @@ class ParseCommand(Command):
 
         files.sort()
         return files.pop()
+
+    def cleanval(self, val):
+
+        import re
+
+        # mm/dd/yy
+        m = re.match(r'([0-9]{2})/([0-9]{2})/([0-9]{2})', val)
+        if m is not None:
+            val = '20{0}'.format('-'.join([m.group(3), m.group(1), m.group(2)]))
+        return val
         
 
 class ForecastAreas(ParseCommand):
@@ -121,3 +132,9 @@ class Hourly(ParseCommand):
     ftp_dir = 'HourlyData'
     filename = 'recent'
     model = AirNowHourly
+
+class ReportingAreas(ParseCommand):
+
+    ftp_dir = 'ReportingArea'
+    filename = 'reportingarea.dat'
+    model = AirNowReportingArea
