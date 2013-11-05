@@ -28,7 +28,7 @@ class ParseCommand(Command):
 
                 model_inst = self.model()
                 for col, val in kvals.items():
-                    val = self.cleanval(val)
+                    val = self.cleanval(col, val)
                     setattr(model_inst, col, val)
                 
                 try:
@@ -104,11 +104,13 @@ class ParseCommand(Command):
         files.sort()
         return files.pop()
 
-    def cleanval(self, val):
+    def cleanval(self, col, val):
 
-        import re
+        if col == 'valid_time' and val == '':
+            return '00:00:00'
 
         # mm/dd/yy
+        import re
         m = re.match(r'([0-9]{2})/([0-9]{2})/([0-9]{2})', val)
         if m is not None:
             val = '20{0}'.format('-'.join([m.group(3), m.group(1), m.group(2)]))

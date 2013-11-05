@@ -206,25 +206,6 @@ function SiteCntl($scope, $route, $routeParams, $http, $location, siteService, d
         });
     };
 
-    // Function to replicate setInterval using $timeout service.
-/*
-    $scope.intervalFunction = function() {
-        $timeout(function() {
-            $scope.loadData();
-            $scope.intervalFunction();
-        }, 1000)
-    };
-
-    // Kick off the interval
-    $scope.intervalFunction();
-*/
-
-/*
-    // Refresh every 5 minutes
-    timeout = setInterval(function() {
-        $scope.loadData(); 
-    }, 10000); // 300000);
-*/
     $scope.setSiteName = function() {
         if ($scope.sites === null) {
             return "";
@@ -240,8 +221,6 @@ function SiteCntl($scope, $route, $routeParams, $http, $location, siteService, d
     $scope.loadSite = function(code) {
         $location.path('/site/' + code);
     };
-
-    //$scope.loadData();
 
 }
 
