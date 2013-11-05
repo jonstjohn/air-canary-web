@@ -245,6 +245,94 @@ function ContactCntl($scope, $http, $timeout) {
     }
 }
 
+app.directive('lineGraph', function(dataService) {
+
+    // constants
+    var margin = {top: 20, right: 10, bottom: 40, left: 10},
+        width = 1020,
+        height = 300,
+        barPadding = 1,
+        color = d3.interpolateRgb("#f77", "#77f");
+
+    return {
+        restrict: 'E',
+        scope: { val: '=' },
+        link: function (scope, element, attrs) {
+            // set up initial svg object
+            var svg = d3.select(element[0])
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append('g')
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");            
+
+            // Watch for data changes
+            scope.$watch('val', function(newVal, oldVal) {
+
+                // Clear all existing graph elements
+                svg.selectAll('*').remove();
+
+                // Clear existing graph
+                if (!newVal) {
+                    return;
+                }
+
+                var x = d3.time.scale().range([width, 0]);
+                var y = d3.scale.linear().range([height, 0]);
+
+                var xAxis = d3.svg.axis()
+                    .scale(x)
+                    .orient("bottom");
+
+                var yAxis = d3.svg.axis()
+                    .scale(y)
+                    .orient("left");
+
+                // Build array of data
+                var data = [];
+                for (var i = 0; i < newVal.length; i++) {
+                    var val = newVal[i][attrs.type] ? newVal[i][attrs.type] : 0;
+
+                    // For now, just format everything in mountain time
+                    data.push({'val': val, 'date': moment(newVal[i].observed).toDate()}); // .tz('America/Denver').format()]);
+                }
+                console.log(data);
+
+                var line = d3.svg.line()
+                    .interpolate('cardinal')
+                    .x(function(d) { return x(d.date); })
+                    .y(function(d) { return y(d.val); });
+
+                x.domain(d3.extent(data, function(d) { return d.date; }));
+                y.domain(d3.extent(data, function(d) { return d.val; }));
+
+                svg.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", "translate(0," + height + ")")
+                    .call(xAxis);
+
+                svg.append("g")
+                    .attr("class", "y axis")
+                    .call(yAxis)
+                    .append("text")
+                        .attr("transform", "rotate(-90)")
+                        .attr("y", 6)
+                        .attr("dy", ".71em")
+                        .style("text-anchor", "end")
+                        .text("PPM");
+
+                svg.append('path')
+                    .datum(data)
+                    .attr('class', 'line')
+                    .attr('d', line);
+            });
+
+        }
+    };
+
+
+});
+
 app.directive('sampleGraph', function(dataService) {
 
     // constants
