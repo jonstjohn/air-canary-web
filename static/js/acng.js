@@ -1,4 +1,4 @@
-var app = angular.module('acApp', []).config( function($routeProvider, $locationProvider, $interpolateProvider, $httpProvider) {
+var app = angular.module('acApp', ['ngRoute']).config( function($routeProvider, $locationProvider, $interpolateProvider, $httpProvider) {
     $routeProvider.when('/', {
         templateUrl: '/ng/home',
         controller: HomeCntl
