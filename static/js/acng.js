@@ -254,6 +254,28 @@ app.directive('lineGraph', function(dataService) {
         barPadding = 1,
         color = d3.interpolateRgb("#f77", "#77f");
 
+    var ranges = {
+        'pm25': [
+            {label: 'Good (<12)', max: 12.0, color: '#5E8C6F', width: 20, x: 0, class: 'bar-green'},
+            {label: 'Moderate (12.1-35.4)', max: 35.4, color: '#F0C866', width: 70, x: 130, class: 'bar-yellow'},
+            {label: 'Unhealthy for Sensitive People (35.5-55.4)', max: 55.4, color: '#DC9C5E', width: 150, x: 310, class: 'bar-orange'},
+            {label: 'Unhealthy (>55.5)', max: 1000.0, color: '#DC4358', width: 100, x: 620, class: 'bar-red'}
+        ],
+        'ozone': [
+            {label: 'Good (<0.059)', max: 0.059, color: '#5E8C6F', width: 20, x: 0, class: 'bar-green'},
+            {label: 'Moderate (0.06-0.075)', max: 0.075, color: '#F0C866', width: 70, x: 150, class: 'bar-yellow'},
+            {label: 'Unhealthy for Sensitive People (0.076-0.095)', max: 0.095, color: '#DC9C5E', width: 150, x: 350, class: 'bar-orange'},
+            {label: 'Unhealthy (>0.096)', max: 1000.0, color: '#DC4358', width: 100, x: 680, class: 'bar-red'}
+        ],
+        'nox': [
+            {label: 'Good (<0.059)', max: 0.059, color: '#5E8C6F', width: 20, x: 0, class: 'bar-green'},
+            {label: 'Moderate (0.06-0.075)', max: 0.075, color: '#F0C866', width: 70, x: 150, class: 'bar-yellow'},
+            {label: 'Unhealthy for Sensitive People (0.076-0.095)', max: 0.095, color: '#DC9C5E', width: 150, x: 350, class: 'bar-orange'},
+            {label: 'Unhealthy (>0.096)', max: 1000.0, color: '#DC4358', width: 100, x: 680, class: 'bar-red'}
+        ],
+
+    };
+
     return {
         restrict: 'E',
         scope: { val: '=' },
@@ -451,22 +473,26 @@ app.directive('sampleGraph', function(dataService) {
                     data.push([val, moment(newVal[i].observed).tz("America/Denver").format()]);
                 }
 
+                // Get range for this parameter
                 var range = ranges[attrs.type];
 
+                // Max value for parameter
                 var yMax = d3.max(data, function(d) { return d[0]; });
+
+                // Build yticks up to next range above max value
                 var yTicks = [];
                 for (var i = 0; i < range.length; i++) {
                     yTicks.push(range[i]);
+                    // Actual yMax will be the top of this band
                     if (range[i].max >= yMax) {
-//                        yTicks.push(range[i]);
                         yMax = range[i].max;
                         break;
                     }
                 }
 
                 // Setup scales for x and y
-                var yScale = d3.scale.linear().domain([0, yMax]).range([0, height]);
-                var xScale = d3.scale.linear().domain([0, 24]).range([0, width]);
+                var yScale = d3.scale.linear().domain([0, yMax]).range([0, height]); // yMax is top of band
+                var xScale = d3.scale.linear().domain([0, 24]).range([0, width]); // 24 samples
 
                 // Set y axis
                 var yAxis = d3.svg.axis().scale(yScale).tickSize(width).orient('right');
