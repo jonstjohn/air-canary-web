@@ -312,6 +312,13 @@ app.directive('lineGraph', function(dataService) {
                     .scale(y)
                     .orient("left");
 
+                var tooltip = d3.select("body")
+                    .append("div")
+                    .style("position", "absolute")
+                    .style("z-index", "10")
+                    .style("visibility", "hidden")
+                    .text("a simple tooltip");
+
                 // Build array of data
                 var data = [];
                 for (var i = 0; i < newVal.length; i++) {
@@ -324,19 +331,37 @@ app.directive('lineGraph', function(dataService) {
                     return a.date - b.date;
                 });
 
+                // Get range for this parameter
+                var range = ranges[attrs.type];
+
+                // Max value for parameter
+                var yMax = d3.max(data, function(d) { return d.val; });
+
+                // Build yticks up to next range above max value
+                var yTicks = [];
+                for (var i = 0; i < range.length; i++) {
+                    yTicks.push(range[i]);
+                    // Actual yMax will be the top of this band
+                    if (range[i].max >= yMax) {
+                        yMax = range[i].max;
+                        break;
+                    }
+                }
+
                 var line = d3.svg.line()
                     .interpolate('cardinal')
                     .x(function(d) { return x(d.date); })
                     .y(function(d) { return y(d.val); });
 
                 x.domain(d3.extent(data, function(d) { return d.date; }));
-                y.domain(d3.extent(data, function(d) { return d.val; }));
+                //y.domain(d3.extent(data, function(d) { return d.val; }));
+                y.domain([0, yMax]);
 
                 svg.append("g")
                     .attr("class", "x axis")
                     .attr("transform", "translate(0," + height + ")")
                     .call(xAxis);
-
+/*
                 svg.append("g")
                     .attr("class", "y axis")
                     .call(yAxis)
@@ -346,6 +371,29 @@ app.directive('lineGraph', function(dataService) {
                         .attr("dy", ".71em")
                         .style("text-anchor", "end")
                         .text("PPM");
+*/
+
+                // Horizontal threshold lines
+                svg.selectAll('yline')
+                    .data(yTicks)
+                    .enter().append('line')
+                        .attr('x1', 0)
+                        .attr('x2', width)
+                        .attr('y1', function(d, i) { return y(d.max); })
+                        .attr('y2', function(d, i) { return y(d.max); })
+                        .style('stroke', '#ccc');
+
+                svg.selectAll('.rule')
+                        .data(yTicks)
+                    .enter().append('text')
+                        .attr('class', 'rule')
+                        .attr('x', function(d, i) { return 0; })
+                        .attr('y', function(d, i) { return y(d.max); })
+                        .attr('dy', '15')
+                        .attr('text-anchor', 'right')
+                        .style('font-size', '10px')
+                        .style('fill', '#999')
+                        .text(function(d, i) { return d.label; });
 
                 svg.append('path')
                     .datum(data)
