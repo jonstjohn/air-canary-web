@@ -319,6 +319,32 @@ app.directive('lineGraph', function(dataService) {
                     .style("visibility", "hidden")
                     .text("a simple tooltip");
 
+                // Format time
+                var formatTime = function(dateTime) {
+                    return moment(dateTime).format('h:mm a');
+                    var parts = dateTime.split("T");
+                    var timeParts = parts[1].split(":");
+                    var hour = parseInt(timeParts[0], 10);
+                    var min = timeParts[1];
+                    var ampm = " AM";
+
+                    if (hour > 12) {
+                        hour = hour - 12;
+                        ampm = ' PM';
+                    }
+
+                    return hour + ":" + min + ampm;
+                };
+
+                // Format date
+                var formatDate = function(dateTime) {
+
+                    return moment(dateTime).format('M/D');
+                    var parts = dateTime.split("T");
+                    var dateParts = parts[0].split("-");
+                    return dateParts[1] + "/" + dateParts[2];
+                }
+
                 // Build array of data
                 var data = [];
                 for (var i = 0; i < newVal.length; i++) {
@@ -327,10 +353,11 @@ app.directive('lineGraph', function(dataService) {
                     // For now, just format everything in mountain time
                     data.push({'val': val, 'date': moment(newVal[i].observed).toDate()}); // .tz('America/Denver').format()]);
                 }
+/*
                 data.sort(function(a, b) {
                     return a.date - b.date;
                 });
-
+*/
                 // Get range for this parameter
                 var range = ranges[attrs.type];
 
@@ -357,10 +384,12 @@ app.directive('lineGraph', function(dataService) {
                 //y.domain(d3.extent(data, function(d) { return d.val; }));
                 y.domain([0, yMax]);
 
+/*
                 svg.append("g")
                     .attr("class", "x axis")
                     .attr("transform", "translate(0," + height + ")")
                     .call(xAxis);
+*/
 /*
                 svg.append("g")
                     .attr("class", "y axis")
@@ -394,6 +423,44 @@ app.directive('lineGraph', function(dataService) {
                         .style('font-size', '10px')
                         .style('fill', '#999')
                         .text(function(d, i) { return d.label; });
+console.log(data);
+                // Labels for x axis
+                // Time
+                svg.selectAll("text.xaxis")
+                    .data(data)
+                    .enter()
+                    .append("text")
+                    .text(function(d, i) {
+                        var label = i == data.length - 1 || i % 4 == 0 ? formatTime(d.date) : "";
+                        return label;
+                    })
+                    .attr("x", function(d, i) {
+                        return i * (width / data.length) + (width / data.length - barPadding) / 2;
+                    })
+                    .attr("y", function(d) {
+                        return height + 15;
+                    })
+                    .attr('font-family', 'sans-serif')
+                    .attr('font-size', '10px')
+                    .attr('fill', 'black')
+                    .attr('text-anchor', 'middle');
+
+                // Date label
+                svg.selectAll("text.xaxis")
+                    .data(data)
+                    .enter()
+                    .append("text")
+                    .text(function(d, i) { return i == data.length - 1 || i % 4 == 0 ? formatDate(d.date) : ""; })
+                    .attr("x", function(d, i) {
+                        return i * (width / data.length) + (width / data.length - 1) / 2;
+                    })
+                    .attr("y", function(d) {
+                        return height + 30;
+                    })
+                    .attr('font-family', 'sans-serif')
+                    .attr('font-size', '10px')
+                    .attr('fill', 'black')
+                    .attr('text-anchor', 'middle');
 
                 svg.append('path')
                     .datum(data)
