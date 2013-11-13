@@ -103,10 +103,7 @@ function MainCntl($scope, $http, siteService, $location) {
         console.log(url);
         $http.get(url)
             .success(function(data, status) {
-                console.log($location.path());
-                if ($location.path() === '/') {
-                    $location.path('/site/' + data.code);
-                }
+                $location.path('/site/' + data.code);
             });
     };
 

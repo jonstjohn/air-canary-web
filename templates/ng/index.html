@@ -18,8 +18,8 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <div class="pull-left" style="padding: 5px"><a href="#"><img src="/static/img/canary1.png" style="width: 40px"/></a></div>
-                <a class="navbar-brand" href="#">Air Canary</a>
+                <div class="pull-left" style="padding: 5px"><img src="/static/img/canary1.png" style="width: 40px"/></div>
+                <span class="navbar-brand">Air Canary</a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
@@ -38,12 +38,19 @@
             </div><!--/.nav-collapse -->
         </div>
         <div style="padding-top: 50px">
-            <div ng-view></div>
+            <div ng-view>
+                <div class="container">
+                    <div style="height: 100vh; background: #fff; font-size: 24px; text-align: center; vertical-align: middle; color: #666; line-height: 100vh">Loading</div>
+                </div>
+            </div>
         </div>
 
         <footer>
             <div class="container">
-                <div class="row">&copy; 2013</div>
+                <div class="row">
+                    <div class="col-xs-6">&copy; 2013</div>
+                    <div class="col-xs-6 text-right"><a href="/#/api">API</a> - <a href="/#/about">About</a> - <a href="/#/contact">Contact</a></div>
+                </div>
             </div>
         </footer>
     </div><!-- content -->
