@@ -299,7 +299,7 @@ app.directive('lineGraph', function(dataService) {
                     return;
                 }
 
-                var bisectDate = d3.bisector(function(d) { return d.date; }).left;
+                var bisectDate = d3.bisector(function(d) { console.log(d); return d.date; }).left;
 
                 var x = d3.time.scale().range([width, 0]);
                 var y = d3.scale.linear().range([height, 0]);
@@ -353,11 +353,11 @@ app.directive('lineGraph', function(dataService) {
                     // For now, just format everything in mountain time
                     data.push({'val': val, 'date': moment(newVal[i].observed).toDate()}); // .tz('America/Denver').format()]);
                 }
-/*
+
                 data.sort(function(a, b) {
-                    return a.date - b.date;
+                    return b.date - a.date;
                 });
-*/
+
                 // Get range for this parameter
                 var range = ranges[attrs.type];
 
@@ -487,11 +487,22 @@ console.log(data);
                     .on("mousemove", mousemove);
 
                 function mousemove() {
-                    var x0 = x.invert(d3.mouse(this)[0]),
-                        i = bisectDate(data, x0, 1),
-                        d0 = data[i - 1],
-                        d1 = data[i],
-                        d = x0 - d0.date > d1.date - x0 ? d1 : d0;
+                console.log(d3.mouse(this)[0]);
+                console.log(x.invert(d3.mouse(this)[0]));
+                    // Date at the mouse position
+                    var x0 = x.invert(d3.mouse(this)[0]);
+
+                    // Get left index
+                    var i = bisectDate(data, x0, 1);
+
+                    // Get data point before and actual
+                    var d0 = data[i - 1];
+                    var d1 = data[i];
+
+                    // Get closest point
+                    var d = x0 - d0.date > d1.date - x0 ? d1 : d0;
+
+                    // Display text
                     focus.attr("transform", "translate(" + x(d.date) + "," + y(d.val) + ")");
                     focus.select("text").text(d.val);
                 }
