@@ -214,3 +214,29 @@ class AirNowReportingArea(Base):
     action_day = Column(VARCHAR(3))
     discussion = Column(VARCHAR(500))
     forecast_source = Column(VARCHAR(100))
+
+class Area(Base):
+
+    __tablename__ = 'area'
+
+    area_id = Column(Integer, primary_key = True)
+    name = Column(VARCHAR(50))
+    country_iso = Column(CHAR(3))
+    state_province = Column(VARCHAR(5))
+    latitude = Column(DECIMAL(10,8))
+    longitude = Column(DECIMAL(11,8))
+
+    @staticmethod
+    def all(country = None, state = None, search = None):
+        session = Session()
+        areas = session.query(Area)
+        if country:
+            areas = areas.filter_by(country_iso=country)
+        if state:
+            areas = areas.filter_by(state_province=state)
+        if search:
+            areas = areas.filter(Area.name.like('%{}%'.format(search)))
+        areas = areas.order_by(Area.name)
+        session.close()
+        return areas
+
