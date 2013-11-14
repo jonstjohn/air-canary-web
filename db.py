@@ -8,7 +8,9 @@ username = c.settings['database']['username']
 password = c.settings['database']['password']
 host = c.settings['database']['host']
 database = c.settings['database']['database']
-engine = create_engine("mysql://{0}:{1}@{2}/{3}".format(username, password, host, database))
+dbtype = c.settings['database']['type']
+
+engine = create_engine("{}://{}:{}@{}/{}".format(dbtype, username, password, host, database))
 
 Session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
 
