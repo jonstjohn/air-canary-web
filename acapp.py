@@ -8,7 +8,7 @@ import json
 import AcConfiguration
 
 from functools import wraps
-from model.models import Site, Data
+from model.models import Site, Data, Area
 
 from raven.contrib.flask import Sentry
 
@@ -157,6 +157,16 @@ def api_site():
     response_data = []
     for site in sites:
         response_data.append({'code': site.code, 'name': site.name})
+    response = Response(json.dumps(response_data), status=200, mimetype='application/json')
+    return response
+
+@app.route('/area', subdomain='api')
+@app.route('/api/area')
+def api_areas():
+    areas = Area.all(request.args.get('country'), request.args.get('state'), request.args.get('search'))
+    response_data = []
+    for area in areas:
+        response_data.append({'id': area.area_id, 'name': area.name})
     response = Response(json.dumps(response_data), status=200, mimetype='application/json')
     return response
 
