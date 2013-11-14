@@ -119,11 +119,13 @@ class ParseForecast(Command):
 
         session = Session()
 
+        colormap = {'Good': 'green', 'Moderate': 'yellow'}
+
         try:
             sites = session.query(Site).all()
 
             title_date_regex = re.compile(r'(\d+)\/(\d+)\/(\d+)')
-            description_regex = re.compile(r'Color: (.*) Condition: (.*)')
+            description_regex = re.compile(r'Health: (.*) Action: (.*)')
 
             for site in sites:
 
@@ -131,7 +133,7 @@ class ParseForecast(Command):
                 url = 'http://www.airquality.utah.gov/aqp/rssFeed.php?id={0}'.format(site.code)
 
                 d = feedparser.parse(url)
-
+                print(d.entries);
                 for entry in d.entries:
                     forecast_date_match = title_date_regex.search(entry.title)
                     description_match = description_regex.search(entry.description)
@@ -139,8 +141,10 @@ class ParseForecast(Command):
                     if forecast_date_match and description_match:
 
                         forecast_date =  "{0}-{1}-{2}".format(forecast_date_match.group(3), forecast_date_match.group(1), forecast_date_match.group(2))
-                        color = description_match.group(1).strip()
-                        condition = description_match.group(2).strip()
+                        health = description_match.group(1).strip()
+                        color = colormap[health]
+
+                        action = description_match.group(2).strip()
 
                         print('  Adding forecast {0}'.format(forecast_date))
                         print(entry.published_parsed)
@@ -153,13 +157,13 @@ class ParseForecast(Command):
 
 
 
-                        if color and condition:
+                        if color and health:
 
                             f = Forecast()
                             f.site_id = site.site_id
                             f.forecast_date = forecast_date
                             f.color = color
-                            f.description = condition
+                            f.description = health
                             f.published = published_date
 
                             try:

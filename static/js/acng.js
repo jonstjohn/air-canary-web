@@ -85,6 +85,7 @@ angular.module("acApp").factory('dataService', function() {
 
     return { 
         sharedObject: {
+            name: null,
             data: null,
             echo: function() { console.log('echo'); }
         }
@@ -92,8 +93,9 @@ angular.module("acApp").factory('dataService', function() {
 
 });
 
-function MainCntl($scope, $http, siteService, $location) {
+function MainCntl($scope, $http, siteService, dataService, $location) {
 
+    $scope.dataService = dataService;
     var success_callback = function(p) {
         var latitude = p.coords.latitude;
         var longitude = p.coords.longitude;
@@ -140,10 +142,11 @@ function MainCntl($scope, $http, siteService, $location) {
     
 }
 
-function HomeCntl($scope, $route, $routeParams, $http, $location, siteService, dataService) {
+function HomeCntl($rootScope, $scope, $route, $routeParams, $http, $location, siteService, dataService) {
     $scope.$route = $route;
     $scope.$location = $location;
     $scope.$routeParams = $routeParams;
+    $scope.name = $rootScope.name;
 
     dataService.sharedObject.data = [];
     var httpRequest = $http({
@@ -158,7 +161,7 @@ function HomeCntl($scope, $route, $routeParams, $http, $location, siteService, d
 
 }
 
-function SiteCntl($scope, $route, $routeParams, $http, $location, siteService, dataService, $timeout) {
+function SiteCntl($rootScope, $scope, $route, $routeParams, $http, $location, siteService, dataService, $timeout) {
 
     $scope.$route = $route;
     $scope.$location = $location;
@@ -198,6 +201,8 @@ function SiteCntl($scope, $route, $routeParams, $http, $location, siteService, d
             url: '/api/site/' + $scope.code + '/24'
         }).success(function(data, status) {
             dataService.sharedObject.data = data.data;
+            dataService.sharedObject.name = data.name;
+            $rootScope.name = data.name;
             $scope.data = data.data;
             $scope.forecast = data.forecast;
         });
