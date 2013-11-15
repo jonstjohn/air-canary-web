@@ -114,29 +114,29 @@ class ParseCommand(Command):
         m = re.match(r'([0-9]{2})/([0-9]{2})/([0-9]{2})', val)
         if m is not None:
             val = '20{0}'.format('-'.join([m.group(3), m.group(1), m.group(2)]))
-        return val
+        return val if len(val) > 0 else None
         
 
 class ForecastAreas(ParseCommand):
-
+    " Parse air now forecast areas "
     ftp_dir = 'Locations'
     filename = 'reporting_area_locations_v2.dat'
     model = AirNowForecastArea
 
 class MonitoringSites(ParseCommand):
-
+    " Parse air now monitoring sites "
     ftp_dir = 'Locations'
     filename = 'monitoring_site_locations.dat'
     model = AirNowMonitoringSite
 
 class Hourly(ParseCommand):
-
+    " Parse air now hourly data "
     ftp_dir = 'HourlyData'
     filename = 'recent'
     model = AirNowHourly
 
 class ReportingAreas(ParseCommand):
-
+    " Parse air now reporting areas "
     ftp_dir = 'ReportingArea'
     filename = 'reportingarea.dat'
     model = AirNowReportingArea

@@ -4,6 +4,7 @@ from flask import request, session
 from flask import abort, redirect, url_for, flash, jsonify, Response
 from flask import g
 from werkzeug.contrib.cache import RedisCache
+from geoalchemy2.functions import ST_X, ST_Y
 import json
 import AcConfiguration
 
@@ -166,7 +167,11 @@ def api_areas():
     areas = Area.all(request.args.get('country'), request.args.get('state'), request.args.get('search'))
     response_data = []
     for area in areas:
-        response_data.append({'id': area.area_id, 'name': area.name})
+        response_data.append(
+                { 'id': area.area_id, 'name': area.name,
+                    'state': area.state_province, 'country': area.country_iso,
+                    #'latitude': Session.scalar(area.location.ST_Y()), 'longitude': Session.scalar(area.location.ST_X())
+                })
     response = Response(json.dumps(response_data), status=200, mimetype='application/json')
     return response
 

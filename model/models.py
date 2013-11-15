@@ -3,6 +3,7 @@ from db import Session
 from sqlalchemy import Column, Integer, String, VARCHAR, Text, Date, DATETIME, DATE, DECIMAL, CHAR, Integer, ForeignKey, TIME
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.schema import Table
+from geoalchemy2 import Geometry
 import db
 
 class Site(Base):
@@ -90,7 +91,7 @@ class Data(Base):
         mountain = timezone('America/Denver')
 
         return {
-            'observed': str(pytz.utc.localize(self.observed).astimezone(mountain).isoformat()),
+            'observed': str(self.observed.astimezone(mountain).isoformat()),
             'ozone': float(self.ozone) if self.ozone else '',
             'ozone_8hr_avg': float(self.ozone_8hr_avg) if self.ozone_8hr_avg else '',
             'pm25': float(self.pm25) if self.pm25 else '',
@@ -125,7 +126,7 @@ class Forecast(Base):
             'date': str(self.forecast_date) + 'T08:00:00.000Z',
             'color': str(self.color) if self.color else '',
             'description': str(self.description) if self.description else '',
-            'published': str(pytz.utc.localize(self.published).astimezone(mountain).isoformat())
+            'published': str(self.published.astimezone(mountain).isoformat())
         }
 
     @staticmethod
@@ -223,8 +224,7 @@ class Area(Base):
     name = Column(VARCHAR(50))
     country_iso = Column(CHAR(3))
     state_province = Column(VARCHAR(5))
-    latitude = Column(DECIMAL(10,8))
-    longitude = Column(DECIMAL(11,8))
+    location = Column(Geometry('POINT'))
 
     @staticmethod
     def all(country = None, state = None, search = None):
@@ -235,7 +235,7 @@ class Area(Base):
         if state:
             areas = areas.filter_by(state_province=state)
         if search:
-            areas = areas.filter(Area.name.like('%{}%'.format(search)))
+            areas = areas.filter(Area.name.ilike('%{}%'.format(search)))
         areas = areas.order_by(Area.name)
         session.close()
         return areas
