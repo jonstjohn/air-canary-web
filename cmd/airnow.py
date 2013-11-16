@@ -1,11 +1,10 @@
 from __future__ import print_function
 from flask.ext.script import Command
-from model.models import AirNowForecastArea, AirNowMonitoringSite, AirNowHourly, AirNowReportingArea
+from model.models import AirNowForecastArea, AirNowMonitoringSite, AirNowHourly, AirNowReportingArea, Area
+from geoalchemy2 import Geometry
 import sqlalchemy.orm
 
 class ParseCommand(Command):
-    " Download and process forecast areas from AirNow "
-
     tmpdir = '/tmp'
     cache_days = 1
 
@@ -140,3 +139,41 @@ class ReportingAreas(ParseCommand):
     ftp_dir = 'ReportingArea'
     filename = 'reportingarea.dat'
     model = AirNowReportingArea
+
+class LoadAreas(Command):
+
+    def run(self):
+
+        from db import Session
+        session = Session()
+
+        an_areas = session.query(AirNowForecastArea)
+        for a in an_areas:
+
+            print(a.reporting_area)
+            area = Area()
+            area.name = a.reporting_area
+            area.country_iso = a.country_code
+            area.state_province = a.state_code
+            txt = 'POINT({} {})'.format(a.longitude, a.latitude)
+            area.location = Geometry(txt)
+            print(area.name)
+            print(area.location)
+
+            try:
+                session.merge(area)
+                session.commit()
+                print('.', end='')
+            except Exception as inst:
+                session.rollback()
+                print('x', end='')
+                raise inst
+
+
+         
+        #from db import engine
+        #engine.execute("""
+        #    INSERT INTO area (name, country_iso, state_province, location)
+        #    SELECT reporting_area, country_code, state_code, ST_GeomFromText('POINT(' || longitude || ' ' || latitude || ')')
+        #    FROM air_now_forecast_area
+        #""")
