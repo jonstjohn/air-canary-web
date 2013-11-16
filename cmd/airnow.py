@@ -3,6 +3,7 @@ from flask.ext.script import Command
 from model.models import AirNowForecastArea, AirNowMonitoringSite, AirNowHourly, AirNowReportingArea, Area
 from geoalchemy2 import Geometry
 import sqlalchemy.orm
+from sqlalchemy.exc import IntegrityError
 
 class ParseCommand(Command):
     tmpdir = '/tmp'
@@ -150,20 +151,20 @@ class LoadAreas(Command):
         an_areas = session.query(AirNowForecastArea)
         for a in an_areas:
 
-            print(a.reporting_area)
             area = Area()
             area.name = a.reporting_area
             area.country_iso = a.country_code
             area.state_province = a.state_code
             txt = 'POINT({} {})'.format(a.longitude, a.latitude)
-            area.location = Geometry(txt)
-            print(area.name)
-            print(area.location)
+            area.location = Geometry('Point').bind_expression(txt)
 
             try:
                 session.merge(area)
                 session.commit()
                 print('.', end='')
+            except IntegrityError as inst:
+                session.rollback()
+                print('-', end='')
             except Exception as inst:
                 session.rollback()
                 print('x', end='')
