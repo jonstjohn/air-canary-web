@@ -3,7 +3,7 @@ from db import Session
 from sqlalchemy import Column, Integer, String, VARCHAR, Text, Date, DATETIME, DATE, DECIMAL, CHAR, Integer, ForeignKey, TIME
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.schema import Table
-from geoalchemy2 import Geometry
+from geoalchemy2 import Geography
 import db
 
 class Site(Base):
@@ -224,10 +224,13 @@ class Area(Base):
     name = Column(VARCHAR(50))
     country_iso = Column(CHAR(3))
     state_province = Column(VARCHAR(5))
-    location = Column(Geometry('POINT'))
+    location = Column(Geography('POINT'))
 
     @staticmethod
     def all(country = None, state = None, search = None):
+        """ Get all areas, optionally limited to country, state, search term
+            returns: list of areas
+        """
         session = Session()
         areas = session.query(Area)
         if country:
@@ -241,8 +244,13 @@ class Area(Base):
         return areas
 
     @staticmethod
-    def nearest(latitude, longitude):
+    def nearest(latitude, longitude, limit = 1):
+        """ Get areas nearest to latitude/longitude
+            returns: list of areas
+        """
         session = Session()
-        areas = session.query(Area).order_by(Area.location.distance_box('POINT({} {})'.format(longitude, latitude))).limit(1)
+        txt = 'POINT({} {})'.format(longitude, latitude)
+        point = Geography('Point').bind_expression(txt)
+        areas = session.query(Area).order_by(Area.location.ST_DISTANCE(Area.location, point)).limit(limit)
         session.close()
         return areas
