@@ -240,3 +240,9 @@ class Area(Base):
         session.close()
         return areas
 
+    @staticmethod
+    def nearest(latitude, longitude):
+        session = Session()
+        areas = session.query(Area).order_by(Area.location.distance_box('POINT({} {})'.format(longitude, latitude))).limit(1)
+        session.close()
+        return areas
