@@ -24,6 +24,11 @@ var app = angular.module('acApp', ['ngRoute']).config( function($routeProvider, 
         controller: ContactCntl
     });
 
+    $routeProvider.when('/a/:latitude/:longitude', {
+        templateUrl: '/ng/area',
+        controller: AreaCntl
+    });
+
     $interpolateProvider.startSymbol('{[{');
     $interpolateProvider.endSymbol('}]}');
 
@@ -226,6 +231,35 @@ function SiteCntl($rootScope, $scope, $route, $routeParams, $http, $location, si
 
 }
 
+function AreaCntl($rootScope, $scope, $route, $routeParams, $http, $location, siteService, dataService, $timeout) {
+
+    /*
+    $scope.$route = $route;
+    $scope.$location = $location;
+    $scope.$routeParams = $routeParams;
+
+    $scope.data = dataService.sharedObject.data;
+    $scope.sites = siteService.sharedObject.data;
+    $scope.forecast = [];
+
+    $scope.code = $routeParams.code;
+    */
+    $scope.area = {};
+
+    var loadData = function() {
+
+        var httpRequest = $http({
+            method: 'GET',
+            url: '/api/area?ll=' + $routeParams.latitude + ',' + $routeParams.longitude
+        }).success(function(data, status) {
+            $scope.area = data[0];
+            console.log($scope.area);
+        });
+    };
+
+    loadData();
+
+}
 function ApiCntl($scope) {
 
 

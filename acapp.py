@@ -62,7 +62,7 @@ def index():
 @app.route('/ng/<template>')
 def ng_template(template):
     """ Render angular template """
-    allowed_templates = ['home', 'site', 'api', 'about', 'contact']
+    allowed_templates = ['home', 'site', 'api', 'about', 'contact', 'area']
     if template not in allowed_templates:
         abort(404)
 
@@ -164,7 +164,12 @@ def api_site():
 @app.route('/area', subdomain='api')
 @app.route('/api/area')
 def api_areas():
-    areas = Area.all(request.args.get('country'), request.args.get('state'), request.args.get('search'))
+
+    if 'll' in request.args: # lat/lon
+        latitude, longitude = request.args.get('ll').split(',')
+        areas = Area.nearest(latitude, longitude, request.args.get('limit', 1))
+    else:
+        areas = Area.all(request.args.get('country'), request.args.get('state'), request.args.get('search'))
     response_data = []
     for area in areas:
         response_data.append(
