@@ -254,3 +254,46 @@ class Area(Base):
         areas = session.query(Area).order_by(Area.location.ST_DISTANCE(Area.location, point)).limit(limit)
         session.close()
         return areas
+
+class AreaData(Base):
+
+    __tablename__ = 'area_data'
+
+    area_id = Column(Integer, ForeignKey('area.area_id'), primary_key = True)
+    observed = Column(DATETIME, primary_key = True, nullable = False)
+    ozone = Column(DECIMAL(10,3))
+    ozone_8hr_avg = Column(DECIMAL(10, 3))
+    pm25 = Column(DECIMAL(6, 2))
+    pm25_24hr_avg = Column(DECIMAL(6, 2))
+    nox = Column(DECIMAL(10, 3))
+    no2 = Column(DECIMAL(10, 3))
+    temperature = Column(DECIMAL(5,2))
+    relative_humidity = Column(DECIMAL(5,2))
+    wind_speed = Column(DECIMAL(5,2))
+    wind_direction = Column(Integer)
+    co = Column(DECIMAL(5,2))
+    solar_radiation = Column(Integer)
+
+    def data(self):
+
+        # Convert datetime to mountain, which is local for all existing sites
+        import pytz
+        from pytz import timezone
+        mountain = timezone('America/Denver')
+
+        return {
+            'observed': str(self.observed.astimezone(mountain).isoformat()),
+            'ozone': float(self.ozone) if self.ozone else '',
+            'ozone_8hr_avg': float(self.ozone_8hr_avg) if self.ozone_8hr_avg else '',
+            'pm25': float(self.pm25) if self.pm25 else '',
+            'pm25_24hr_avg': float(self.pm25_24hr_avg) if self.pm25_24hr_avg else '',
+            'nox': float(self.nox) if self.nox else '',
+            'no2': float(self.no2) if self.no2 else '',
+            'temperature': float(self.temperature) if self.temperature else '',
+            'relative_humidity': float(self.relative_humidity) if self.relative_humidity else '',
+            'wind_speed': float(self.wind_speed) if self.wind_speed else '',
+            'wind_direction': float(self.wind_direction) if self.wind_direction else '',
+            'co': float(self.co) if self.co else '',
+            'solar_radiation': float(self.solar_radiation) if self.solar_radiation else ''
+        }
+
