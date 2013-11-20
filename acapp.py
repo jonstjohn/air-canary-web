@@ -129,8 +129,8 @@ def contact():
 @cache()
 def api_forecast(code):
     """ API forecast """
-    site = Site.from_code(code)
-    response_data = site.forecast_data()
+    area = Area.from_code(code)
+    response_data = area.forecast_data()
     response = Response(json.dumps(response_data), status=200, mimetype='application/json')
     return response
 
@@ -177,6 +177,19 @@ def api_areas():
                     'state': area.state_province, 'country': area.country_iso,
                     #'latitude': Session.scalar(area.location.ST_Y()), 'longitude': Session.scalar(area.location.ST_X())
                 })
+    response = Response(json.dumps(response_data), status=200, mimetype='application/json')
+    return response
+
+@app.route('/area/<int:code>', defaults={'samples': 1}, subdomain='api')
+@app.route('/area/<int:code>/<int:samples>', subdomain='api')
+@app.route('/api/area/<int:code>', defaults={'samples': 1})
+@app.route('/api/area/<int:code>/<int:samples>')
+@cache()
+def api(code, samples):
+    """ API site """
+    session = Session()
+    area = session.query(Area).get(code)
+    response_data = {'code': area.code, 'name': area.name, 'data': area.data(samples), 'forecast': area.forecast_data()}
     response = Response(json.dumps(response_data), status=200, mimetype='application/json')
     return response
 

@@ -260,6 +260,52 @@ class Area(Base):
         session.close()
         return areas
 
+    def data(self, samples):
+
+        session = Session()
+        data = session.query(AreaData).filter(AreaData.area_id == self.area_id).order_by(AreaData.observed.desc()).limit(samples).all()
+        result = []
+        for d in data:
+            result.append(d.data())
+        session.close()
+        return result
+
+    def forecast_data(self):
+        session = Session()
+        data = session.query(AreaForecast).filter(AreaForecast.area_id == self.area_id).order_by(AreaForecast.forecast_date.desc()).limit(3).all()
+        result = []
+        for d in data:
+            result.append(d.data())
+        result.reverse()
+        session.close()
+        return result
+
+    @staticmethod
+    def data_all(samples):
+
+        areas = Area.all_areas()
+        result = []
+        for site in sites:
+            result.append({'code': area.code, 'name': area.name, 'data': area.data(samples)})
+        return result
+
+    @staticmethod
+    def all_areas():
+        session = Session()
+        areas = session.query(Area).order_by(Area.name)
+        session.close()
+        return areas
+
+    @staticmethod
+    def from_code(code):
+        """
+        Get area from code
+        """
+        session = Session()
+        area = session.query(Area).filter(Area.code == code).one()
+        session.close()
+        return area
+
 class AreaData(Base):
 
     __tablename__ = 'area_data'
@@ -308,3 +354,26 @@ class AreaSource(Base):
 
     area_source_id = Column(Integer, primary_key = True)
     name = Column(VARCHAR(100))
+
+class AreaForecast(Base):
+
+    __tablename__ = 'area_forecast'
+
+    area_id = Column(Integer, primary_key = True, nullable = False)
+    forecast_date = Column(DATE, primary_key = True, nullable = False)
+    color = Column(VARCHAR(12), nullable = False)
+    description = Column(VARCHAR(100), nullable = False)
+    published = Column(DATETIME, nullable = False)
+
+    def data(self):
+
+        import pytz
+        from pytz import timezone
+        mountain = timezone('America/Denver')
+
+        return {
+            'date': str(self.forecast_date) + 'T08:00:00.000Z',
+            'color': str(self.color) if self.color else '',
+            'description': str(self.description) if self.description else '',
+            'published': str(pytz.utc.localize(self.published).astimezone(mountain).isoformat())
+        }

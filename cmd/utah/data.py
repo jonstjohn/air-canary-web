@@ -1,8 +1,8 @@
 from __future__ import print_function
 from flask.ext.script import Command
 
-class ParseData(Command):
-    "Downloads and parses primary data"
+class Current(Command):
+    "Downloads and parses current data"
 
     debug = False
 
@@ -50,17 +50,17 @@ class ParseData(Command):
             logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
         session = Session()
-        area = session.query(Site).all()
+        areas = session.query(Area).filter(Area.area_source_id == 2).all()
 
         mst = timezone('MST')
 
         try:
-            # Loop over each site
-            for site in sites:
+            # Loop over each area
+            for area in areas:
 
                 # Get XML and convert to data
-                print("\nRetrieving data for '{0}'".format(site.name))
-                xml_str = self.url2xml('http://www.airquality.utah.gov/aqp/xmlFeed.php?id={0}'.format(site.code))
+                print("\nRetrieving data for '{0}'".format(area.name))
+                xml_str = self.url2xml('http://www.airquality.utah.gov/aqp/xmlFeed.php?id={0}'.format(area.code))
                 data = self.xml2data(xml_str)
 
                 cols = ('ozone', 'ozone_8hr_avg', 'pm25', 'pm25_24hr_avg', 'nox',
@@ -69,8 +69,8 @@ class ParseData(Command):
 
                 for date, values in data.items():
 
-                    dp = Data()
-                    dp.site_id = site.site_id
+                    dp = AreaData()
+                    dp.area_id = area.area_id
 
                     # Adjust datetime by 1 hour according to DEQ
                     dt =  datetime.strptime(date, '%m/%d/%Y %H:%M:%S') + timedelta(hours=1)
@@ -104,7 +104,7 @@ class ParseData(Command):
         session.close()
         print('\nDone')
 
-class ParseForecast(Command):
+class Forecast(Command):
     " Downloads and parses daily forecast "
 
     def run(self):
@@ -115,25 +115,24 @@ class ParseForecast(Command):
 
         import db
         from db import Session
-        from model.models import Site, Data, Forecast
+        from model.models import Area, AreaForecast
 
         session = Session()
 
         colormap = {'Good': 'green', 'Moderate': 'yellow'}
 
         try:
-            sites = session.query(Site).all()
+            areas = session.query(Area).filter(Area.area_source_id == 2).all()
 
             title_date_regex = re.compile(r'(\d+)\/(\d+)\/(\d+)')
             description_regex = re.compile(r'Health: (.*) Action: (.*)')
 
-            for site in sites:
+            for area in areas:
 
-                print("Retrieving data for '{0}'".format(site.name))
-                url = 'http://www.airquality.utah.gov/aqp/rssFeed.php?id={0}'.format(site.code)
+                print("Retrieving data for '{0}'".format(area.name))
+                url = 'http://www.airquality.utah.gov/aqp/rssFeed.php?id={0}'.format(area.code)
 
                 d = feedparser.parse(url)
-                print(d.entries);
                 for entry in d.entries:
                     forecast_date_match = title_date_regex.search(entry.title)
                     description_match = description_regex.search(entry.description)
@@ -147,20 +146,16 @@ class ParseForecast(Command):
                         action = description_match.group(2).strip()
 
                         print('  Adding forecast {0}'.format(forecast_date))
-                        print(entry.published_parsed)
                         published_date = "{0}-{1:02d}-{2:02d} {3:02d}:{4:02d}:{5:02d}".format(
                             entry.published_parsed[0], entry.published_parsed[1],
                             entry.published_parsed[2], entry.published_parsed[3],
                             entry.published_parsed[4], entry.published_parsed[5]
                         )
 
-
-
-
                         if color and health:
 
-                            f = Forecast()
-                            f.site_id = site.site_id
+                            f = AreaForecast()
+                            f.area_id = area.area_id
                             f.forecast_date = forecast_date
                             f.color = color
                             f.description = health
