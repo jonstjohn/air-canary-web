@@ -225,6 +225,11 @@ class Area(Base):
     country_iso = Column(CHAR(3))
     state_province = Column(VARCHAR(5))
     location = Column(Geography('POINT'))
+    area_source_id = Column(Integer, ForeignKey('area_source.area_source_id'))
+    code = Column(VARCHAR(20))
+
+    data = relationship("AreaData", uselist = False, backref = "area")
+    source = relationship("AreaSource", uselist = False, backref = "area")
 
     @staticmethod
     def all(country = None, state = None, search = None):
@@ -297,3 +302,9 @@ class AreaData(Base):
             'solar_radiation': float(self.solar_radiation) if self.solar_radiation else ''
         }
 
+class AreaSource(Base):
+
+    __tablename__ = 'area_source'
+
+    area_source_id = Column(Integer, primary_key = True)
+    name = Column(VARCHAR(100))

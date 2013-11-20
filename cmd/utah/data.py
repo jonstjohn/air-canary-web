@@ -42,7 +42,7 @@ class ParseData(Command):
         import pytz
         import db
         from db import Session
-        from model.models import Site, Data
+        from model.models import Area, AreaData
 
         if self.debug:
             import logging
@@ -50,7 +50,7 @@ class ParseData(Command):
             logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
         session = Session()
-        sites = session.query(Site).all()
+        area = session.query(Site).all()
 
         mst = timezone('MST')
 
