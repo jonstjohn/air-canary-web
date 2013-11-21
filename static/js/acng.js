@@ -233,7 +233,6 @@ function SiteCntl($rootScope, $scope, $route, $routeParams, $http, $location, si
 
 function AreaCntl($rootScope, $scope, $route, $routeParams, $http, $location, siteService, dataService, $timeout) {
 
-    /*
     $scope.$route = $route;
     $scope.$location = $location;
     $scope.$routeParams = $routeParams;
@@ -243,9 +242,52 @@ function AreaCntl($rootScope, $scope, $route, $routeParams, $http, $location, si
     $scope.forecast = [];
 
     $scope.code = $routeParams.code;
-    */
     $scope.area = {};
 
+    /*
+    $scope.$watch('code', function() {
+        $scope.setSiteName();
+        $scope.loadData();
+    });
+    */
+
+    var loadData = function() {
+        dataService.sharedObject.data = [];
+        //$location.path('/site/' + $scope.code);
+        var httpRequest = $http({
+            method: 'GET',
+            url: '/api/area?ll=' + $routeParams.latitude + ',' + $routeParams.longitude
+        }).success(function(data, status) {
+            console.log(data);
+            dataService.sharedObject.data = data.data;
+            dataService.sharedObject.name = data.name;
+            $rootScope.name = data.name;
+            $scope.data = data.data;
+            $scope.forecast = data.forecast;
+        });
+    };
+
+    $scope.setSiteName = function() {
+        if ($scope.sites === null) {
+            return "";
+        }
+
+        for (var i = 0; i < $scope.sites.length; i++) {
+            if ($scope.sites[i].code == $scope.code) {
+                $scope.name = $scope.sites[i].name;
+            }
+        }
+    };
+
+    /*
+    $scope.loadSite = function(code) {
+        $location.path('/site/' + code);
+    }
+    */
+
+
+
+    /*
     var loadData = function() {
 
         var httpRequest = $http({
@@ -256,6 +298,7 @@ function AreaCntl($rootScope, $scope, $route, $routeParams, $http, $location, si
             console.log($scope.area);
         });
     };
+    */
 
     loadData();
 

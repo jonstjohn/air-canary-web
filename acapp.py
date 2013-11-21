@@ -175,6 +175,7 @@ def api_areas():
         response_data.append(
                 { 'id': area.area_id, 'name': area.name,
                     'state': area.state_province, 'country': area.country_iso,
+                    'data': area.data(24), 'forecast': area.forecast_data()
                     #'latitude': Session.scalar(area.location.ST_Y()), 'longitude': Session.scalar(area.location.ST_X())
                 })
     response = Response(json.dumps(response_data), status=200, mimetype='application/json')
