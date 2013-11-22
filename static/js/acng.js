@@ -104,14 +104,18 @@ function MainCntl($scope, $http, siteService, dataService, $location) {
     var success_callback = function(p) {
         var latitude = p.coords.latitude;
         var longitude = p.coords.longitude;
-        console.log(latitude);
-        console.log(longitude)
+        $location.path('/a/' + latitude + '/' + longitude);
+
+        //console.log(latitude);
+        //console.log(longitude)
+        /*
         var url = '/location/' + latitude + '/' + longitude;
         console.log(url);
         $http.get(url)
             .success(function(data, status) {
                 $location.path('/site/' + data.code);
             });
+        */
     };
 
     var error_callback = function(p) {
@@ -153,6 +157,7 @@ function HomeCntl($rootScope, $scope, $route, $routeParams, $http, $location, si
     $scope.$routeParams = $routeParams;
     $scope.name = $rootScope.name;
 
+    /*
     dataService.sharedObject.data = [];
     var httpRequest = $http({
         method: 'GET',
@@ -162,7 +167,7 @@ function HomeCntl($rootScope, $scope, $route, $routeParams, $http, $location, si
         $scope.data = data.data;
         $scope.forecast = data.forecast;
     });
-
+    */
 
 }
 
@@ -258,12 +263,11 @@ function AreaCntl($rootScope, $scope, $route, $routeParams, $http, $location, si
             method: 'GET',
             url: '/api/area?ll=' + $routeParams.latitude + ',' + $routeParams.longitude
         }).success(function(data, status) {
-            console.log(data);
-            dataService.sharedObject.data = data.data;
-            dataService.sharedObject.name = data.name;
-            $rootScope.name = data.name;
-            $scope.data = data.data;
-            $scope.forecast = data.forecast;
+            dataService.sharedObject.data = data[0].data;
+            dataService.sharedObject.name = data[0].name;
+            $rootScope.name = data[0].name;
+            $scope.data = data[0].data;
+            $scope.forecast = data[0].forecast;
         });
     };
 
