@@ -98,30 +98,22 @@ angular.module("acApp").factory('dataService', function() {
 
 });
 
-function MainCntl($scope, $http, siteService, dataService, $location) {
+function MainCntl($rootScope, $scope, $http, siteService, dataService, $location) {
 
     $scope.dataService = dataService;
     var success_callback = function(p) {
         var latitude = p.coords.latitude;
         var longitude = p.coords.longitude;
-        $location.path('/a/' + latitude + '/' + longitude);
 
-        //console.log(latitude);
-        //console.log(longitude)
-        /*
-        var url = '/location/' + latitude + '/' + longitude;
-        console.log(url);
-        $http.get(url)
-            .success(function(data, status) {
-                $location.path('/site/' + data.code);
-            });
-        */
+        $rootScope.$apply( function() {
+            $location.path('/a/' + latitude + '/' + longitude);
+        });
     };
 
     var error_callback = function(p) {
         console.log('failed location');
         console.log(p);
-        $location.path('/site/slc');
+        $location.path('/a/40.7760238/-111.8784646');
     };
 
     if (geoPosition.init()){  // Geolocation Initialisation
@@ -129,7 +121,7 @@ function MainCntl($scope, $http, siteService, dataService, $location) {
         geoPosition.getCurrentPosition(success_callback,error_callback,{enableHighAccuracy:true});
     } else {
         console.log("Geoposition not available");
-        $location.path('/site/slc');
+        $location.path('/a/40.7760238/-111.8784646');
         // You cannot use Geolocation in this device
     }
 
@@ -156,19 +148,6 @@ function HomeCntl($rootScope, $scope, $route, $routeParams, $http, $location, si
     $scope.$location = $location;
     $scope.$routeParams = $routeParams;
     $scope.name = $rootScope.name;
-
-    /*
-    dataService.sharedObject.data = [];
-    var httpRequest = $http({
-        method: 'GET',
-        url: '/api/site/slc/12'
-    }).success(function(data, status) {
-        dataService.sharedObject.data = data.data;
-        $scope.data = data.data;
-        $scope.forecast = data.forecast;
-    });
-    */
-
 }
 
 function SiteCntl($rootScope, $scope, $route, $routeParams, $http, $location, siteService, dataService, $timeout) {
@@ -183,24 +162,9 @@ function SiteCntl($rootScope, $scope, $route, $routeParams, $http, $location, si
 
     $scope.code = $routeParams.code;
     
-    /*
-    var setReload = function() {
-        // Refresh every 5 minutes
-        $scope.timeout = setInterval(function() {
-            $scope.loadData();
-        }, 10000); // 300000);
-    };
-    */
     $scope.$watch('code', function() {
         $scope.setSiteName();
         $scope.loadData(); 
-    /*
-        if ($scope.timeout) {
-            console.log('clear interval');
-            window.clearInterval($scope.timeout);
-        }
-        setReload();
-    */
     });
 
     $scope.loadData = function() {
@@ -249,16 +213,9 @@ function AreaCntl($rootScope, $scope, $route, $routeParams, $http, $location, si
     $scope.code = $routeParams.code;
     $scope.area = {};
 
-    /*
-    $scope.$watch('code', function() {
-        $scope.setSiteName();
-        $scope.loadData();
-    });
-    */
-
     var loadData = function() {
         dataService.sharedObject.data = [];
-        //$location.path('/site/' + $scope.code);
+        
         var httpRequest = $http({
             method: 'GET',
             url: '/api/area?ll=' + $routeParams.latitude + ',' + $routeParams.longitude
@@ -283,27 +240,6 @@ function AreaCntl($rootScope, $scope, $route, $routeParams, $http, $location, si
         }
     };
 
-    /*
-    $scope.loadSite = function(code) {
-        $location.path('/site/' + code);
-    }
-    */
-
-
-
-    /*
-    var loadData = function() {
-
-        var httpRequest = $http({
-            method: 'GET',
-            url: '/api/area?ll=' + $routeParams.latitude + ',' + $routeParams.longitude
-        }).success(function(data, status) {
-            $scope.area = data[0];
-            console.log($scope.area);
-        });
-    };
-    */
-
     loadData();
 
 }
@@ -316,6 +252,7 @@ function AboutCntl($scope) {
 
 
 }
+
 function ContactCntl($scope, $http, $timeout) {
 
     $scope.send = function(contact) {
@@ -506,7 +443,6 @@ app.directive('lineGraph', function(dataService) {
                         .style('font-size', '10px')
                         .style('fill', '#999')
                         .text(function(d, i) { return d.label; });
-console.log(data);
                 // Labels for x axis
                 // Time
                 svg.selectAll("text.xaxis")
