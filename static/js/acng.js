@@ -98,7 +98,7 @@ angular.module("acApp").factory('dataService', function() {
 
 });
 
-function MainCntl($rootScope, $scope, $http, siteService, dataService, $location) {
+function MainCntl($rootScope, $scope, $http, siteService, dataService, $location, $timeout) {
 
     $scope.dataService = dataService;
     var success_callback = function(p) {
@@ -137,6 +137,20 @@ function MainCntl($rootScope, $scope, $http, siteService, dataService, $location
             siteService.sharedObject.data = data;
         });
     };
+
+    $scope.sendLocation = function(location) {
+        $http.post('/geocode', {'location': location })
+            .success( function(data, status) {
+                $scope.location = data['place'];
+                //$scope.$apply( function() {
+                    $location.path('/a/' + data['latitude'] + '/' + data['longitude']);
+                //});
+                /*
+                location.success = true;
+                $timeout(function() { location.success = false; }, 5000);
+                */
+            });
+    }
 
     $scope.loadSites();
 

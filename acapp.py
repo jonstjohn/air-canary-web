@@ -194,6 +194,18 @@ def api(code, samples):
     response = Response(json.dumps(response_data), status=200, mimetype='application/json')
     return response
 
+@app.route('/geocode', methods=['POST'])
+def geocode():
+    """ Geocode location """
+    data = json.loads(request.data)
+
+    from geopy import geocoders
+    g = geocoders.GoogleV3()
+    place, (lat, lng) = g.geocode(data['location'])
+    response_data = {'place': place, 'latitude': lat, 'longitude': lng}
+    response = Response(json.dumps(response_data), status=200, mimetype='application/json')
+    return response
+
 @app.teardown_appcontext
 def shutdown_session(exception=None):
     Session.remove()

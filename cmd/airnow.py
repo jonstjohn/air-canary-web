@@ -118,7 +118,7 @@ class ParseCommand(Command):
         
 
 class ForecastAreas(ParseCommand):
-    " Parse air now forecast areas "
+    " Parse air now forecast areas - actual areas"
     ftp_dir = 'Locations'
     filename = 'reporting_area_locations_v2.dat'
     model = AirNowForecastArea
@@ -136,7 +136,7 @@ class Hourly(ParseCommand):
     model = AirNowHourly
 
 class ReportingAreas(ParseCommand):
-    " Parse air now reporting areas "
+    " Parse air now reporting areas - individual reports "
     ftp_dir = 'ReportingArea'
     filename = 'reportingarea.dat'
     model = AirNowReportingArea
@@ -178,3 +178,9 @@ class LoadAreas(Command):
         #    SELECT reporting_area, country_code, state_code, ST_GeomFromText('POINT(' || longitude || ' ' || latitude || ')')
         #    FROM air_now_forecast_area
         #""")
+
+class LoadAreaData(Command):
+
+    def run(self):
+        
+        pass
