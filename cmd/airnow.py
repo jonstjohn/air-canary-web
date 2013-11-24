@@ -31,6 +31,10 @@ class ParseCommand(Command):
                     val = self.cleanval(col, val)
                     setattr(model_inst, col, val)
                 
+                if hasattr(model_inst, 'country_code') and model_inst.country_code == 'CA':
+                    print('s', end='')
+                    continue
+
                 try:
                     session.merge(model_inst)
                     session.commit()
