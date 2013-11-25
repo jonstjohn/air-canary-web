@@ -31,9 +31,9 @@ class ParseCommand(Command):
                     val = self.cleanval(col, val)
                     setattr(model_inst, col, val)
                 
-                if hasattr(model_inst, 'country_code') and model_inst.country_code == 'CA':
-                    print('s', end='')
-                    continue
+                #if hasattr(model_inst, 'country_code') and model_inst.country_code == 'CA':
+                #    print('s', end='')
+                #    continue
 
                 try:
                     session.merge(model_inst)
@@ -76,15 +76,22 @@ class ParseCommand(Command):
 
         content = []
         with open(filepath) as f:
-            content = f.readlines()
+            for line in f:
+                content.append(line.decode('iso-8859-1').encode('utf-8'))
+            #content = f.readlines()
 
         return content
 
     def download_file(self):
         ftp = self.ftp()
         ftp.cwd(self.ftp_dir)
-        ftp.retrbinary('RETR {0}'.format(self.filename), open('{0}/{1}'.format(self.tmpdir, self.filename), 'wb').write)
+
+        filepath = '{0}/{1}'.format(self.tmpdir, self.filename)
+        ftp.retrbinary('RETR {0}'.format(self.filename), open(filepath, 'wb').write)
         ftp.quit()
+        
+        # convert using iconv
+        #iconv -f iso-8859-1 -t utf8 /tmp/monitoring_site_locations.dat.orig > /tmp/monitoring_site_locations.dat
 
     def ftp(self):
 
