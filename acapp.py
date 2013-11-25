@@ -30,11 +30,11 @@ app.secret_key = c.settings['flask']['secret_key']
 app.debug = True
 
 def generate_csrf_token():
-    if '_csrf_token' not in session:
-        import string
-        import random
-        session['_csrf_token'] = "".join([random.choice(string.ascii_letters + string.digits) for n in xrange(30)])
-    return session['_csrf_token']
+    if 'XSRF-TOKEN' in request.cookies:
+        return request.cookies.get('XSRF-TOKEN')
+    else:
+        import string, random
+        return "".join([random.choice(string.ascii_letters + string.digits) for n in xrange(30)])
 
 app.jinja_env.globals['csrf_token'] = generate_csrf_token
 
@@ -51,8 +51,6 @@ def cache(timeout=300, key='view:{0}'):
             return response
         return decorated_function
     return decorator
-
-app.jinja_env.globals['csrf_token'] = generate_csrf_token
 
 @app.route('/')
 def index():
@@ -226,8 +224,8 @@ def call_after_request_callbacks(response):
 def csrf_protect():
     if request.method == "POST":
         # Compare header token to cookie token that only our domain can read
-        print("X-XSRF-TOKEN: {0}".format(request.headers['X-XSRF-TOKEN']))
-        print("XSRF-TOKEN: {0}".format(request.cookies.get('XSRF-TOKEN')))
+        #print("X-XSRF-TOKEN: {0}".format(request.headers['X-XSRF-TOKEN']))
+        #print("XSRF-TOKEN: {0}".format(request.cookies.get('XSRF-TOKEN')))
         if request.headers['X-XSRF-TOKEN'] != request.cookies.get('XSRF-TOKEN'):
             abort(403)
     elif request.method == 'GET':
@@ -237,16 +235,6 @@ def csrf_protect():
             def set_csrf_cookie(response):
                 response.set_cookie('XSRF-TOKEN', generate_csrf_token())
        
-def generate_csrf_token():
-    if '_csrf_token' not in session:
-        import string
-        import random
-        session['_csrf_token'] = "".join([random.choice(string.ascii_letters + string.digits) for n in xrange(30)])
-    return session['_csrf_token']
-
-app.jinja_env.globals['csrf_token'] = generate_csrf_token 
-
-
 if __name__ == '__main__':
     app.debug = True
     app.run(host = c.settings['configuration']['ip'], port = 8080)
