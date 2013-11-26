@@ -1,7 +1,7 @@
 from __future__ import print_function
 from flask.ext.script import Command
-from model.models import AirNowForecastArea, AirNowMonitoringSite, AirNowHourly, AirNowReportingArea, Area
-from geoalchemy2 import Geometry
+from model.models import AirNowForecastArea, AirNowMonitoringSite, AirNowHourly, AirNowReportingArea, Area, Site
+from geoalchemy2 import Geometry, Geography
 import sqlalchemy.orm
 from sqlalchemy.exc import IntegrityError
 
@@ -195,3 +195,34 @@ class LoadAreaData(Command):
     def run(self):
         
         pass
+
+class LoadSites(Command):
+
+    def run(self):
+        """ Load air now monitoring sites into site table """
+        from db import Session
+        session = Session()
+
+        an_sites = session.query(AirNowMonitoringSite)
+        for s in an_sites:
+
+            site = Site()
+            site.name = s.site_name
+            site.country_iso = s.country_code
+            site.state_province = s.state_code
+            site.code = s.aqsid
+            site.area_source_id = 2
+            txt = 'POINT({} {})'.format(s.longitude, s.latitude)
+            site.location = Geography('Point').bind_expression(txt)
+
+            try:
+                session.merge(site)
+                session.commit()
+                print('.', end='')
+            except IntegrityError as inst:
+                session.rollback()
+                print('-', end='')
+            except Exception as inst:
+                session.rollback()
+                print('x', end='')
+                raise inst

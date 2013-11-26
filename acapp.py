@@ -166,14 +166,23 @@ def api_areas():
     if 'll' in request.args: # lat/lon
         latitude, longitude = request.args.get('ll').split(',')
         areas = Area.nearest(latitude, longitude, request.args.get('limit', 1))
+        sites = Site.nearest(latitude, longitude, 5)
     else:
         areas = Area.all(request.args.get('country'), request.args.get('state'), request.args.get('search'))
+        sites = []
+
+    site_data = []
+
+    for site in sites:
+        site_data.append({'id': site.site_id, 'name': site.name})
+
     response_data = []
     for area in areas:
         response_data.append(
                 { 'id': area.area_id, 'name': area.name,
                     'state': area.state_province, 'country': area.country_iso,
-                    'data': area.data(24), 'forecast': area.forecast_data()
+                    'data': area.data(24), 'forecast': area.forecast_data(),
+                    'sites': site_data
                     #'latitude': Session.scalar(area.location.ST_Y()), 'longitude': Session.scalar(area.location.ST_X())
                 })
     response = Response(json.dumps(response_data), status=200, mimetype='application/json')

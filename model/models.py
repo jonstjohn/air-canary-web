@@ -15,7 +15,10 @@ class Site(Base):
     name = Column(VARCHAR(50))
     country_iso = Column(CHAR(3))
     state_province = Column(VARCHAR(5))
+    location = Column(Geography('POINT'))
+    area_source_id = Column(Integer, ForeignKey('area_source.area_source_id'))
 
+    source = relationship("AreaSource", uselist = False, backref = "site")
     data = relationship("Data", uselist = False, backref = "site")
 
     def data(self, samples):
@@ -50,7 +53,8 @@ class Site(Base):
     @staticmethod
     def all_sites():
         session = Session()
-        sites = session.query(Site).order_by(Site.name)
+        sites = session.query(Site).filter(Site.area_source_id == 2).order_by(Site.name)
+        print(sites)
         session.close()
         return sites
 
@@ -63,6 +67,18 @@ class Site(Base):
         site = session.query(Site).filter(Site.code == code).one()
         session.close() 
         return site
+
+    @staticmethod
+    def nearest(latitude, longitude, limit = 1):
+        """ Get sites nearest to latitude/longitude
+            returns: list of areas
+        """
+        session = Session()
+        txt = 'POINT({} {})'.format(longitude, latitude)
+        point = Geography('Point').bind_expression(txt)
+        sites = session.query(Site).order_by(Site.location.ST_DISTANCE(Site.location, point)).limit(limit)
+        session.close()
+        return sites
 
 class Data(Base):
 
