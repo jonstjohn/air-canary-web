@@ -239,6 +239,7 @@ function AreaCntl($rootScope, $scope, $route, $routeParams, $http, $location, si
             $rootScope.name = data[0].name;
             $scope.data = data[0].data;
             $scope.forecast = data[0].forecast;
+            $scope.msites = data[0].sites;
         });
     };
 

@@ -77,7 +77,7 @@ class ParseCommand(Command):
         content = []
         with open(filepath) as f:
             for line in f:
-                content.append(line.decode('iso-8859-1').encode('utf-8'))
+                content.append(line.decode('iso-8859-1')) #.encode('utf-8'))
             #content = f.readlines()
 
         return content
@@ -211,7 +211,7 @@ class LoadSites(Command):
             site.country_iso = s.country_code
             site.state_province = s.state_code
             site.code = s.aqsid
-            site.area_source_id = 2
+            site.area_source_id = 1
             txt = 'POINT({} {})'.format(s.longitude, s.latitude)
             site.location = Geography('Point').bind_expression(txt)
 
