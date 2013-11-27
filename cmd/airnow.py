@@ -77,7 +77,7 @@ class ParseCommand(Command):
         content = []
         with open(filepath) as f:
             for line in f:
-                content.append(line.decode('iso-8859-1')) #.encode('utf-8'))
+                content.append(line.decode('cp850')) # iso-8859-1')) #.encode('utf-8'))
             #content = f.readlines()
 
         return content
