@@ -174,7 +174,16 @@ def api_areas():
     site_data = []
 
     for site in sites:
-        site_data.append({'id': site.site_id, 'name': site.name})
+        site_data.append(
+                {'id': site.site_id, 'name': site.name,
+                    'code': site.code, 'country': site.country_iso,
+                    'state_province': site.state_province, 
+                    'location': "{0}, {1}".format(
+                        Session.scalar(site.location.ST_Y()),
+                        Session.scalar(site.location.ST_X())
+                    ),
+                    'source': site.source.name }
+        )
 
     response_data = []
     for area in areas:

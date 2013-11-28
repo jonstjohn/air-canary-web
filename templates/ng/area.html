@@ -123,12 +123,20 @@
                     <table class="table table-condensed table-striped">
                         <thead>
                             <tr>
+                                <th>Code</th>
                                 <th>Name</th>
+                                <th>State</th>
+                                <th>Country</th>
+                                <th>Location</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr ng-repeat="s in msites">
+                                <td>{[{ s.code }]}</td>
                                 <td>{[{ s.name }]}</td>
+                                <td>{[{ s.state_province }]}</td>
+                                <td>{[{ s.country_iso }]}</td>
+                                <td>{[{ s.location }]}</td>
                             </tr>
                         </tbody>
                     </table>
