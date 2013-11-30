@@ -209,7 +209,7 @@ class LoadSites(Command):
             site = Site()
             site.name = s.site_name
             site.country_iso = s.country_code
-            site.state_province = s.state_code
+            site.state_province = s.state_name
             site.code = s.aqsid
             site.area_source_id = 1
             txt = 'POINT({} {})'.format(s.longitude, s.latitude)
