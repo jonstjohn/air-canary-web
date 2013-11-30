@@ -1,6 +1,6 @@
 from __future__ import print_function
 from flask.ext.script import Command
-from model.models import AirNowForecastArea, AirNowMonitoringSite, AirNowHourly, AirNowReportingArea, Area, Site
+from model.models import AirNowForecastArea, AirNowMonitoringSite, AirNowHourly, AirNowReportingArea, Area, Site, SiteData
 from geoalchemy2 import Geometry, Geography
 import sqlalchemy.orm
 from sqlalchemy.exc import IntegrityError
@@ -226,3 +226,85 @@ class LoadSites(Command):
                 session.rollback()
                 print('x', end='')
                 raise inst
+
+class LoadHourly(Command):
+    """ Load hourly data """
+    col_map = {
+        'BARPR': None, # barometric pressure, millibar
+        'BC': None, # ??, ug/m3
+        'CO': 'co', # Carbon monoxide, ppm
+        'NO': None, # ??, ppb
+        'NO2': 'no2', # Nitrogen dioxide, ppb
+        'NO2Y': None, # ??, ppb
+        'NOX': 'nox', # nitrogen oxide, ppb
+        'NOY': None, # ??, ppb
+        'OZONE': 'ozone', # ozone, ppb
+        'PM10': None, # particulate matter, 10 microns, ug/m3
+        'PM2.5': 'pm25', # particulate matter, 2.5 microns, ug/m3
+        'PRECIP': None, # precip, mm
+        'RHUM': 'relative_humidity',  # relative humidity, percent
+        'SO2': None, # sulfur dioxide, ppb
+        'SRAD': None, # ??, watts/m2
+        'TEMP': 'temperature', # temperature, celsius
+        'WD': 'wind_direction', # wind direction, degrees
+        'WS': 'wind_speed' # wind speed, m/s
+    }
+
+    def run(self):
+        """ Load hourly data """
+        from db import Session
+        session = Session()
+
+        hourlies = session.query(AirNowHourly).order_by(AirNowHourly.valid_date.desc()).limit(1000)
+        for hourly in hourlies:
+
+            # Create observed using valid_date, valid_time and gmt_offset
+            observed = self.observed(hourly.valid_date, hourly.valid_time, hourly.gmt_offset)
+            print(observed)
+
+            # Lookup site_id using aqsid
+            site = self.site_from_aqsid(hourly.aqsid)
+            print(site.name)
+
+            # Check to see if this site data row already exists using site_id and observed
+            try:
+                site_data = session.query(SiteData).filter(SiteData.observed == observed, SiteData.site_id == site.site_id).one()
+            except sqlalchemy.orm.exc.NoResultFound:
+                # If it does not exist, create a row for it
+                site_data = SiteData()
+                site_data.observed = observed
+                site_data.site_id = site.site_id
+
+            # Check for parameter
+            col = self.col_map[hourly.parameter]
+
+            if not col:
+                print("Skipping " + hourly.parameter)
+                continue
+
+            value = float(hourly.value)
+
+            # Convert ozone from ppb to ppm
+            if col == 'ozone':
+                print(value)
+                value = value/1000
+
+            # Set property
+            setattr(site_data, col, hourly.value)
+
+            session.add(site_data)
+            session.commit()
+            print('.', end='')
+
+    def observed(self, valid_date, valid_time, gmt_offset):
+        """ Get observed from valid date/time and offset """
+        # Construct date/time and convert to UTC using gmt_offset
+        return str(valid_date) + 'T' + str(valid_time) + 'Z'
+
+    def site_from_aqsid(self, aqsid):
+        """ Get site id from aqsid """
+        from db import Session
+        session = Session()
+
+        site = session.query(Site).filter(Site.code == aqsid and Site.area_source_id == 1).one()
+        return site
