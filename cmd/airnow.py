@@ -252,41 +252,67 @@ class LoadHourly(Command):
 
     def run(self):
         """ Load hourly data """
+        from datetime import datetime, timedelta
+        from db import Session
+        from math import ceil
+
+        session = Session()
+
+        yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+
+        q = session.query(AirNowHourly).filter(AirNowHourly.valid_date >= yesterday, AirNowHourly.aqsid == '000020301')
+        count = q.count()
+
+        batch_size = 1000
+
+        iterations = int(ceil(count/1000))
+
+        print(count)
+        print(iterations)
+
+        for i in range(0, iterations + 1):
+            print("Processing {} - {} of {}".format(batch_size * i, batch_size * i + batch_size, count))
+            self.process_hourly_batch(batch_size, batch_size * i)
+
+    def process_hourly_batch(self, limit, offset):
+
+        from datetime import datetime, timedelta
         from db import Session
         session = Session()
 
-        hourlies = session.query(AirNowHourly).order_by(AirNowHourly.valid_date.desc()).limit(1000)
+        yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+
+        hourlies = session.query(AirNowHourly).filter(AirNowHourly.valid_date >= yesterday, AirNowHourly.aqsid == '000020301').limit(limit).offset(offset)
         for hourly in hourlies:
-
-            # Create observed using valid_date, valid_time and gmt_offset
-            observed = self.observed(hourly.valid_date, hourly.valid_time, hourly.gmt_offset)
-            print(observed)
-
-            # Lookup site_id using aqsid
-            site = self.site_from_aqsid(hourly.aqsid)
-            print(site.name)
-
-            # Check to see if this site data row already exists using site_id and observed
-            try:
-                site_data = session.query(SiteData).filter(SiteData.observed == observed, SiteData.site_id == site.site_id).one()
-            except sqlalchemy.orm.exc.NoResultFound:
-                # If it does not exist, create a row for it
-                site_data = SiteData()
-                site_data.observed = observed
-                site_data.site_id = site.site_id
 
             # Check for parameter
             col = self.col_map[hourly.parameter]
 
             if not col:
-                print("Skipping " + hourly.parameter)
+                #print("Skipping " + hourly.parameter)
                 continue
+
+            # Create observed using valid_date, valid_time and gmt_offset
+            observed = self.observed(hourly.valid_date, hourly.valid_time, hourly.gmt_offset)
+
+            # Lookup site_id using aqsid
+            site = self.site_from_aqsid(hourly.aqsid)
+
+            # Check to see if this site data row already exists using site_id and observed
+            try:
+                site_data = session.query(SiteData).filter(SiteData.observed == observed, SiteData.site_id == site.site_id).one()
+                print('f', end='')
+            except sqlalchemy.orm.exc.NoResultFound:
+                # If it does not exist, create a row for it
+                print('c', end='')
+                site_data = SiteData()
+                site_data.observed = observed
+                site_data.site_id = site.site_id
 
             value = float(hourly.value)
 
             # Convert ozone from ppb to ppm
             if col == 'ozone':
-                print(value)
                 value = value/1000
 
             # Set property
@@ -299,7 +325,7 @@ class LoadHourly(Command):
     def observed(self, valid_date, valid_time, gmt_offset):
         """ Get observed from valid date/time and offset """
         # Construct date/time and convert to UTC using gmt_offset
-        return str(valid_date) + 'T' + str(valid_time) + 'Z'
+        return str(valid_date) + ' ' + str(valid_time)
 
     def site_from_aqsid(self, aqsid):
         """ Get site id from aqsid """
