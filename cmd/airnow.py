@@ -260,7 +260,7 @@ class LoadHourly(Command):
 
         yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
 
-        q = session.query(AirNowHourly).filter(AirNowHourly.valid_date >= yesterday, AirNowHourly.aqsid == '000020301')
+        q = session.query(AirNowHourly).filter(AirNowHourly.valid_date >= yesterday)
         count = q.count()
 
         batch_size = 1000
@@ -282,7 +282,7 @@ class LoadHourly(Command):
 
         yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
 
-        hourlies = session.query(AirNowHourly).filter(AirNowHourly.valid_date >= yesterday, AirNowHourly.aqsid == '000020301').limit(limit).offset(offset)
+        hourlies = session.query(AirNowHourly).filter(AirNowHourly.valid_date >= yesterday).limit(limit).offset(offset)
         for hourly in hourlies:
 
             # Check for parameter

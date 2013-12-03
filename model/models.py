@@ -205,7 +205,7 @@ class AirNowHourly(Base):
     aqsid = Column(CHAR(9), primary_key = True, nullable = False)
     site_name = Column(VARCHAR(20))
     gmt_offset = Column(Integer)
-    parameter = Column(VARCHAR(10))
+    parameter = Column(VARCHAR(10), primary_key = True, nullable = False)
     units = Column(VARCHAR(10))
     value = Column(VARCHAR(6))
     data_source = Column(VARCHAR(100))
