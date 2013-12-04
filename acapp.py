@@ -182,7 +182,8 @@ def api_areas():
                         Session.scalar(site.location.ST_Y()),
                         Session.scalar(site.location.ST_X())
                     ),
-                    'source': site.source.name }
+                    'source': site.source.name,
+                    'data': site.data(5)}
         )
 
     response_data = []

@@ -23,6 +23,7 @@ class Site(Base):
 
     def data(self, samples):
 
+        return []
         session = Session()
         data = session.query(Data).filter(Data.site_id == self.site_id).order_by(Data.observed.desc()).limit(samples).all()
         result = []
