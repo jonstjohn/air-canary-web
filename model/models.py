@@ -28,7 +28,6 @@ class Site(Base):
         result = []
         for d in data:
             result.append(d.data())
-#        session.close()
         return result
 
     def forecast_data(self):
@@ -38,7 +37,6 @@ class Site(Base):
         for d in data:
             result.append(d.data())
         result.reverse()
-#        session.close()
         return result
 
     @staticmethod
@@ -54,8 +52,6 @@ class Site(Base):
     def all_sites():
         session = Session()
         sites = session.query(Site).filter(Site.area_source_id == 2).order_by(Site.name)
-        print(sites)
-#        session.close()
         return sites
 
     @staticmethod
@@ -65,7 +61,6 @@ class Site(Base):
         """
         session = Session()
         site = session.query(Site).filter(Site.code == code).one()
-#        session.close() 
         return site
 
     @staticmethod
@@ -77,7 +72,6 @@ class Site(Base):
         txt = 'POINT({} {})'.format(longitude, latitude)
         point = Geography('Point').bind_expression(txt)
         sites = session.query(Site).order_by(Site.location.ST_DISTANCE(Site.location, point)).limit(limit)
-#        session.close()
         return sites
 
 class Data(Base):
@@ -261,7 +255,6 @@ class Area(Base):
         if search:
             areas = areas.filter(Area.name.ilike('%{}%'.format(search)))
         areas = areas.order_by(Area.name)
-        session.close()
         return areas
 
     @staticmethod
@@ -273,7 +266,6 @@ class Area(Base):
         txt = 'POINT({} {})'.format(longitude, latitude)
         point = Geography('Point').bind_expression(txt)
         areas = session.query(Area).order_by(Area.location.ST_DISTANCE(Area.location, point)).limit(limit)
-        session.close()
         return areas
 
     def data(self, samples):
@@ -283,7 +275,6 @@ class Area(Base):
         result = []
         for d in data:
             result.append(d.data())
-        session.close()
         return result
 
     def forecast_data(self):
@@ -293,7 +284,6 @@ class Area(Base):
         for d in data:
             result.append(d.data())
         result.reverse()
-        session.close()
         return result
 
     @staticmethod
@@ -309,7 +299,6 @@ class Area(Base):
     def all_areas():
         session = Session()
         areas = session.query(Area).order_by(Area.name)
-        session.close()
         return areas
 
     @staticmethod
@@ -319,7 +308,6 @@ class Area(Base):
         """
         session = Session()
         area = session.query(Area).filter(Area.code == code).one()
-        session.close()
         return area
 
 class AreaData(Base):
