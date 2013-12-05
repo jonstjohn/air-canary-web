@@ -23,13 +23,12 @@ class Site(Base):
 
     def data(self, samples):
 
-        return []
         session = Session()
         data = session.query(Data).filter(Data.site_id == self.site_id).order_by(Data.observed.desc()).limit(samples).all()
         result = []
         for d in data:
             result.append(d.data())
-        session.close()
+#        session.close()
         return result
 
     def forecast_data(self):
@@ -39,7 +38,7 @@ class Site(Base):
         for d in data:
             result.append(d.data())
         result.reverse()
-        session.close()
+#        session.close()
         return result
 
     @staticmethod
@@ -56,7 +55,7 @@ class Site(Base):
         session = Session()
         sites = session.query(Site).filter(Site.area_source_id == 2).order_by(Site.name)
         print(sites)
-        session.close()
+#        session.close()
         return sites
 
     @staticmethod
@@ -66,7 +65,7 @@ class Site(Base):
         """
         session = Session()
         site = session.query(Site).filter(Site.code == code).one()
-        session.close() 
+#        session.close() 
         return site
 
     @staticmethod
@@ -78,7 +77,7 @@ class Site(Base):
         txt = 'POINT({} {})'.format(longitude, latitude)
         point = Geography('Point').bind_expression(txt)
         sites = session.query(Site).order_by(Site.location.ST_DISTANCE(Site.location, point)).limit(limit)
-        session.close()
+#        session.close()
         return sites
 
 class Data(Base):
