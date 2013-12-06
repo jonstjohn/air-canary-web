@@ -9,15 +9,17 @@ import json
 import AcConfiguration
 
 from functools import wraps
-from model.models import Site, Data, Area
 
 from raven.contrib.flask import Sentry
 
-#import sqlalchemy
-#import json
-from db import Session
+from flask.ext.sqlalchemy import SQLAlchemy
+
+import db
 
 app = Flask(__name__)
+acdb = db.init(app)
+
+from model.models import Site, Data, Area
 
 # Sentry config
 app.config['SENTRY_DSN'] = 'https://c4e3385afab54c018041e7a577a75374:966792c8e18a441f9429731b65c0f853@app.getsentry.com/6569'
@@ -179,8 +181,8 @@ def api_areas():
                     'code': site.code, 'country': site.country_iso,
                     'state_province': site.state_province, 
                     'location': "{0}, {1}".format(
-                        Session.scalar(site.location.ST_Y()),
-                        Session.scalar(site.location.ST_X())
+                        acdb.session.scalar(site.location.ST_Y()),
+                        acdb.session.scalar(site.location.ST_X())
                     ),
                     'source': site.source.name,
                     'data': site.data(5)}
@@ -193,7 +195,7 @@ def api_areas():
                     'state': area.state_province, 'country': area.country_iso,
                     'data': area.data(24), 'forecast': area.forecast_data(),
                     'sites': site_data
-                    #'latitude': Session.scalar(area.location.ST_Y()), 'longitude': Session.scalar(area.location.ST_X())
+                    #'latitude': acdb.scalar(area.location.ST_Y()), 'longitude': acdb.scalar(area.location.ST_X())
                 })
     response = Response(json.dumps(response_data), status=200, mimetype='application/json')
     return response
@@ -203,10 +205,9 @@ def api_areas():
 @app.route('/api/area/<int:code>', defaults={'samples': 1})
 @app.route('/api/area/<int:code>/<int:samples>')
 @cache()
-def api(code, samples):
+def api_area(code, samples):
     """ API site """
-    session = Session()
-    area = session.query(Area).get(code)
+    area = acdb.session.query(Area).get(code)
     response_data = {'code': area.code, 'name': area.name, 'data': area.data(samples), 'forecast': area.forecast_data()}
     response = Response(json.dumps(response_data), status=200, mimetype='application/json')
     return response
@@ -222,10 +223,6 @@ def geocode():
     response_data = {'place': place, 'latitude': lat, 'longitude': lng}
     response = Response(json.dumps(response_data), status=200, mimetype='application/json')
     return response
-
-@app.teardown_appcontext
-def shutdown_session(exception=None):
-    Session.remove()
 
 def after_this_request(f):
     if not hasattr(g, 'after_request_callbacks'):

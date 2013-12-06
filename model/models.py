@@ -1,12 +1,17 @@
-from db import Base
-from db import Session
 from sqlalchemy import Column, Integer, String, VARCHAR, Text, Date, DATETIME, DATE, DECIMAL, CHAR, Integer, ForeignKey, TIME
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.schema import Table
 from geoalchemy2 import Geography
-import db
+from db import acdb
 
-class Site(Base):
+class AreaSource(acdb.Model):
+
+    __tablename__ = 'area_source'
+
+    area_source_id = Column(Integer, primary_key = True)
+    name = Column(VARCHAR(100))
+
+class Site(acdb.Model):
 
     __tablename__ = 'site'
 
@@ -23,16 +28,14 @@ class Site(Base):
 
     def data(self, samples):
 
-        session = Session()
-        data = session.query(Data).filter(Data.site_id == self.site_id).order_by(Data.observed.desc()).limit(samples).all()
+        data = acdb.session.query(Data).filter(Data.site_id == self.site_id).order_by(Data.observed.desc()).limit(samples).all()
         result = []
         for d in data:
             result.append(d.data())
         return result
 
     def forecast_data(self):
-        session = Session()
-        data = session.query(Forecast).filter(Forecast.site_id == self.site_id).order_by(Forecast.forecast_date.desc()).limit(3).all()
+        data = acdb.session.query(Forecast).filter(Forecast.site_id == self.site_id).order_by(Forecast.forecast_date.desc()).limit(3).all()
         result = []
         for d in data:
             result.append(d.data())
@@ -50,8 +53,7 @@ class Site(Base):
 
     @staticmethod
     def all_sites():
-        session = Session()
-        sites = session.query(Site).filter(Site.area_source_id == 2).order_by(Site.name)
+        sites = acdb.session.query(Site).filter(Site.area_source_id == 2).order_by(Site.name)
         return sites
 
     @staticmethod
@@ -59,8 +61,7 @@ class Site(Base):
         """
         Get site from code
         """
-        session = Session()
-        site = session.query(Site).filter(Site.code == code).one()
+        site = acdb.session.query(Site).filter(Site.code == code).one()
         return site
 
     @staticmethod
@@ -68,13 +69,12 @@ class Site(Base):
         """ Get sites nearest to latitude/longitude
             returns: list of areas
         """
-        session = Session()
         txt = 'POINT({} {})'.format(longitude, latitude)
         point = Geography('Point').bind_expression(txt)
-        sites = session.query(Site).order_by(Site.location.ST_DISTANCE(Site.location, point)).limit(limit)
+        sites = acdb.session.query(Site).order_by(Site.location.ST_DISTANCE(Site.location, point)).limit(limit)
         return sites
 
-class Data(Base):
+class Data(acdb.Model):
 
     __tablename__ = 'data'
 
@@ -116,7 +116,7 @@ class Data(Base):
             'solar_radiation': float(self.solar_radiation) if self.solar_radiation else ''
         }
 
-class Forecast(Base):
+class Forecast(acdb.Model):
 
     __tablename__ = 'forecast'
 
@@ -144,7 +144,7 @@ class Forecast(Base):
 
         pass
 
-class AirNowForecastArea(Base):
+class AirNowForecastArea(acdb.Model):
 
     __tablename__ = 'air_now_forecast_area'
 
@@ -163,7 +163,7 @@ class AirNowForecastArea(Base):
     usa_today = Column(VARCHAR(3))
     forecast_source = Column(VARCHAR(100))
 
-class AirNowMonitoringSite(Base):
+class AirNowMonitoringSite(acdb.Model):
 
     __tablename__ = 'air_now_monitoring_site'
 
@@ -190,7 +190,7 @@ class AirNowMonitoringSite(Base):
     county_name = Column(VARCHAR(25))
     city_code = Column(CHAR(9)) # Nine-digit GNIS Feature ID of the named population place in which site is located
 
-class AirNowHourly(Base):
+class AirNowHourly(acdb.Model):
 
     __tablename__ = 'air_now_hourly'
 
@@ -204,7 +204,7 @@ class AirNowHourly(Base):
     value = Column(VARCHAR(6))
     data_source = Column(VARCHAR(100))
 
-class AirNowReportingArea(Base):
+class AirNowReportingArea(acdb.Model):
 
     __tablename__ = 'air_now_reporting_area'
 
@@ -226,7 +226,7 @@ class AirNowReportingArea(Base):
     discussion = Column(VARCHAR(500))
     forecast_source = Column(VARCHAR(100))
 
-class Area(Base):
+class Area(acdb.Model):
 
     __tablename__ = 'area'
 
@@ -246,8 +246,7 @@ class Area(Base):
         """ Get all areas, optionally limited to country, state, search term
             returns: list of areas
         """
-        session = Session()
-        areas = session.query(Area)
+        areas = acdb.session.query(Area)
         if country:
             areas = areas.filter_by(country_iso=country)
         if state:
@@ -262,24 +261,21 @@ class Area(Base):
         """ Get areas nearest to latitude/longitude
             returns: list of areas
         """
-        session = Session()
         txt = 'POINT({} {})'.format(longitude, latitude)
         point = Geography('Point').bind_expression(txt)
-        areas = session.query(Area).order_by(Area.location.ST_DISTANCE(Area.location, point)).limit(limit)
+        areas = acdb.session.query(Area).order_by(Area.location.ST_DISTANCE(Area.location, point)).limit(limit)
         return areas
 
     def data(self, samples):
 
-        session = Session()
-        data = session.query(AreaData).filter(AreaData.area_id == self.area_id).order_by(AreaData.observed.desc()).limit(samples).all()
+        data = acdb.session.query(AreaData).filter(AreaData.area_id == self.area_id).order_by(AreaData.observed.desc()).limit(samples).all()
         result = []
         for d in data:
             result.append(d.data())
         return result
 
     def forecast_data(self):
-        session = Session()
-        data = session.query(AreaForecast).filter(AreaForecast.area_id == self.area_id).order_by(AreaForecast.forecast_date.desc()).limit(3).all()
+        data = acdb.session.query(AreaForecast).filter(AreaForecast.area_id == self.area_id).order_by(AreaForecast.forecast_date.desc()).limit(3).all()
         result = []
         for d in data:
             result.append(d.data())
@@ -297,8 +293,7 @@ class Area(Base):
 
     @staticmethod
     def all_areas():
-        session = Session()
-        areas = session.query(Area).order_by(Area.name)
+        areas = acdb.session.query(Area).order_by(Area.name)
         return areas
 
     @staticmethod
@@ -306,11 +301,10 @@ class Area(Base):
         """
         Get area from code
         """
-        session = Session()
-        area = session.query(Area).filter(Area.code == code).one()
+        area = acdb.session.query(Area).filter(Area.code == code).one()
         return area
 
-class AreaData(Base):
+class AreaData(acdb.Model):
 
     __tablename__ = 'area_data'
 
@@ -352,14 +346,7 @@ class AreaData(Base):
             'solar_radiation': float(self.solar_radiation) if self.solar_radiation else ''
         }
 
-class AreaSource(Base):
-
-    __tablename__ = 'area_source'
-
-    area_source_id = Column(Integer, primary_key = True)
-    name = Column(VARCHAR(100))
-
-class AreaForecast(Base):
+class AreaForecast(acdb.Model):
 
     __tablename__ = 'area_forecast'
 
@@ -382,7 +369,7 @@ class AreaForecast(Base):
             'published': str(pytz.utc.localize(self.published).astimezone(mountain).isoformat())
         }
 
-class SiteData(Base):
+class SiteData(acdb.Model):
 
     __tablename__ = 'site_data'
 
