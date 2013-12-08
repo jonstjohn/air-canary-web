@@ -226,6 +226,7 @@ class LoadHourly(Command):
         'BARPR': None, # barometric pressure, millibar
         'BC': None, # ??, ug/m3
         'CO': 'co', # Carbon monoxide, ppm
+        'EC': None, # ?? ug/m3
         'NO': None, # ??, ppb
         'NO2': 'no2', # Nitrogen dioxide, ppb
         'NO2Y': None, # ??, ppb
@@ -274,6 +275,9 @@ class LoadHourly(Command):
         for hourly in hourlies:
 
             # Check for parameter
+            if not hourly.parameter in self.col_map:
+                continue
+
             col = self.col_map[hourly.parameter]
 
             if not col:

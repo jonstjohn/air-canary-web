@@ -185,7 +185,7 @@ def api_areas():
                         acdb.session.scalar(site.location.ST_X())
                     ),
                     'source': site.source.name,
-                    'data': site.data(5)}
+                    'data': site.site_data(5)}
         )
 
     response_data = []

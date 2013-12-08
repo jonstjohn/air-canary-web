@@ -128,6 +128,7 @@
                                 <th>State</th>
                                 <th>Country</th>
                                 <th>Location</th>
+                                <th>Data</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -137,6 +138,12 @@
                                 <td>{[{ s.state_province }]}</td>
                                 <td>{[{ s.country }]}</td>
                                 <td>{[{ s.location }]}</td>
+                                <td>
+                                    <div ng-repeat="d in s.data">
+                                        {[{ d.pm25 }]}
+                                    </div>
+                                </td>
+
                             </tr>
                         </tbody>
                     </table>
