@@ -1,10 +1,15 @@
 from flask import Flask
 from flask.ext.script import Manager
-from cmd.data import ParseData, ParseForecast
-from cmd.utah.data import Current, Forecast
-from cmd.airnow import ForecastAreas, MonitoringSites, Hourly, ReportingAreas, LoadAreas, LoadSites, LoadHourly
+import db
 
 app = Flask(__name__)
+acdb = db.init(app)
+
+from cmd.airnow import ForecastAreas, MonitoringSites, Hourly, ReportingAreas, LoadAreas, LoadSites, LoadHourly
+from cmd.data import ParseData, ParseForecast
+from cmd.utah.data import Current, Forecast
+
+#app = Flask(__name__)
 # configure your app
 
 manager = Manager(app)

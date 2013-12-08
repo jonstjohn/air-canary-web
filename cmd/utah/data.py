@@ -1,6 +1,8 @@
 from __future__ import print_function
 from flask.ext.script import Command
 
+from db import acdb
+
 class Current(Command):
     "Downloads and parses current data"
 
@@ -41,7 +43,6 @@ class Current(Command):
         from pytz import timezone
         import pytz
         import db
-        from db import Session
         from model.models import Area, AreaData
 
         if self.debug:
@@ -49,8 +50,7 @@ class Current(Command):
             logging.basicConfig()
             logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
-        session = Session()
-        areas = session.query(Area).filter(Area.area_source_id == 2).all()
+        areas = acdb.session.query(Area).filter(Area.area_source_id == 2).all()
 
         mst = timezone('MST')
 
@@ -89,19 +89,19 @@ class Current(Command):
                             if val and val[0] != '-':
                                 setattr(dp, col, val)
                     try:
-                        session.merge(dp)
-                        session.commit()
+                        acdb.session.merge(dp)
+                        acdb.session.commit()
                         print('.', end='')
                     except:
-                        session.rollback()
+                        acdb.session.rollback()
                         print('x', end='')
                         raise
 
         except:
-            session.close()
+            acdb.session.close()
             raise
 
-        session.close()
+        acdb.session.close()
         print('\nDone')
 
 class Forecast(Command):
@@ -114,15 +114,12 @@ class Forecast(Command):
         import re
 
         import db
-        from db import Session
         from model.models import Area, AreaForecast
-
-        session = Session()
 
         colormap = {'Good': 'green', 'Moderate': 'yellow'}
 
         try:
-            areas = session.query(Area).filter(Area.area_source_id == 2).all()
+            areas = acdb.session.query(Area).filter(Area.area_source_id == 2).all()
 
             title_date_regex = re.compile(r'(\d+)\/(\d+)\/(\d+)')
             description_regex = re.compile(r'Health: (.*) Action: (.*)')
@@ -162,17 +159,17 @@ class Forecast(Command):
                             f.published = published_date
 
                             try:
-                                session.merge(f)
-                                session.commit()
+                                acdb.session.merge(f)
+                                acdb.session.commit()
                             except:
-                                session.rollback()
+                                acdb.session.rollback()
                                 raise
 
         except:
-            session.close()
+            acdb.session.close()
             raise
 
-        session.close()
+        acdb.session.close()
 
         print('Done')
 

@@ -41,7 +41,6 @@ class ParseData(Command):
         from pytz import timezone
         import pytz
         import db
-        from db import Session
         from model.models import Site, Data
 
         if self.debug:
@@ -49,8 +48,7 @@ class ParseData(Command):
             logging.basicConfig()
             logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
-        session = Session()
-        sites = session.query(Site).all()
+        sites = acdb.session.query(Site).all()
 
         mst = timezone('MST')
 
@@ -89,19 +87,19 @@ class ParseData(Command):
                             if val and val[0] != '-':
                                 setattr(dp, col, val)
                     try:
-                        session.merge(dp)
-                        session.commit()
+                        acdb.session.merge(dp)
+                        acdb.session.commit()
                         print('.', end='')
                     except:
-                        session.rollback()
+                        acdb.session.rollback()
                         print('x', end='')
                         raise
 
         except:
-            session.close()
+            acdb.session.close()
             raise
 
-        session.close()
+        acdb.session.close()
         print('\nDone')
 
 class ParseForecast(Command):
@@ -114,15 +112,12 @@ class ParseForecast(Command):
         import re
 
         import db
-        from db import Session
         from model.models import Site, Data, Forecast
-
-        session = Session()
 
         colormap = {'Good': 'green', 'Moderate': 'yellow'}
 
         try:
-            sites = session.query(Site).all()
+            sites = acdb.session.query(Site).all()
 
             title_date_regex = re.compile(r'(\d+)\/(\d+)\/(\d+)')
             description_regex = re.compile(r'Health: (.*) Action: (.*)')
@@ -167,17 +162,17 @@ class ParseForecast(Command):
                             f.published = published_date
 
                             try:
-                                session.merge(f)
-                                session.commit()
+                                acdb.session.merge(f)
+                                acdb.session.commit()
                             except:
-                                session.rollback()
+                                acdb.session.rollback()
                                 raise
 
         except:
-            session.close()
+            acdb.session.close()
             raise
 
-        session.close()
+        acdb.session.close()
 
         print('Done')
 

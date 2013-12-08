@@ -5,14 +5,13 @@ from geoalchemy2 import Geometry, Geography
 import sqlalchemy.orm
 from sqlalchemy.exc import IntegrityError
 
+from db import acdb
+
 class ParseCommand(Command):
     tmpdir = '/tmp'
     cache_days = 1
 
     def run(self):
-
-        from db import Session
-        session = Session()
 
         # Special filename for most recent file
         if self.filename == 'recent':
@@ -36,19 +35,19 @@ class ParseCommand(Command):
                 #    continue
 
                 try:
-                    session.merge(model_inst)
-                    session.commit()
+                    acdb.session.merge(model_inst)
+                    acdb.session.commit()
                     print('.', end='')
                 except Exception as inst:
-                    session.rollback()
+                    acdb.session.rollback()
                     print('x', end='')
                     raise inst
 
         except Exception as inst:
-            session.close()
+            acdb.session.close()
             raise inst
 
-        session.close()
+        acdb.session.close()
         print('\nDone')
 
 
@@ -156,10 +155,7 @@ class LoadAreas(Command):
 
     def run(self):
 
-        from db import Session
-        session = Session()
-
-        an_areas = session.query(AirNowForecastArea)
+        an_areas = acdb.session.query(AirNowForecastArea)
         for a in an_areas:
 
             area = Area()
@@ -170,14 +166,14 @@ class LoadAreas(Command):
             area.location = Geometry('Point').bind_expression(txt)
 
             try:
-                session.merge(area)
-                session.commit()
+                acdb.session.merge(area)
+                acdb.session.commit()
                 print('.', end='')
             except IntegrityError as inst:
-                session.rollback()
+                acdb.session.rollback()
                 print('-', end='')
             except Exception as inst:
-                session.rollback()
+                acdb.session.rollback()
                 print('x', end='')
                 raise inst
 
@@ -200,10 +196,7 @@ class LoadSites(Command):
 
     def run(self):
         """ Load air now monitoring sites into site table """
-        from db import Session
-        session = Session()
-
-        an_sites = session.query(AirNowMonitoringSite)
+        an_sites = acdb.session.query(AirNowMonitoringSite)
         for s in an_sites:
 
             site = Site()
@@ -216,14 +209,14 @@ class LoadSites(Command):
             site.location = Geography('Point').bind_expression(txt)
 
             try:
-                session.merge(site)
-                session.commit()
+                acdb.session.merge(site)
+                acdb.session.commit()
                 print('.', end='')
             except IntegrityError as inst:
-                session.rollback()
+                acdb.session.rollback()
                 print('-', end='')
             except Exception as inst:
-                session.rollback()
+                acdb.session.rollback()
                 print('x', end='')
                 raise inst
 
@@ -253,14 +246,11 @@ class LoadHourly(Command):
     def run(self):
         """ Load hourly data """
         from datetime import datetime, timedelta
-        from db import Session
         from math import ceil
-
-        session = Session()
 
         yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
 
-        q = session.query(AirNowHourly).filter(AirNowHourly.valid_date >= yesterday)
+        q = acdb.session.query(AirNowHourly).filter(AirNowHourly.valid_date >= yesterday)
         count = q.count()
 
         batch_size = 1000
@@ -277,12 +267,10 @@ class LoadHourly(Command):
     def process_hourly_batch(self, limit, offset):
 
         from datetime import datetime, timedelta
-        from db import Session
-        session = Session()
 
         yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
 
-        hourlies = session.query(AirNowHourly).filter(AirNowHourly.valid_date >= yesterday).limit(limit).offset(offset)
+        hourlies = acdb.session.query(AirNowHourly).filter(AirNowHourly.valid_date >= yesterday).limit(limit).offset(offset)
         for hourly in hourlies:
 
             # Check for parameter
@@ -300,7 +288,7 @@ class LoadHourly(Command):
 
             # Check to see if this site data row already exists using site_id and observed
             try:
-                site_data = session.query(SiteData).filter(SiteData.observed == observed, SiteData.site_id == site.site_id).one()
+                site_data = acdb.session.query(SiteData).filter(SiteData.observed == observed, SiteData.site_id == site.site_id).one()
                 print('f', end='')
             except sqlalchemy.orm.exc.NoResultFound:
                 # If it does not exist, create a row for it
@@ -318,8 +306,8 @@ class LoadHourly(Command):
             # Set property
             setattr(site_data, col, hourly.value)
 
-            session.add(site_data)
-            session.commit()
+            acdb.session.add(site_data)
+            acdb.session.commit()
             print('.', end='')
 
     def observed(self, valid_date, valid_time, gmt_offset):
@@ -329,8 +317,5 @@ class LoadHourly(Command):
 
     def site_from_aqsid(self, aqsid):
         """ Get site id from aqsid """
-        from db import Session
-        session = Session()
-
-        site = session.query(Site).filter(Site.code == aqsid and Site.area_source_id == 1).one()
+        site = acdb.session.query(Site).filter(Site.code == aqsid and Site.area_source_id == 1).one()
         return site
