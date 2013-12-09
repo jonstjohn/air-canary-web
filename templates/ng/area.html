@@ -140,7 +140,9 @@
                                 <td>{[{ s.location }]}</td>
                                 <td>
                                     <div ng-repeat="d in s.data">
-                                        {[{ d.pm25 }]}
+                                        {[{ d.observed | date:'short' }]}
+                                        Ozone: {[{ d.ozone }]}
+                                        PM 2.5: {[{ d.pm25 }]}
                                     </div>
                                 </td>
 
