@@ -308,11 +308,15 @@ class LoadHourly(Command):
                 value = value/1000
 
             # Set property
-            setattr(site_data, col, hourly.value)
+            try:
+                setattr(site_data, col, hourly.value)
 
-            acdb.session.add(site_data)
-            acdb.session.commit()
-            print('.', end='')
+                acdb.session.add(site_data)
+                acdb.session.commit()
+                print('.', end='')
+            except Exception as inst:
+                acdb.session.rollback()
+                print(inst)
 
     def observed(self, valid_date, valid_time, gmt_offset):
         """ Get observed from valid date/time and offset """
