@@ -82,10 +82,20 @@ class ParseCommand(Command):
         return content
 
     def download_file(self):
+
+        import os
+
+        # Connect and change directory
         ftp = self.ftp()
         ftp.cwd(self.ftp_dir)
 
-        filepath = '{0}/{1}'.format(self.tmpdir, self.filename)
+        # Check for local directory, create recursively if it doesn't exist
+        local_dir = os.path.join(self.tmpdir, self.local_dir)
+        if not os.path.exists(local_dir):
+            os.mkdirs(local_dir)
+
+        # Download file and write
+        filepath = os.path.join(local_dir, self.filename)
         ftp.retrbinary('RETR {0}'.format(self.filename), open(filepath, 'wb').write)
         ftp.quit()
         
@@ -129,25 +139,29 @@ class ParseCommand(Command):
 
 class ForecastAreas(ParseCommand):
     " Parse air now forecast areas - actual areas"
-    ftp_dir = 'Locations'
+    ftp_dir = 'location'
+    local_dir = 'areas'
     filename = 'reporting_area_locations_v2.dat'
     model = AirNowForecastArea
 
 class MonitoringSites(ParseCommand):
     " Parse air now monitoring sites "
     ftp_dir = 'Locations'
+    local_dir = 'location'
     filename = 'monitoring_site_locations.dat'
     model = AirNowMonitoringSite
 
 class Hourly(ParseCommand):
     " Parse air now hourly data "
     ftp_dir = 'HourlyData'
+    local_dir = 'site_data'
     filename = 'recent'
     model = AirNowHourly
 
 class ReportingAreas(ParseCommand):
     " Parse air now reporting areas - individual reports "
     ftp_dir = 'ReportingArea'
+    local_dir = 'area_data'
     filename = 'reportingarea.dat'
     model = AirNowReportingArea
 

@@ -224,6 +224,25 @@ def geocode():
     response = Response(json.dumps(response_data), status=200, mimetype='application/json')
     return response
 
+@app.route('/point/<latlon>')
+def point(latlon):
+    """ Get data for lat lon """
+    from grib import AirNowGrib
+
+    lat, lon = latlon.split(',')
+
+    a = AirNowGrib()
+
+    ozone = a.ozone(lat, lon)
+    pm25 = a.pm25(lat, lon)
+    combined = a.combined(lat, lon)
+    forecast_today = a.forecast_today(lat, lon)
+    forecast_tomorrow = a.forecast_tomorrow(lat, lon)
+
+    response_data = {'ozone': ozone, 'pm25': pm25, 'combined': combined, 'forecast_today': forecast_today, 'forecast_tomorrow': forecast_tomorrow}
+    response = Response(json.dumps(response_data), status=200, mimetype='text/html')
+    return response
+
 def after_this_request(f):
     if not hasattr(g, 'after_request_callbacks'):
         g.after_request_callbacks = []
