@@ -341,3 +341,11 @@ class LoadHourly(Command):
         """ Get site id from aqsid """
         site = acdb.session.query(Site).filter(Site.code == aqsid and Site.area_source_id == 1).one()
         return site
+
+class GribDownload(Command):
+
+    def run(self):
+        from an import Ftp
+        f = Ftp()
+        f.grib2_download()
+        f.close()

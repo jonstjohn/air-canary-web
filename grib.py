@@ -32,7 +32,8 @@ class AirNowGrib():
         import os
 
         if not date:
-            filepath = self.recent_filepath(param)
+            filepath = os.path.join(self.GRIB_DIR, 'US-current{}.grib2'.format(self.FILE_SUFFIX[param]))
+            #filepath = self.recent_filepath(param)
         else:
             date = datetime.date.today()
             date_part = date.strftime('%y%m%d')
