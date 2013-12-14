@@ -59,10 +59,15 @@ def index():
     """ Home page """
     return render_template('ng/index.html')
 
+@app.route('/p')
+def pindex():
+    """ P index """
+    return render_template('ng/p/index.html')
+
 @app.route('/ng/<template>')
 def ng_template(template):
     """ Render angular template """
-    allowed_templates = ['home', 'site', 'api', 'about', 'contact', 'area']
+    allowed_templates = ['home', 'site', 'api', 'about', 'contact', 'area', 'point']
     if template not in allowed_templates:
         abort(404)
 
