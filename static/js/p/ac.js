@@ -34,6 +34,16 @@ var app = angular.module('acApp', ['ngRoute']).config( function($routeProvider, 
 
 });
 
+var aqi_thresholds = [
+    { label: 'Good', color: 'green', low: 0, high: 50 },
+    { label: 'Moderate', color: 'yellow', low: 51, high: 100 },
+    { label: 'Unhealthy for Sensitive Groups', color: 'orange', low: 101, high: 150 },
+    { label: 'Unhealthy', color: 'red', low: 151, high: 200},
+    { label: 'Very Unhealth', color: 'purple', low: 201, high: 300},
+    { label: 'Harzardous', color: 'maroon', low: 301, high: 500 }
+];
+    
+
 app.filter('dir', function() {
     return function(degrees) {
         var directions = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
