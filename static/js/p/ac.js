@@ -34,7 +34,7 @@ var app = angular.module('acApp', ['ngRoute']).config( function($routeProvider, 
 
 });
 
-var aqi_thresholds = [
+var aqiThresholds = [
     { label: 'Good', color: 'green', low: 0, high: 50 },
     { label: 'Moderate', color: 'yellow', low: 51, high: 100 },
     { label: 'Unhealthy for Sensitive Groups', color: 'orange', low: 101, high: 150 },
@@ -42,6 +42,20 @@ var aqi_thresholds = [
     { label: 'Very Unhealth', color: 'purple', low: 201, high: 300},
     { label: 'Harzardous', color: 'maroon', low: 301, high: 500 }
 ];
+
+var aqiColor = function(aqi) {
+
+    for (var i = 0; i < aqiThresholds.length; i++) {
+
+        if (aqi <= aqiThresholds[i].high) {
+
+            return aqiThresholds[i].color;
+
+        }
+
+    }
+    
+}
     
 
 app.filter('dir', function() {
@@ -251,6 +265,7 @@ function PntCntl($rootScope, $scope, $route, $routeParams, $http, $location, sit
             $scope.forecast_today = data.forecast_today;
             $scope.combined = data.combined;
             $scope.pm25 = data.pm25;
+            $scope.color = aqiColor(parseInt(data.combined, 10));
 
             /*
             dataService.sharedObject.data = data[0].data;

@@ -2,3 +2,26 @@
 .forecast-yellow { background-color: #F0C866 }
 .forecast-red { background-color: #DC4358 }
 */
+
+.aqi-green {
+    background-color: #00E400
+}
+.aqi-yellow {
+    background-color:#FFFF00
+}
+.aqi-orange {
+    background-color:#FF7E00;
+    color:#FFFFFF;
+}
+.aqi-red {
+    background-color:#FF0000;
+    color:#FFFFFF;
+}
+.aqi-maroon {
+    background-color:#7E0023;
+    color:#FFFFFF;
+}
+.aqi-purple {
+    background-color:#99004C;
+    color:#FFFFFF;
+}
