@@ -265,7 +265,7 @@ function PntCntl($rootScope, $scope, $route, $routeParams, $http, $location, sit
             $scope.forecast_today = data.forecast_today;
             $scope.combined = data.combined;
             $scope.pm25 = data.pm25;
-            $scope.color = aqiColor(parseInt(data.combined, 10));
+            $rootScope.color = aqiColor(parseInt(data.combined, 10));
 
             /*
             dataService.sharedObject.data = data[0].data;
