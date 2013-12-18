@@ -43,13 +43,12 @@ var aqiThresholds = [
     { label: 'Harzardous', color: 'maroon', low: 301, high: 500 }
 ];
 
-var aqiColor = function(aqi) {
-
+var aqiThreshold = function(aqi) {
     for (var i = 0; i < aqiThresholds.length; i++) {
 
         if (aqi <= aqiThresholds[i].high) {
 
-            return aqiThresholds[i].color;
+            return aqiThresholds[i];
 
         }
 
@@ -265,7 +264,10 @@ function PntCntl($rootScope, $scope, $route, $routeParams, $http, $location, sit
             $scope.forecast_today = data.forecast_today;
             $scope.combined = data.combined;
             $scope.pm25 = data.pm25;
-            $rootScope.color = aqiColor(parseInt(data.combined, 10));
+            var threshold = aqiThreshold(parseInt(data.combined, 10));
+
+            $rootScope.color = threshold.color;
+            $rootScope.label = threshold.label;
 
             /*
             dataService.sharedObject.data = data[0].data;

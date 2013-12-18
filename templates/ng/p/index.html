@@ -19,7 +19,11 @@
     </style>
 </head>
 <body class="aqi-{[{ color }]}">
+
+    <!-- Main Container -->
     <div class="container" ng-controller="MainCntl" >
+
+
         <!-- Static navbar -->
         <div class="aqi-{[{ color }]} navbar navbar-default navbar-fixed-top">
             <div class="navbar-collapse collapse">
@@ -39,14 +43,19 @@
             </div><!--/.nav-collapse -->
         </div>
 
-        <div style="padding-top: 50px">
-            <div ng-view>
+        
+        
+        <!-- Content -->
+        <div style="padding-top: 50px" class="row">
+            <div ng-view class="col-md-12">
                 <div class="container">
                     <div style="height: 100vh; background: #fff; font-size: 24px; text-align: center; vertical-align: middle; color: #666; line-height: 100vh">Loading</div>
                 </div>
             </div>
         </div>
 
+        
+        <!-- Footer -->
         <footer style="padding: 10px">
             <div class="container">
                 <div class="row">

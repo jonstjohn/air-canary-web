@@ -116,7 +116,7 @@ class Forecast(Command):
         import db
         from model.models import Area, AreaForecast
 
-        colormap = {'Good': 'green', 'Moderate': 'yellow'}
+        colormap = {'Good': 'green', 'Moderate': 'yellow', 'Unhealthy for Sensitive Groups': 'orange', 'Unhealth': 'red'}
 
         try:
             areas = acdb.session.query(Area).filter(Area.area_source_id == 2).all()
