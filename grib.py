@@ -77,6 +77,13 @@ class AirNowGrib():
                 ), key=os.path.getctime)
         return filepath
 
+    def csv(self, param):
+
+        import subprocess
+        filepath = os.path.join(self.GRIB_DIR, 'US-current{}.grib2'.format(self.FILE_SUFFIX[param]))
+        csv_filepath = os.path.join(self.GRIB_DIR, 'US-current{}.csv'.format(self.FILE_SUFFIX[param]))
+        subprocess.check_call(['/usr/local/bin/wgrib2', filepath, '-csv', csv_filepath])
+
 if __name__ == '__main__':
 
     import datetime
