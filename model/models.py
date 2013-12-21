@@ -418,3 +418,18 @@ class SiteData(acdb.Model):
             'co': float(self.co) if self.co else '',
             'solar_radiation': float(self.solar_radiation) if self.solar_radiation else ''
         }
+
+class GribData(acdb.Model):
+
+    __tablename__ = 'grib_data'
+
+    start = Column(DATETIME, primary_key = True)
+    latitude = Column(DECIMAL(6,4), primary_key = True)
+    longitude = Column(DECIMAL(5,2), primary_key = True)
+    location = Column(Geography('POINT'))
+    ozone = Column(Integer)
+    pm25 = Column(Integer)
+    combined = Column(Integer)
+    forecast_today = Column(Integer)
+    forecast_tomorrow = Column(Integer)
+
