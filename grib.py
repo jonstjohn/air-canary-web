@@ -80,17 +80,36 @@ class AirNowGrib():
     def csv(self, param):
 
         import subprocess
+        import os
         filepath = os.path.join(self.GRIB_DIR, 'US-current{}.grib2'.format(self.FILE_SUFFIX[param]))
         csv_filepath = os.path.join(self.GRIB_DIR, 'US-current{}.csv'.format(self.FILE_SUFFIX[param]))
         subprocess.check_call(['/usr/local/bin/wgrib2', filepath, '-csv', csv_filepath])
+
+    def process_csv(self, param):
+
+        import csv
+        import os
+
+        csv_filepath = os.path.join(self.GRIB_DIR, 'US-current{}.csv'.format(self.FILE_SUFFIX[param]))
+
+        with open(csv_filepath, 'rb') as f:
+
+            reader = csv.reader(f)
+            for row in reader:
+                start, end, var, loc, lon, lat, val = row
+                print(start, lat, lon, val)
 
 if __name__ == '__main__':
 
     import datetime
     a = AirNowGrib()
+    #a.csv(AirNowGrib.OZONE)
+    a.process_csv(AirNowGrib.OZONE)
+    """
     lat = '40.524671'
     lon = '-111.863'
 
     print(a.ozone(lat, lon))
     print(a.pm25(lat, lon))
     print(a.combined(lat, lon))
+    """
