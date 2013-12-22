@@ -1,3 +1,9 @@
+from __future__ import print_function
+from model.models import GribData
+from geoalchemy2 import Geography
+from sqlalchemy.exc import IntegrityError
+
+from db import acdb
 
 class AirNowGrib():
 
@@ -21,6 +27,17 @@ class AirNowGrib():
         '-max_combined', # Max combined
         '-ForecastToday', # Forecast for today
         '-ForecastTomorrow', # Forecast for tomorrow
+    )
+
+    GRIBDATA_COLS = (
+        'ozone',
+        'pm25',
+        'combined',
+        None,
+        None,
+        None,
+        'forecast_today',
+        'forecast_tomorrow',
     )
 
     GRIB_DIR = '/tmp/grib2'
@@ -97,6 +114,31 @@ class AirNowGrib():
             reader = csv.reader(f)
             for row in reader:
                 start, end, var, loc, lon, lat, val = row
+
+                grib = GribData()
+                grib.start = start
+                grib.latitude = lat
+                grib.longitude = lon
+                txt = 'POINT({} {})'.format(lon, lat)
+                grib.location = Geography('Point').bind_expression(txt)
+                setattr(grib, self.GRIBDATA_COLS[param], val)
+
+                try:
+                    acdb.session.merge(grib)
+                    acdb.session.commit()
+                    print('.', end='')
+                except IntegrityError as inst:
+                    acdb.session.rollback()
+                    print('-', end='')
+                except Exception as inst:
+                    acdb.session.rollback()
+                    print('x', end='')
+                    raise inst
+
+
+
+
+
                 print(start, lat, lon, val)
 
 if __name__ == '__main__':

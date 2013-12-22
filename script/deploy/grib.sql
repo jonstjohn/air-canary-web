@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS grib_data (
     pm25 integer,
     combined integer,
     forecast_today integer,
-    forecast_tomorrow integer
+    forecast_tomorrow integer,
+    primary key (start, latitude, longitude)
 );
 
-CREATE INDEX gribData_location_index ON grib_data (location);
+CREATE INDEX gribData_location_index ON grib_data (location, start);

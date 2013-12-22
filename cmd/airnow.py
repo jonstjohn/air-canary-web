@@ -4,6 +4,7 @@ from model.models import AirNowForecastArea, AirNowMonitoringSite, AirNowHourly,
 from geoalchemy2 import Geometry, Geography
 import sqlalchemy.orm
 from sqlalchemy.exc import IntegrityError
+from grib import AirNowGrib
 
 from db import acdb
 
@@ -349,3 +350,10 @@ class GribDownload(Command):
         f = Ftp()
         f.grib2_download()
         f.close()
+
+class GribProcess(Command):
+
+    def run(self):
+        a = AirNowGrib()
+        a.csv(AirNowGrib.PM25)
+        a.process_csv(AirNowGrib.PM25)
