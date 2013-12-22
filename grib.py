@@ -141,12 +141,80 @@ class AirNowGrib():
 
                 print(start, lat, lon, val)
 
+    def grid_xy(self, lat, lon):
+
+        """
+        1:0:grid_template=0:winds(N/S):
+        lat-lon grid:(1850 x 889) units 1e-06 input WE:SN output WE:SN res 48
+        lat 20.000000 to 60.004999 by 0.045024
+        lon 227.000000 to 310.250000 by 0.045051 #points=1644650
+        """
+
+        x_factor = (60.004999 - 20.000000) / 889
+        y_factor = (310.250 - 227.000) / 1850
+
+        #x_factor = 0.045024
+        #y_factor = 0.045051
+
+        x = int(round((lat - 20.0) / x_factor))
+        if lon < 0:
+            lon = 360 + lon
+        print(lon)
+        y = int(round((lon - 227.0) / y_factor))
+
+        return x, y
+
+    def grid_latlon(self, x, y):
+
+        x_factor = (60.004999 - 20.000000) / 889
+        y_factor = (227.000 - 310.25000) / 1850
+
+        #x_factor = 0.045024
+        #y_factor = 0.045051
+
+        lat = x * x_factor + 20.0
+        lon = y * y_factor + 227.0
+
+        return lat, lon
+
+
+
 if __name__ == '__main__':
 
-    import datetime
+    import datetime, os
+
     a = AirNowGrib()
     #a.csv(AirNowGrib.OZONE)
-    a.process_csv(AirNowGrib.OZONE)
+    #a.process_csv(AirNowGrib.OZONE)
+
+    print()
+    lat, lon = 20.0000, 227.0000
+    print(lat, lon)
+    x, y = a.grid_xy(lat, lon)
+    print(x, y)
+    print(a.grid_latlon(x, y))
+    print(os.system('wgrib2 /tmp/grib2/US-current_combined.grib2 -lon {} {}'.format(lon, lat)))
+
+    print()
+
+    lat, lon = 60.004999, 310.250000
+    print(lat, lon)
+    x, y = a.grid_xy(lat, lon)
+    print(x, y)
+    print(a.grid_latlon(x, y))
+    print(os.system('wgrib2 /tmp/grib2/US-current_combined.grib2 -lon {} {}'.format(lon, lat)))
+    
+    print()
+
+    lat, lon = 40.7762, -111.8786
+    print(lat, lon)
+    x, y = a.grid_xy(lat, lon)
+    print('grid_xy')
+    print(x, y)
+    print('grid_latlon')
+    print(a.grid_latlon(x, y))
+    print(os.system('wgrib2 /tmp/grib2/US-current_combined.grib2 -lon {} {}'.format(lon, lat)))
+
     """
     lat = '40.524671'
     lon = '-111.863'
