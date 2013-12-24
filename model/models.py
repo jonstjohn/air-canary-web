@@ -433,3 +433,41 @@ class GribData(acdb.Model):
     forecast_today = Column(Integer)
     forecast_tomorrow = Column(Integer)
 
+class GribOzone(acdb.Model):
+
+    __tablename__ = 'grib_ozone'
+
+    cell = Column(Integer, primary_key = True)
+    val = Column(Integer)
+
+class GribPm25(acdb.Model):
+
+    __tablename__ = 'grib_pm25'
+
+    cell = Column(Integer, primary_key = True)
+    val = Column(Integer)
+
+class GribToday(acdb.Model):
+
+    __tablename__ = 'grib_today'
+
+    cell = Column(Integer, primary_key = True)
+    val = Column(Integer)
+
+class GribTomorrow(acdb.Model):
+
+    __tablename__ = 'grib_tomorrow'
+
+    cell = Column(Integer, primary_key = True)
+    val = Column(Integer)
+
+class GribMulti(acdb.Model):
+
+    __tablename__ = 'grib_multi'
+
+    cell = Column(Integer, primary_key = True)
+    start = Column(DATETIME, primary_key = True)
+    ozone = Column(Integer)
+    pm25 = Column(Integer)
+    today = Column(Integer)
+    tomorrow = Column(Integer)

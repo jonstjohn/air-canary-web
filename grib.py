@@ -1,5 +1,5 @@
 from __future__ import print_function
-from model.models import GribData
+from model.models import GribData, GribPm25
 from geoalchemy2 import Geography
 from sqlalchemy.exc import IntegrityError
 
@@ -38,6 +38,17 @@ class AirNowGrib():
         None,
         'forecast_today',
         'forecast_tomorrow',
+    )
+
+    GRIB_CLASS = (
+        'GribOzone',
+        'GribPm25',
+        None,
+        None,
+        None,
+        None,
+        'GribToday',
+        'GribTomorrow',
     )
 
     GRIB_DIR = '/tmp/grib2'
@@ -103,7 +114,7 @@ class AirNowGrib():
         subprocess.check_call(['/usr/local/bin/wgrib2', filepath, '-csv', csv_filepath])
 
     def process_csv(self, param):
-
+        
         import csv
         import os
 
@@ -111,10 +122,20 @@ class AirNowGrib():
 
         with open(csv_filepath, 'rb') as f:
 
+            #module = __import__('model.models')
+            #class_ = getattr(module, self.GRIB_CLASS[param])
+            
             reader = csv.reader(f)
             for row in reader:
                 start, end, var, loc, lon, lat, val = row
 
+                cell = self.grid_xy(float(lat), float(lon))
+                grib = GribPm25()
+                #g = getattr(module, class_)
+                grib.cell = cell
+                grib.val = int(val)
+                
+                """
                 grib = GribData()
                 grib.start = start
                 grib.latitude = lat
@@ -122,6 +143,7 @@ class AirNowGrib():
                 txt = 'POINT({} {})'.format(lon, lat)
                 grib.location = Geography('Point').bind_expression(txt)
                 setattr(grib, self.GRIBDATA_COLS[param], val)
+                """
 
                 try:
                     acdb.session.merge(grib)

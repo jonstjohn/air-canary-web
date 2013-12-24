@@ -355,5 +355,5 @@ class GribProcess(Command):
 
     def run(self):
         a = AirNowGrib()
-        a.csv(AirNowGrib.PM25)
+        #a.csv(AirNowGrib.PM25)
         a.process_csv(AirNowGrib.PM25)
