@@ -149,34 +149,6 @@ function MainCntl($rootScope, $scope, $http, siteService, dataService, $location
         // You cannot use Geolocation in this device
     }
 
-    /*
-    $scope.sites = siteService.sharedObject.data;
-
-    $scope.loadSites = function() {
-
-        var httpRequest = $http({
-            method: 'GET',
-            url: '/api/site'
-        }).success(function(data, status) {
-            $scope.sites = data;
-            siteService.sharedObject.data = data;
-        });
-    };
-
-    $scope.sendLocation = function(location) {
-        $http.post('/geocode', {'location': location })
-            .success( function(data, status) {
-                $scope.location = data['place'];
-                //$scope.$apply( function() {
-                    $location.path('/a/' + data['latitude'] + '/' + data['longitude']);
-                //});
-            });
-    }
-
-    $scope.loadSites();
-    */
-
-    
 }
 
 function HomeCntl($rootScope, $scope, $route, $routeParams, $http, $location, siteService, dataService) {
