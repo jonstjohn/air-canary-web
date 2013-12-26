@@ -120,6 +120,8 @@ class AirNowGrib():
 
         csv_filepath = os.path.join(self.GRIB_DIR, 'US-current{}.csv'.format(self.FILE_SUFFIX[param]))
 
+        print(GribPm25.query.delete())
+
         with open(csv_filepath, 'rb') as f:
 
             #module = __import__('model.models')
@@ -129,10 +131,11 @@ class AirNowGrib():
             for row in reader:
                 start, end, var, loc, lon, lat, val = row
 
-                cell = self.grid_xy(float(lat), float(lon))
+                x, y = self.grid_xy(float(lat), float(lon))
                 grib = GribPm25()
                 #g = getattr(module, class_)
-                grib.cell = cell
+                grib.x = x
+                grib.y = y
                 grib.val = int(val)
                 
                 """
@@ -146,12 +149,12 @@ class AirNowGrib():
                 """
 
                 try:
-                    acdb.session.merge(grib)
+                    acdb.session.add(grib)
                     acdb.session.commit()
                     print('.', end='')
-                except IntegrityError as inst:
-                    acdb.session.rollback()
-                    print('-', end='')
+                #except IntegrityError as inst:
+                #    acdb.session.rollback()
+                #    print('-', end='')
                 except Exception as inst:
                     acdb.session.rollback()
                     print('x', end='')
@@ -161,7 +164,7 @@ class AirNowGrib():
 
 
 
-                print(start, lat, lon, val)
+                #print(start, lat, lon, val)
 
     def grid_xy(self, lat, lon):
 
@@ -181,7 +184,7 @@ class AirNowGrib():
         x = int(round((lat - 20.0) / x_factor))
         if lon < 0:
             lon = 360 + lon
-        print(lon)
+        #print(lon)
         y = int(round((lon - 227.0) / y_factor))
 
         return x, y
