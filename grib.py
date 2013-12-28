@@ -118,6 +118,10 @@ class AirNowGrib():
         import csv
         import os
 
+        import redis
+
+        r = redis.StrictRedis(host='localhost', port=6379, db=0)
+
         csv_filepath = os.path.join(self.GRIB_DIR, 'US-current{}.csv'.format(self.FILE_SUFFIX[param]))
 
         print(GribPm25.query.delete())
@@ -130,13 +134,19 @@ class AirNowGrib():
             reader = csv.reader(f)
             for row in reader:
                 start, end, var, loc, lon, lat, val = row
+                k = '{}:{}:pm25'.format(lat,lon)
+                r.set(k, val)
 
+                """
                 x, y = self.grid_xy(float(lat), float(lon))
                 grib = GribPm25()
                 #g = getattr(module, class_)
                 grib.x = x
                 grib.y = y
                 grib.val = int(val)
+                """
+
+
                 
                 """
                 grib = GribData()
@@ -148,20 +158,19 @@ class AirNowGrib():
                 setattr(grib, self.GRIBDATA_COLS[param], val)
                 """
 
+                """
                 try:
                     acdb.session.add(grib)
                     acdb.session.commit()
                     print('.', end='')
-                #except IntegrityError as inst:
-                #    acdb.session.rollback()
-                #    print('-', end='')
+                except IntegrityError as inst:
+                    acdb.session.rollback()
+                    print('-', end='')
                 except Exception as inst:
                     acdb.session.rollback()
                     print('x', end='')
                     raise inst
-
-
-
+                """
 
 
                 #print(start, lat, lon, val)
