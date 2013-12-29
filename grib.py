@@ -113,10 +113,23 @@ class AirNowGrib():
         csv_filepath = os.path.join(self.GRIB_DIR, 'US-current{}.csv'.format(self.FILE_SUFFIX[param]))
         subprocess.check_call(['/usr/local/bin/wgrib2', filepath, '-csv', csv_filepath])
 
+    def wgrib_ij(self, lat, lon):
+
+        import subprocess
+        output = subprocess.check_output(['wgrib2', '-ll2ij', lon, lat, '/tmp/grib2/US-current.grib2'])
+        latpart, ijpart = output.split('->')
+        j, i = ijpart.strip().strip('()').split(',')
+        #print(lat, lon)
+        #print(i, j)
+        return int(round(float(i))), int(round(float(j)))
+
+
     def process_csv(self, param):
         
         import csv
         import os
+        import time
+        import subprocess
 
         import redis
 
@@ -126,16 +139,60 @@ class AirNowGrib():
 
         print(GribPm25.query.delete())
 
+        started = time.time()
         with open(csv_filepath, 'rb') as f:
 
             #module = __import__('model.models')
             #class_ = getattr(module, self.GRIB_CLASS[param])
             
             reader = csv.reader(f)
+
+            last_x = None
+            last_y = None
+            xcount = 0
+            rowcount = 0
             for row in reader:
+                rowcount += 1
                 start, end, var, loc, lon, lat, val = row
-                k = '{}:{}:pm25'.format(lat,lon)
-                r.set(k, val)
+
+                x, y = self.grid_xy(float(lat), float(lon))
+                """
+                if x == last_x and y == last_y:
+                    print('X', end='')
+                    xcount += 1
+                else:
+                    print('.', end='')
+                """
+                
+                wx, wy = self.wgrib_ij(lat, lon)
+
+                if x == wx and y == wy:
+                    print('.', end='')
+                else:
+                    print(lat, lon)
+                    print(x, y)
+                    print(wx, wy)
+                    print('X', end='')
+                    xcount += 1
+
+
+                last_x = x
+                last_y = y
+                #if rowcount == 10000:
+                #    break
+                continue
+                k = '{}:{}'.format(lat,lon)
+                kparam = '{}:pm25'.format(k)
+                pipe = r.pipeline(transaction=False)
+
+                # Hash for lat/lon
+                pipe.hset(k, 'pm25', val)
+
+                # List for param
+                #pipe.lpush(kparam, val).ltrim(kparam, 0, 71) # 3 days
+                pipe.delete(kparam)
+                
+                pipe.execute()
 
                 """
                 x, y = self.grid_xy(float(lat), float(lon))
@@ -175,6 +232,13 @@ class AirNowGrib():
 
                 #print(start, lat, lon, val)
 
+        ended = time.time()
+
+        elapsed = ended-started
+        
+        print('Errors: {}'.format(xcount))
+        print("{} seconds".format(elapsed))
+
     def grid_xy(self, lat, lon):
 
         """
@@ -184,13 +248,13 @@ class AirNowGrib():
         lon 227.000000 to 310.250000 by 0.045051 #points=1644650
         """
 
-        x_factor = (60.004999 - 20.000000) / 889
-        y_factor = (310.250 - 227.000) / 1850
+        x_factor = (60.004999 - 20.000000) / 887 # 887
+        y_factor = (310.250 - 227.000) / 1851 # 1851
 
         #x_factor = 0.045024
         #y_factor = 0.045051
 
-        x = int(round((lat - 20.0) / x_factor))
+        x = int(round((lat - 20.0) / x_factor)) + 1
         if lon < 0:
             lon = 360 + lon
         #print(lon)
