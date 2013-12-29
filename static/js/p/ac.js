@@ -232,8 +232,8 @@ function PntCntl($rootScope, $scope, $route, $routeParams, $http, $location, sit
         }).success(function(data, status) {
             console.log(data);
             $scope.ozone = data.ozone;
-            $scope.forecast_tomorrow = data.forecast_tomorrow;
-            $scope.forecast_today = data.forecast_today;
+            $scope.tomorrow = data.tomorrow;
+            $scope.today = data.today;
             $scope.combined = data.combined;
             $scope.pm25 = data.pm25;
             var threshold = aqiThreshold(parseInt(data.combined, 10));

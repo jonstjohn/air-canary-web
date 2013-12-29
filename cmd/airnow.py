@@ -355,5 +355,10 @@ class GribProcess(Command):
 
     def run(self):
         a = AirNowGrib()
-        #a.csv(AirNowGrib.PM25)
-        a.process_csv(AirNowGrib.PM25)
+        print(a.data_latlon(40.7762,-111.8786))
+        print(a.grid_xy(40.7762,-111.8786))
+        return
+
+        for param in (AirNowGrib.PM25, AirNowGrib.OZONE, AirNowGrib.FORECAST_TODAY, AirNowGrib.FORECAST_TOMORROW):
+            a.csv(param)
+            a.process_csv(param)

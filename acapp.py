@@ -237,7 +237,11 @@ def point(latlon):
     lat, lon = latlon.split(',')
 
     a = AirNowGrib()
+    response_data = a.data_latlon(float(lat), float(lon))
+    if 'ozone' in response_data:
+        response_data['combined'] = response_data['ozone'] if float(response_data['ozone']) > float(response_data['pm25']) else response_data['pm25']
 
+    """
     ozone = a.ozone(lat, lon)
     pm25 = a.pm25(lat, lon)
     combined = a.combined(lat, lon)
@@ -245,6 +249,7 @@ def point(latlon):
     forecast_tomorrow = a.forecast_tomorrow(lat, lon)
 
     response_data = {'ozone': ozone, 'pm25': pm25, 'combined': combined, 'forecast_today': forecast_today, 'forecast_tomorrow': forecast_tomorrow}
+    """
     response = Response(json.dumps(response_data), status=200, mimetype='text/html')
     return response
 
