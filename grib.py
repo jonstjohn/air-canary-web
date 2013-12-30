@@ -114,7 +114,7 @@ class AirNowGrib():
         return filepath
 
     def csv(self, param):
-
+        """ Generate CSV for param """
         import subprocess
         import os
         filepath = os.path.join(self.GRIB_DIR, 'US-current{}.grib2'.format(self.FILE_SUFFIX[param]))
@@ -122,7 +122,7 @@ class AirNowGrib():
         subprocess.check_call(['/usr/local/bin/wgrib2', filepath, '-csv', csv_filepath])
 
     def wgrib_ij(self, lat, lon):
-
+        """ Calculate i and j coordinates using wgrib from lat/lon """
         import subprocess
         output = subprocess.check_output(['wgrib2', '-ll2ij', lon, lat, '/tmp/grib2/US-current.grib2'])
         latpart, ijpart = output.split('->')
@@ -132,7 +132,8 @@ class AirNowGrib():
         return int(round(float(i))), int(round(float(j)))
 
     def data_latlon(self, lat, lon):
-
+        """ Get data from lat/lon
+            Returns dictionary of pm25, ozone, today, tomorrow """
         import redis
         x, y = self.grid_xy(lat, lon)
 
@@ -141,7 +142,7 @@ class AirNowGrib():
         return r.hgetall('{}:{}'.format(x,y))
 
     def process_csv(self, param):
-        
+        """ Process CSV file for param """ 
         import csv
         import os
         import time
@@ -288,7 +289,7 @@ class AirNowGrib():
         return x, y
 
     def grid_latlon(self, x, y):
-
+        """ Get grid lat lon from x, y coordinates """
         x_factor = (60.004999 - 20.000000) / 889
         y_factor = (227.000 - 310.25000) / 1850
 
