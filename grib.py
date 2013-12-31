@@ -205,6 +205,7 @@ class AirNowGrib():
 
                 # Hash for lat/lon
                 pipe.hset(k, param_name, val)
+                #pipe.hset(k, '{}_start'.format(param_name), start)
 
                 # List for param
                 #pipe.lpush(kparam, val).ltrim(kparam, 0, 71) # 3 days
@@ -212,11 +213,11 @@ class AirNowGrib():
                 
                 pipe.execute()
 
-                if rowcount % 100 == 0:
+                if rowcount % 1000 == 0:
                     print('.', end='')
                     sys.stdout.flush()
 
-                if rowcount % 10000 == 0:
+                if rowcount % 100000 == 0:
                     print()
                     print('{} rows processed in {} seconds'.format(rowcount, time.time() - started))
 

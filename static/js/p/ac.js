@@ -123,14 +123,25 @@ angular.module("acApp").factory('dataService', function() {
 
 function MainCntl($rootScope, $scope, $http, siteService, dataService, $location, $timeout) {
     
-    console.log('main');
     $scope.dataService = dataService;
+
+    var setLocation = function(latitude, longitude) {
+        $http.post('/rgeocode', {'lat': latitude, 'lon': longitude })
+            .success( function(data, status) {
+                $scope.location = data['place'];
+                $scope.locationLoaded = $scope.location;
+            });
+
+    };
+
+
     var success_callback = function(p) {
         var latitude = p.coords.latitude;
         var longitude = p.coords.longitude;
 
         $rootScope.$apply( function() {
             $location.path('/p/' + latitude + '/' + longitude);
+            setLocation(latitude, longitude);
         });
     };
 
@@ -138,15 +149,27 @@ function MainCntl($rootScope, $scope, $http, siteService, dataService, $location
         console.log('failed location');
         console.log(p);
         $location.path('/p/40.7760238/-111.8784646');
+
     };
 
-    if (geoPosition.init()){  // Geolocation Initialisation
-        console.log("Checking geoposition");
-        geoPosition.getCurrentPosition(success_callback,error_callback,{enableHighAccuracy:true});
-    } else {
-        console.log("Geoposition not available");
-        $location.path('/p/40.7760238/-111.8784646');
-        // You cannot use Geolocation in this device
+    if ($location.path().length === 0) {
+        if (geoPosition.init()){  // Geolocation Initialisation
+            console.log("Checking geoposition");
+            geoPosition.getCurrentPosition(success_callback,error_callback,{enableHighAccuracy:true});
+        } else {
+            console.log("Geoposition not available");
+            $location.path('/p/40.7760238/-111.8784646');
+            // You cannot use Geolocation in this device
+        }
+    }
+
+    $scope.sendLocation = function(location) {
+        $http.post('/geocode', {'location': location })
+            .success( function(data, status) {
+                $scope.location = data['place'];
+                $scope.locationLoaded = $scope.location;
+                $location.path('/p/' + data['latitude'] + '/' + data['longitude']);
+            });
     }
 
 }

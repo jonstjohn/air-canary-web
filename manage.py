@@ -5,7 +5,7 @@ import db
 app = Flask(__name__)
 acdb = db.init(app)
 
-from cmd.airnow import ForecastAreas, MonitoringSites, Hourly, ReportingAreas, LoadAreas, LoadSites, LoadHourly, GribDownload, GribProcess
+from cmd.airnow import ForecastAreas, MonitoringSites, Hourly, ReportingAreas, LoadAreas, LoadSites, LoadHourly, GribDownload, GribProcess, Grib
 from cmd.data import ParseData, ParseForecast
 from cmd.utah.data import Current, Forecast
 
@@ -23,7 +23,7 @@ manager.add_command('airnow_reporting_areas', ReportingAreas())
 manager.add_command('airnow_load_areas', LoadAreas())
 manager.add_command('airnow_load_sites', LoadSites())
 manager.add_command('airnow_load_hourly', LoadHourly())
-manager.add_command('airnow_grib', GribDownload())
+manager.add_command('airnow_grib', Grib())
 manager.add_command('airnow_grib_process', GribProcess())
 
 manager.add_command('utah_current', Current())

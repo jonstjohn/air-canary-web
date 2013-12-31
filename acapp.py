@@ -229,6 +229,29 @@ def geocode():
     response = Response(json.dumps(response_data), status=200, mimetype='application/json')
     return response
 
+@app.route('/rgeocode', methods=['POST'])
+def rgeocode():
+    """ Reverse geocode location """
+    data = json.loads(request.data)
+
+    from geopy import geocoders
+    g = geocoders.GoogleV3()
+    print(g.reverse((data['lat'], data['lon']), exactly_one=True))
+    place, (lat, lng) = g.reverse((data['lat'], data['lon']), exactly_one=True)
+    response_data = {'place': parse_place(place), 'latitude': lat, 'longitude': lng}
+    response = Response(json.dumps(response_data), status=200, mimetype='application/json')
+    return response
+
+def parse_place(place):
+
+    parts = place.split(',')
+    print(parts)
+    if parts.pop().strip() == 'USA':
+        state, zip = parts.pop().strip().split(' ')
+        city = parts.pop().strip()
+        return '{}, {}'.format(city, state)
+    return place
+
 @app.route('/point/<latlon>')
 def point(latlon):
     """ Get data for lat lon """

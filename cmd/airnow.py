@@ -351,14 +351,31 @@ class GribDownload(Command):
         f.grib2_download()
         f.close()
 
+class Grib(Command):
+    """ Download and process grib files """
+    def run(self):
+
+        # Download
+        from an import Ftp
+        f = Ftp()
+        f.grib2_download()
+        f.close
+
+        # Convert to csv and process
+        a = AirNowGrib()
+        for param in (AirNowGrib.PM25, AirNowGrib.OZONE):
+            a.csv(param)
+            a.process_csv(param)
+
 class GribProcess(Command):
 
     def run(self):
         a = AirNowGrib()
-        print(a.data_latlon(40.7762,-111.8786))
-        print(a.grid_xy(40.7762,-111.8786))
-        return
+        #print(a.data_latlon(40.7762,-111.8786))
+        #print(a.grid_xy(40.7762,-111.8786))
+        #return
 
-        for param in (AirNowGrib.PM25, AirNowGrib.OZONE, AirNowGrib.FORECAST_TODAY, AirNowGrib.FORECAST_TOMORROW):
+        #for param in (AirNowGrib.PM25, AirNowGrib.OZONE, AirNowGrib.FORECAST_TODAY, AirNowGrib.FORECAST_TOMORROW):
+        for param in (AirNowGrib.PM25, AirNowGrib.OZONE):
             a.csv(param)
             a.process_csv(param)
