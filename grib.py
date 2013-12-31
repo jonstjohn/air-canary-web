@@ -141,7 +141,7 @@ class AirNowGrib():
 
         return r.hgetall('{}:{}'.format(x,y))
 
-    def process_csv(self, param):
+    def process_csv(self, param, exists_only=False):
         """ Process CSV file for param """ 
         import csv
         import os
@@ -201,17 +201,19 @@ class AirNowGrib():
                 #    break
                 k = '{}:{}'.format(x,y)
                 kparam = '{}:{}'.format(k, param_name)
-                pipe = r.pipeline()
+                if not exists_only or r.exists(k):
+                    
+                    pipe = r.pipeline()
 
-                # Hash for lat/lon
-                pipe.hset(k, param_name, val)
-                #pipe.hset(k, '{}_start'.format(param_name), start)
+                    # Hash for lat/lon
+                    pipe.hset(k, param_name, val)
+                    pipe.hset(k, '{}_start'.format(param_name), start)
 
-                # List for param
-                #pipe.lpush(kparam, val).ltrim(kparam, 0, 71) # 3 days
-                #pipe.delete(kparam)
-                
-                pipe.execute()
+                    # List for param
+                    #pipe.lpush(kparam, val).ltrim(kparam, 0, 71) # 3 days
+                    #pipe.delete(kparam)
+                    
+                    pipe.execute()
 
                 if rowcount % 1000 == 0:
                     print('.', end='')

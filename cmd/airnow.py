@@ -367,6 +367,11 @@ class Grib(Command):
             a.csv(param)
             a.process_csv(param)
 
+        #for param in (AirNowGrib.FORECAST_TODAY, AirNowGrib.FORECAST_TOMORROW):
+        #    a.csv(param)
+        #    a.process_csv(param, True)
+
+
 class GribProcess(Command):
 
     def run(self):
@@ -379,3 +384,7 @@ class GribProcess(Command):
         for param in (AirNowGrib.PM25, AirNowGrib.OZONE):
             a.csv(param)
             a.process_csv(param)
+
+        for param in (AirNowGrib.FORECAST_TODAY, AirNowGrib.FORECAST_TOMORROW):
+            a.csv(param)
+            a.process_csv(param, True)
