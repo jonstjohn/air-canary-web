@@ -59,6 +59,10 @@ def index():
     """ Home page """
     return render_template('ng/index.html')
 
+@app.route('/e')
+def index_e():
+    return render_template('ng/e.html')
+
 @app.route('/p')
 def pindex():
     """ P index """

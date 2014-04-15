@@ -93,7 +93,7 @@ class ParseCommand(Command):
         # Check for local directory, create recursively if it doesn't exist
         local_dir = os.path.join(self.tmpdir, self.local_dir)
         if not os.path.exists(local_dir):
-            os.mkdirs(local_dir)
+            os.makedirs(local_dir)
 
         # Download file and write
         filepath = os.path.join(local_dir, self.filename)
@@ -367,9 +367,9 @@ class Grib(Command):
             a.csv(param)
             a.process_csv(param)
 
-        #for param in (AirNowGrib.FORECAST_TODAY, AirNowGrib.FORECAST_TOMORROW):
-        #    a.csv(param)
-        #    a.process_csv(param, True)
+        for param in (AirNowGrib.FORECAST_TODAY, AirNowGrib.FORECAST_TOMORROW):
+            a.csv(param)
+            a.process_csv(param, True)
 
 
 class GribProcess(Command):
