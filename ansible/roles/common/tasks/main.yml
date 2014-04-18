@@ -1,2 +1,4 @@
 - apt: upgrade=yes update_cache=yes
 - apt: pkg=htop
+- apt: pkg=vim
+- apt: pkg=build-essential

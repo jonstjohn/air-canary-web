@@ -1,0 +1,27 @@
+- name: python - install pip
+  apt: pkg=python-pip
+
+- name: python - virtualenv
+  apt: pkg=python-virtualenv
+
+- name: python - install dev
+  apt: pkg=python-dev
+
+- name: python - pip upgrade
+  pip: name=pip extra_args='--upgrade'
+
+- name: python - virtualenvwrapper
+  pip: name=virtualenvwrapper
+
+- name: postgresql client
+  apt: pkg=postgresql-client
+
+- name: uwsgi
+  pip: name=uwsgi
+
+- name: nginx
+  apt: pkg=nginx
+
+- name: git
+  apt: pkg=git
+

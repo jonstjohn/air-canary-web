@@ -18,6 +18,8 @@ ANSIBLE_HOSTS=$2
 EXTRA_VARS=$3
 TEMP_HOSTS="/tmp/ansible_hosts"
 
+echo $ANSIBLE_PLAYBOOK
+
 if [ ! -f /vagrant/$ANSIBLE_PLAYBOOK ]; then
   echo "Cannot find Ansible playbook."
   exit 1

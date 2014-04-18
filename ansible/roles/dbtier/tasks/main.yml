@@ -1,0 +1,41 @@
+- name: Install python-pycurl for adding repository
+  apt: pkg=python-pycurl
+
+- name: postgresql - add repository key
+  apt_key: url=https://www.postgresql.org/media/keys/ACCC4CF8.asc state=present
+
+- name: Add postgres repository
+  apt_repository: repo='deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main' state='present'
+
+- name: Install postgresql 9.3 server
+  apt: pkg=postgresql-9.3 force=yes state=latest update_cache=yes
+
+- name: Install postgresql 9.3 server
+  apt: pkg=postgresql-server-dev-9.3 force=yes state=present
+
+- name: postgresql - install psycopg2
+  apt: pkg=python-psycopg2
+
+- name: postgresql - install postgis
+  apt: pkg=postgresql-9.3-postgis
+
+- name: Restart postgresql server
+  service: name=postgresql state=started enabled=yes
+
+- name: postgresql - create db
+  sudo_user: postgres
+  sudo: yes
+  postgresql_db: name="air_canary" encoding="UTF-8" lc_collate="en_US.UTF-8" lc_ctype="en_US.UTF-8" template='template0'
+
+- name: postgresql - create user
+  sudo_user: postgres
+  sudo: yes
+  postgresql_user: db=air_canary user=ac_web password=test1234
+
+- name: postgresql - apply privileges
+  sudo_user: postgres
+  sudo: yes
+  postgresql_privs: db=air_canary privs=ALL type=database role=ac_web
+
+- name: postgresql - install postgresql-contrib-9.3 --needed for fulltextsearch
+  apt: pkg=postgresql-contrib-9.3 state=latest update_cache=yes
