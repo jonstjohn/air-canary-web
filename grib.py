@@ -150,14 +150,18 @@ class AirNowGrib():
 
         import redis
 
+        # Setup redis
         r = redis.StrictRedis(host='localhost', port=6379, db=0)
 
+        # CSV path
         csv_filepath = os.path.join(self.GRIB_DIR, 'US-current{}.csv'.format(self.FILE_SUFFIX[param]))
 
+        # Parameter
         param_name = self.GRIBDATA_PARAMS[param]
 
         #print(GribPm25.query.delete())
 
+        # Read CSV
         started = time.time()
         with open(csv_filepath, 'rb') as f:
 
@@ -170,11 +174,15 @@ class AirNowGrib():
             last_y = None
             #xcount = 0
             rowcount = 0
+
+            # Loop over rows
             for row in reader:
+
                 rowcount += 1
                 start, end, var, loc, lon, lat, val = row
 
                 x, y = self.grid_xy(float(lat), float(lon))
+
                 """
                 if x == last_x and y == last_y:
                     print('X', end='')
@@ -199,20 +207,28 @@ class AirNowGrib():
                 #last_y = y
                 #if rowcount == 10000:
                 #    break
+
+                # Key - lat/lon translated to integers, key would be something like 1:2
                 k = '{}:{}'.format(x,y)
+
+                # Key w/ param, e.g., 1:2:pm25
                 kparam = '{}:{}'.format(k, param_name)
+
+                # If key not doing replace only or key exists, save to redis
                 if not exists_only or r.exists(k):
-                    
+                   
+                    # Create a pipline
                     pipe = r.pipeline()
 
                     # Hash for lat/lon
-                    pipe.hset(k, param_name, val)
-                    pipe.hset(k, '{}_start'.format(param_name), start)
+                    pipe.hset(k, param_name, val) # Param value
+                    pipe.hset(k, '{}_start'.format(param_name), start) # Param start
 
-                    # List for param
+                    # List for parameter history
                     #pipe.lpush(kparam, val).ltrim(kparam, 0, 71) # 3 days
                     #pipe.delete(kparam)
-                    
+                   
+                    # Execute save
                     pipe.execute()
 
                 if rowcount % 1000 == 0:
