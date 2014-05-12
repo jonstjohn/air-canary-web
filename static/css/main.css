@@ -4,24 +4,24 @@
 */
 
 .aqi-green {
-    background-color: #00E400
+    background-color: #60bd22
 }
 .aqi-yellow {
-    background-color:#FFFF00
+    background-color: #f4bd00;
 }
 .aqi-orange {
-    background-color:#FF7E00;
+    background-color:#f69721;
     color:#FFFFFF;
 }
 .aqi-red {
-    background-color:#FF0000;
+    background-color:#c44812;
     color:#FFFFFF;
 }
 .aqi-maroon {
-    background-color:#7E0023;
+    background-color:#980046;
     color:#FFFFFF;
 }
 .aqi-purple {
-    background-color:#99004C;
+    background-color:#7c0020;
     color:#FFFFFF;
 }

@@ -63,6 +63,10 @@ def index():
 def index_e():
     return render_template('ng/e.html')
 
+@app.route('/t')
+def index_t():
+    return render_template('ng/t.html')
+
 @app.route('/p')
 def pindex():
     """ P index """
