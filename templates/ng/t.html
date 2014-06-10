@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/css/bootstrap.css"/>
     <link href="/static/css/main.css" rel="stylesheet" media="screen"/> 
+    <link href="/static/css/climacons-font.css" rel="stylesheet" media="screen"/>
     <link href='http://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
     <script src="http://code.jquery.com/jquery.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
@@ -16,15 +17,6 @@
         .vcontainer { display: table !important; height: 100% }
         .vcontent { display: table-cell; vertical-align: middle; height: 100% }
         .rounded-border { border: 1px solid #60bd22; padding: 3px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; }
-        @font-face {
-            font-family:'ClimaconsRegular';
-            src: url('/static/fonts/climacons-webfont.eot');
-            src: url('/static/fonts/climacons-webfont.eot?#iefix') format('embedded-opentype'),
-                 url('/static/fonts/climacons-webfont.woff') format('woff'),
-                 url('/static/fonts/climacons-webfont.ttf') format('truetype');
-            font-weight: normal;
-            font-style: normal;
-        }
     </style>
 </head>
 <body class="aqi-green" style="height: 100%">
@@ -86,10 +78,10 @@
         <div class="col-xs-12">
             <div class="row" style="padding: 30px; color: #eee; font-size: 120%">Now</div>
             <div class="row" style="padding: 0">
-                <div class="col-xs-5" style="padding: 0"><img src="/static/img/climacons/svg/Cloud-Sun.svg"/> <span style="font-family: 'ClimaconsRegular', sans-serif">AaBbCcDdEeFfGgHh1234</span></div>
+                <div class="col-xs-5"><span class="fs1 climacon cloud sun" style="font-size: 800%" aria-hidden="true"></span></div>
                 <div class="col-xs-7">
                     <div class="row">&nbsp;</div>
-                    <div class="row" style="font-size: 140%">
+                    <div class="row" style="font-size: 120%">
                         <div class="col-xs-12 text-right">Salt Lake City, UT</div>
                     </div>
                     <div class="row" style="font-size: 250%">
