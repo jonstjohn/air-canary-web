@@ -1,0 +1,27 @@
+/*.forecast-green { background-color: #5E8C6F }
+.forecast-yellow { background-color: #F0C866 }
+.forecast-red { background-color: #DC4358 }
+*/
+
+.aqi-green {
+    background-color: #60bd22
+}
+.aqi-yellow {
+    background-color: #f4bd00;
+}
+.aqi-orange {
+    background-color:#f69721;
+    color:#FFFFFF;
+}
+.aqi-red {
+    background-color:#c44812;
+    color:#FFFFFF;
+}
+.aqi-maroon {
+    background-color:#980046;
+    color:#FFFFFF;
+}
+.aqi-purple {
+    background-color:#7c0020;
+    color:#FFFFFF;
+}
