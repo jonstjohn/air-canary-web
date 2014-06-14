@@ -59,7 +59,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'djcelery',
     'places',
+    'airnow',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -87,6 +89,16 @@ DATABASES = {
         'PASSWORD': 'Xd2!3g',
         'HOST': 'localhost',
         'PORT': '',
+    }
+}
+
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.cache.RedisCache',
+        'LOCATION': '127.0.0.1:6379:0',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'redis_cache.client.DefaultClient',
+        }
     }
 }
 
@@ -127,3 +139,11 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
 ########## END STATIC FILE CONFIGURATION
+
+AIRNOW_GRIB_DIR = '/tmp/grib3'
+
+BROKER_URL = 'redis://localhost:6379/0'
+
+CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
+import djcelery
+djcelery.setup_loader()
