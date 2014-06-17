@@ -57,7 +57,7 @@ class AirNowGrib():
         'GribTomorrow',
     )
 
-    GRIB_DIR = '/tmp/grib2'
+    GRIB_DIR = '/tmp/grib3'
 
     def val(self, lat, lon, param, date=None, time=None):
 
@@ -122,7 +122,7 @@ class AirNowGrib():
     def wgrib_ij(self, lat, lon):
         """ Calculate i and j coordinates using wgrib from lat/lon """
         import subprocess
-        output = subprocess.check_output(['wgrib2', '-ll2ij', lon, lat, '/tmp/grib2/US-current.grib2'])
+        output = subprocess.check_output(['wgrib2', '-ll2ij', lon, lat, '/tmp/grib3/US-current.grib2'])
         latpart, ijpart = output.split('->')
         j, i = ijpart.strip().strip('()').split(',')
         #print(lat, lon)
@@ -157,21 +157,18 @@ class AirNowGrib():
         # Parameter
         param_name = self.GRIBDATA_PARAMS[param]
 
-        #print(GribPm25.query.delete())
-
         # Read CSV
         started = time.time()
         with open(csv_filepath, 'rb') as f:
 
-            #module = __import__('model.models')
-            #class_ = getattr(module, self.GRIB_CLASS[param])
-            
             reader = csv.reader(f)
 
             last_x = None
             last_y = None
-            #xcount = 0
             rowcount = 0
+
+            # Create redis pipeline
+            pipe = r.pipeline()
 
             # Loop over rows
             for row in reader:
@@ -180,31 +177,6 @@ class AirNowGrib():
                 start, end, var, loc, lon, lat, val = row
 
                 x, y = self.grid_xy(float(lat), float(lon))
-
-                """
-                if x == last_x and y == last_y:
-                    print('X', end='')
-                    xcount += 1
-                else:
-                    print('.', end='')
-                """
-                
-                #wx, wy = self.wgrib_ij(lat, lon)
-
-                #if x == wx and y == wy:
-                #    print('.', end='')
-                #else:
-                #    print(lat, lon)
-                #    print(x, y)
-                #    print(wx, wy)
-                #    print('X', end='')
-                #    xcount += 1
-
-
-                #last_x = x
-                #last_y = y
-                #if rowcount == 10000:
-                #    break
 
                 # Key - lat/lon translated to integers, key would be something like 1:2
                 k = '{}:{}'.format(x,y)
@@ -215,71 +187,24 @@ class AirNowGrib():
                 # If key not doing replace only or key exists, save to redis
                 if not exists_only or r.exists(k):
                    
-                    # Create a pipline
-                    pipe = r.pipeline()
-
-                    # Hash for lat/lon
-                    pipe.hset(k, param_name, val) # Param value
-                    pipe.hset(k, '{}_start'.format(param_name), start) # Param start
+                    pipe.hmset(k, {param_name: val, '{}_start'.format(param_name): start})
 
                     # List for parameter history
                     #pipe.lpush(kparam, val).ltrim(kparam, 0, 71) # 3 days
                     #pipe.delete(kparam)
                    
-                    # Execute save
+                if rowcount % 100 == 0:
                     pipe.execute()
-
-                if rowcount % 1000 == 0:
-                    print('.', end='')
-                    sys.stdout.flush()
+                    pipe = r.pipeline()
 
                 if rowcount % 100000 == 0:
                     print()
                     print('{} rows processed in {} seconds'.format(rowcount, time.time() - started))
 
-                """
-                x, y = self.grid_xy(float(lat), float(lon))
-                grib = GribPm25()
-                #g = getattr(module, class_)
-                grib.x = x
-                grib.y = y
-                grib.val = int(val)
-                """
-
-
-                
-                """
-                grib = GribData()
-                grib.start = start
-                grib.latitude = lat
-                grib.longitude = lon
-                txt = 'POINT({} {})'.format(lon, lat)
-                grib.location = Geography('Point').bind_expression(txt)
-                setattr(grib, self.GRIBDATA_COLS[param], val)
-                """
-
-                """
-                try:
-                    acdb.session.add(grib)
-                    acdb.session.commit()
-                    print('.', end='')
-                except IntegrityError as inst:
-                    acdb.session.rollback()
-                    print('-', end='')
-                except Exception as inst:
-                    acdb.session.rollback()
-                    print('x', end='')
-                    raise inst
-                """
-
-
-                #print(start, lat, lon, val)
-
+        pipe.execute()
         ended = time.time()
 
         elapsed = ended-started
-        
-        #print('Errors: {}'.format(xcount))
         print("{} seconds".format(elapsed))
 
     def grid_xy(self, lat, lon):
@@ -327,15 +252,20 @@ def run():
     f.close
 
     # Convert to csv and process
+    from airnow.tasks import grib_process_csv
+
     a = AirNowGrib()
+    #grib_process_csv.delay(AirNowGrib.PM25)
+
     for param in (AirNowGrib.PM25, AirNowGrib.OZONE):
         a.csv(param)
-        a.process_csv(param)
+        #a.process_csv(param)
+        grib_process_csv.delay(param) # run async
 
     for param in (AirNowGrib.FORECAST_TODAY, AirNowGrib.FORECAST_TOMORROW):
         a.csv(param)
-        a.process_csv(param, True)
-    self.stdout.write('Grib!')
+        #a.process_csv(param, True)
+        grib_process_csv.delay(param) # run async
 
 if __name__ == '__main__':
 
@@ -351,7 +281,7 @@ if __name__ == '__main__':
     x, y = a.grid_xy(lat, lon)
     print(x, y)
     print(a.grid_latlon(x, y))
-    print(os.system('wgrib2 /tmp/grib2/US-current_combined.grib2 -lon {} {}'.format(lon, lat)))
+    print(os.system('wgrib2 /tmp/grib3/US-current_combined.grib2 -lon {} {}'.format(lon, lat)))
 
     print()
 
@@ -360,7 +290,7 @@ if __name__ == '__main__':
     x, y = a.grid_xy(lat, lon)
     print(x, y)
     print(a.grid_latlon(x, y))
-    print(os.system('wgrib2 /tmp/grib2/US-current_combined.grib2 -lon {} {}'.format(lon, lat)))
+    print(os.system('wgrib2 /tmp/grib3/US-current_combined.grib2 -lon {} {}'.format(lon, lat)))
     
     print()
 
@@ -371,7 +301,7 @@ if __name__ == '__main__':
     print(x, y)
     print('grid_latlon')
     print(a.grid_latlon(x, y))
-    print(os.system('wgrib2 /tmp/grib2/US-current_combined.grib2 -lon {} {}'.format(lon, lat)))
+    print(os.system('wgrib2 /tmp/grib3/US-current_combined.grib2 -lon {} {}'.format(lon, lat)))
 
     """
     lat = '40.524671'

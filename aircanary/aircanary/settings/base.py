@@ -145,5 +145,6 @@ AIRNOW_GRIB_DIR = '/tmp/grib3'
 BROKER_URL = 'redis://localhost:6379/0'
 
 CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
+CELERY_RESULT_BACKEND = 'redis://'
 import djcelery
 djcelery.setup_loader()
