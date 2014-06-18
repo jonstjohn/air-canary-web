@@ -97,7 +97,7 @@
             <div class="row" style="height: 100%; font-size: 1.1em">
                 <div class="col-xs-4 vcontainer">
                     <div class="vcontent">
-                        <div>PM2.5 <span class="rounded-border">31</span></div>
+                        <div>PM2.5 <span class="rounded-border">{{pm25}}</span></div>
                     </div>
                 </div>
                 <div class="col-xs-4 vcontainer">
@@ -121,7 +121,7 @@
             <div class="vcontent" style="font-size: 150%">Today</div>
         </div>
         <div class="col-xs-6 text-right vcontainer">
-            <div class="vcontent">Unhealthy</div>
+            <div class="vcontent">Unhealthy {{today}}</div>
         </div>
     </div>
     <div class="row aqi-maroon" style="height: 20%">
@@ -129,7 +129,7 @@
             <div class="vcontent" style="font-size: 150%">Tomorrow</div>
         </div>
         <div class="col-xs-6 text-right vcontainer">
-            <div class="vcontent">Very Unhealthy</div>
+            <div class="vcontent">Very Unhealthy {{tomorrow}}</div>
         </div>
     </div>
 </div>

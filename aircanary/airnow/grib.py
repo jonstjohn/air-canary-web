@@ -276,6 +276,16 @@ if __name__ == '__main__':
     #a.process_csv(AirNowGrib.OZONE)
 
     print()
+    lat, lon = 40.7500, -111.8833
+    print(lat, lon)
+    x, y = a.grid_xy(lat, lon)
+    print(x, y)
+    print(a.grid_latlon(x, y))
+    print(os.system('wgrib2 /tmp/grib3/US-current_combined.grib2 -lon {} {}'.format(lon, lat)))
+    print(os.system('wgrib2 /tmp/grib3/US-current-ForecastToday.grib2 -lon {} {}'.format(lon, lat)))
+    print(os.system('wgrib2 /tmp/grib3/US-current-ForecastTomorrow.grib2 -lon {} {}'.format(lon, lat)))
+
+    print()
     lat, lon = 20.0000, 227.0000
     print(lat, lon)
     x, y = a.grid_xy(lat, lon)
