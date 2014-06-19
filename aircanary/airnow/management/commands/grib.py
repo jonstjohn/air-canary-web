@@ -7,4 +7,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        airnow.grib.run()
+        airnow.grib.run(async=False)

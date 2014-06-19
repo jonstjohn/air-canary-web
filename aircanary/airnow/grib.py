@@ -243,7 +243,7 @@ class AirNowGrib():
 
         return lat, lon
 
-def run():
+def run(async=True):
 
     # Download
     from airnow.utils import Ftp
@@ -257,15 +257,12 @@ def run():
     a = AirNowGrib()
     #grib_process_csv.delay(AirNowGrib.PM25)
 
-    for param in (AirNowGrib.PM25, AirNowGrib.OZONE):
+    for param in (AirNowGrib.PM25, AirNowGrib.OZONE, AirNowGrib.FORECAST_TODAY, AirNowGrib.FORECAST_TOMORROW):
         a.csv(param)
-        #a.process_csv(param)
-        grib_process_csv.delay(param) # run async
-
-    for param in (AirNowGrib.FORECAST_TODAY, AirNowGrib.FORECAST_TOMORROW):
-        a.csv(param)
-        #a.process_csv(param, True)
-        grib_process_csv.delay(param) # run async
+        if async:
+            grib_process_csv.delay(param) # run async
+        else:
+            a.process_csv(param)
 
 if __name__ == '__main__':
 
