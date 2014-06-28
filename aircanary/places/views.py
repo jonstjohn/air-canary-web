@@ -19,16 +19,9 @@ class HomeView(TemplateView):
             lat = 40.7500
             lon = -111.8833
 
-        from airnow.grib import AirNowGrib
-        a = AirNowGrib()
-        r = a.data_latlon(lat, lon)
-        if 'ozone' in r:
-            context['combined'] = r['ozone'] if float(r['ozone']) > float(r['pm25']) else r['pm25']
-
-        context['pm25'] = r['pm25']
-        context['ozone'] = r['ozone']
-        context['today'] = r['today']
-        context['tomorrow'] = r['tomorrow']
+        from places.models import Place
+        p = Place(lat, lon)
+        context['place'] = p
 
         return context
 
