@@ -11,13 +11,8 @@ class HomeView(TemplateView):
     def get_context_data(self, **kwargs):
 
         context = super(HomeView, self).get_context_data(**kwargs)
-
-        if 'lat' in self.kwargs and 'lon' in self.kwargs:
-            lat = float(self.kwargs['lat']) # SLC: 40.7500
-            lon = float(self.kwargs['lon']) # SLC: -111.8833
-        else:
-            lat = 40.7500
-            lon = -111.8833
+        lat = float(self.request.GET.get('lat', 40.7500))
+        lon = float(self.request.GET.get('lon', -111.8833))
 
         from places.models import Place
         p = Place(lat, lon)

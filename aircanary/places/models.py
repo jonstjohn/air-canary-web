@@ -43,7 +43,7 @@ class Place(models.Model):
         f = Forecast.Forecast(key, '37.8267', '-122.423')
         c = f.current()
 
-        self.temperature = c['currently']['temperature']
+        self.temperature = int(c['currently']['temperature'])
         self.icon = c['currently']['icon']
 
     def _load_name(self):
