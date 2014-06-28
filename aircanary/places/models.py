@@ -20,6 +20,7 @@ class Place(models.Model):
 
         self._load_airnow()
         self._load_forecast()
+        self._load_name()
 
     def _load_airnow(self):
 
@@ -44,6 +45,22 @@ class Place(models.Model):
 
         self.temperature = c['currently']['temperature']
         self.icon = c['currently']['icon']
+
+    def _load_name(self):
+        
+        from geopy import geocoders
+        g = geocoders.GoogleV3()
+        place, (lat, lng) = g.reverse((self.latitude, self.longitude), exactly_one=True)
+        self.name = self._parse_place(place)
+
+    def _parse_place(self, place):
+
+        parts = place.split(',')
+        if parts.pop().strip() == 'USA':
+            state, zip = parts.pop().strip().split(' ')
+            city = parts.pop().strip()
+            return '{}, {}'.format(city, state)
+        return place
 
     def __str__(self):
 
