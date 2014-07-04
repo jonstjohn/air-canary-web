@@ -16,7 +16,7 @@ class Place(models.Model):
     today = None
     tomorrow = None
 
-    icon_css_map = {'clear-day': 'sun',
+    icon_class_map = {'clear-day': 'sun',
                       'clear-night': 'moon',
                       'rain': 'rain',
                       'snow': 'snow',
