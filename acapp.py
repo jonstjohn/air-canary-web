@@ -31,6 +31,7 @@ app.secret_key = c.settings['flask']['secret_key']
 #app.debug = True if c.settings['configuration']['debug'] == 1 else False
 app.debug = True
 
+
 def generate_csrf_token():
     if 'XSRF-TOKEN' in request.cookies:
         return request.cookies.get('XSRF-TOKEN')
@@ -39,6 +40,7 @@ def generate_csrf_token():
         return "".join([random.choice(string.ascii_letters + string.digits) for n in xrange(30)])
 
 app.jinja_env.globals['csrf_token'] = generate_csrf_token
+
 
 def cache(timeout=300, key='view:{0}'):
     def decorator(f):
@@ -54,23 +56,28 @@ def cache(timeout=300, key='view:{0}'):
         return decorated_function
     return decorator
 
+
 @app.route('/')
 def index():
     """ Home page """
     return render_template('ng/index.html')
 
+
 @app.route('/e')
 def index_e():
     return render_template('ng/e.html')
+
 
 @app.route('/t')
 def index_t():
     return render_template('ng/t.html')
 
+
 @app.route('/p')
 def pindex():
     """ P index """
     return render_template('ng/p/index.html')
+
 
 @app.route('/ng/<template>')
 def ng_template(template):
@@ -80,6 +87,7 @@ def ng_template(template):
         abort(404)
 
     return render_template('ng/{0}.html'.format(template))
+
 
 @app.route('/location/<latitude>/<longitude>')
 def county(latitude, longitude):
@@ -137,6 +145,7 @@ def contact():
         response = Response(json.dumps(response_data), status=200, mimetype='application/json')
         return response
 
+
 @app.route('/forecast/<code>', subdomain='api')
 @app.route('/api/forecast/<code>')
 @cache()
@@ -146,6 +155,7 @@ def api_forecast(code):
     response_data = area.forecast_data()
     response = Response(json.dumps(response_data), status=200, mimetype='application/json')
     return response
+
 
 @app.route('/site/<code>', defaults={'samples': 1}, subdomain='api')
 @app.route('/site/<code>/<int:samples>', subdomain='api')
@@ -162,6 +172,7 @@ def api(code, samples):
     response = Response(json.dumps(response_data), status=200, mimetype='application/json')
     return response
 
+
 @app.route('/site', subdomain='api')
 @app.route('/api/site')
 @cache()
@@ -173,6 +184,7 @@ def api_site():
         response_data.append({'code': site.code, 'name': site.name})
     response = Response(json.dumps(response_data), status=200, mimetype='application/json')
     return response
+
 
 @app.route('/area', subdomain='api')
 @app.route('/api/area')
@@ -213,6 +225,7 @@ def api_areas():
     response = Response(json.dumps(response_data), status=200, mimetype='application/json')
     return response
 
+
 @app.route('/area/<int:code>', defaults={'samples': 1}, subdomain='api')
 @app.route('/area/<int:code>/<int:samples>', subdomain='api')
 @app.route('/api/area/<int:code>', defaults={'samples': 1})
@@ -225,6 +238,7 @@ def api_area(code, samples):
     response = Response(json.dumps(response_data), status=200, mimetype='application/json')
     return response
 
+
 @app.route('/geocode', methods=['POST'])
 def geocode():
     """ Geocode location """
@@ -236,6 +250,7 @@ def geocode():
     response_data = {'place': place, 'latitude': lat, 'longitude': lng}
     response = Response(json.dumps(response_data), status=200, mimetype='application/json')
     return response
+
 
 @app.route('/rgeocode', methods=['POST'])
 def rgeocode():
@@ -250,6 +265,7 @@ def rgeocode():
     response = Response(json.dumps(response_data), status=200, mimetype='application/json')
     return response
 
+
 def parse_place(place):
 
     parts = place.split(',')
@@ -259,6 +275,7 @@ def parse_place(place):
         city = parts.pop().strip()
         return '{}, {}'.format(city, state)
     return place
+
 
 @app.route('/point/<latlon>')
 def point(latlon):
@@ -275,17 +292,20 @@ def point(latlon):
     response = Response(json.dumps(response_data), status=200, mimetype='text/html')
     return response
 
+
 def after_this_request(f):
     if not hasattr(g, 'after_request_callbacks'):
         g.after_request_callbacks = []
     g.after_request_callbacks.append(f)
     return f
 
+
 @app.after_request
 def call_after_request_callbacks(response):
     for callback in getattr(g, 'after_request_callbacks', ()):
         callback(response)
     return response
+
 
 @app.before_request
 def csrf_protect():
@@ -304,7 +324,7 @@ def csrf_protect():
        
 if __name__ == '__main__':
     app.debug = True
-    app.run(host = c.settings['configuration']['ip'], port = 8080)
+    app.run(host=c.settings['configuration']['ip'], port = 8080)
 
 ADMINS = ['jonstjohn@gmail.com']
 if not app.debug:
