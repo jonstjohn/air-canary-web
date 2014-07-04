@@ -9,6 +9,7 @@ class Place(models.Model):
     pm25 = None
     combined = None
     icon = None
+    summary = None
     temperature = None
     today = None
     tomorrow = None
@@ -45,6 +46,7 @@ class Place(models.Model):
 
         self.temperature = int(c['currently']['temperature'])
         self.icon = c['currently']['icon']
+        self.summary = c['currently']['summary']
 
     def _load_name(self):
         
