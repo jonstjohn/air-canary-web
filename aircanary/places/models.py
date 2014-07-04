@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Place(models.Model):
 
     name = None
@@ -10,9 +11,21 @@ class Place(models.Model):
     combined = None
     icon = None
     summary = None
+    icon_class = None
     temperature = None
     today = None
     tomorrow = None
+
+    icon_class_map = {'clear-day': 'sun',
+                      'clear-night': 'moon',
+                      'rain': 'rain',
+                      'snow': 'snow',
+                      'sleet': 'sleet',
+                      'wind': 'wind',
+                      'fog': 'fog',
+                      'cloudy': 'cloud',
+                      'partly-cloudy-day': 'cloud sun',
+                      'partly-cloudy-night': 'cloud moon'}
 
     def __init__(self, latitude, longitude):
 
@@ -47,6 +60,11 @@ class Place(models.Model):
         self.temperature = int(c['currently']['temperature'])
         self.icon = c['currently']['icon']
         self.summary = c['currently']['summary']
+        self.icon_class = self._icon_to_css(self.icon)
+
+    def _icon_to_css(self, icon):
+
+        return self.icon_css_map[icon] if icon in self.icon_css_map else 'sun'
 
     def _load_name(self):
         
