@@ -54,9 +54,9 @@ class Place(models.Model):
         import os
         from places import Forecast
         key = os.environ['FORECAST_IO_KEY']
-        f = Forecast.Forecast(key, '37.8267', '-122.423')
+        f = Forecast.Forecast(key, self.latitude, self.longitude)
         c = f.current()
-
+        
         self.temperature = int(c['currently']['temperature'])
         self.icon = c['currently']['icon']
         self.summary = c['currently']['summary']
