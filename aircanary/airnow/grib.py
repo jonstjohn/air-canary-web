@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+
 class AirNowGrib():
 
     OZONE = 0
@@ -14,14 +15,14 @@ class AirNowGrib():
     FORECAST_TOMORROW = 7
 
     FILE_SUFFIX = (
-        '', # Ozone
-        '_pm25', # PM 2.5
-        '_combined', # combined
-        '-max', # Max Ozone
-        '-max_pm25', # Max PM 2.5
-        '-max_combined', # Max combined
-        '-ForecastToday', # Forecast for today
-        '-ForecastTomorrow', # Forecast for tomorrow
+        '',  # Ozone
+        '_pm25',  # PM 2.5
+        '_combined',  # combined
+        '-max',  # Max Ozone
+        '-max_pm25',  # Max PM 2.5
+        '-max_combined',  # Max combined
+        '-ForecastToday',  # Forecast for today
+        '-ForecastTomorrow',  # Forecast for tomorrow
     )
 
     GRIBDATA_COLS = (
@@ -57,69 +58,81 @@ class AirNowGrib():
         'GribTomorrow',
     )
 
-    GRIB_DIR = '/tmp/grib3'
-
-    def val(self, lat, lon, param, date=None, time=None):
-
+    def wgrib2_val(self, lat, lon, param, date=None, time=None):
+        """ Get airnow parameter data from latitude and longitude using wgrib2
+            Runs external call to wgrib2
+        """
         import subprocess
         import datetime
         import os
 
+        from django.conf import settings
+        grib2_dir = settings.AIRNOW_GRIB_DIR
+
+        # Get file path, either current or based on data
         if not date:
-            filepath = os.path.join(self.GRIB_DIR, 'US-current{}.grib2'.format(self.FILE_SUFFIX[param]))
-            #filepath = self.recent_filepath(param)
+            filepath = os.path.join(grib2_dir, 'US-current{}.grib2'.format(self.FILE_SUFFIX[param]))
         else:
             date = datetime.date.today()
             date_part = date.strftime('%y%m%d')
             if time:
                 date_part += time.strftime('%H')
-            filepath = os.path.join(self.GRIB_DIR, 'US-{}{}.grib2'.format(date_part, self.FILE_SUFFIX[param]))
+            filepath = os.path.join(grib2_dir, 'US-{}{}.grib2'.format(date_part, self.FILE_SUFFIX[param]))
 
+        # Get grib output
         output = subprocess.check_output(['/usr/local/bin/wgrib2', filepath, '-lon', lon, lat])
         parts = output.strip().split(',')
         return parts.pop().split('=')[1]
 
     def ozone(self, lat, lon):
 
-        return self.val(lat, lon, self.OZONE)
+        return self.wgrib2_val(lat, lon, self.OZONE)
 
     def pm25(self, lat, lon):
 
-        return self.val(lat, lon, self.PM25)
+        return self.wgrib2_val(lat, lon, self.PM25)
 
     def combined(self, lat, lon):
 
-        return self.val(lat, lon, self.COMBINED)
+        return self.wgrib2_val(lat, lon, self.COMBINED)
 
     def forecast_today(self, lat, lon):
 
-        return self.val(lat, lon, self.FORECAST_TODAY)
+        return self.wgrib2_val(lat, lon, self.FORECAST_TODAY)
 
     def forecast_tomorrow(self, lat, lon):
 
-        return self.val(lat, lon, self.FORECAST_TOMORROW)
+        return self.wgrib2_val(lat, lon, self.FORECAST_TOMORROW)
 
     def recent_filepath(self, param):
 
         import os
         import glob
 
+        from django.conf import settings
+        grib2_dir = settings.AIRNOW_GRIB_DIR
+
         numbers = 8 if param < 6 else 6
         filepath = max(
-                glob.iglob(
-                    '{}/US-{}{}.grib2'.format(self.GRIB_DIR, '[0-9]' * numbers, self.FILE_SUFFIX[param])
-                ), key=os.path.getctime)
+            glob.iglob(
+                '{}/US-{}{}.grib2'.format(grib2_dir, '[0-9]' * numbers, self.FILE_SUFFIX[param])
+            ), key=os.path.getctime)
         return filepath
 
     def csv(self, param):
         """ Generate CSV for param """
         import subprocess
         import os
-        filepath = os.path.join(self.GRIB_DIR, 'US-current{}.grib2'.format(self.FILE_SUFFIX[param]))
-        csv_filepath = os.path.join(self.GRIB_DIR, 'US-current{}.csv'.format(self.FILE_SUFFIX[param]))
+
+        from django.conf import settings
+        grib2_dir = settings.AIRNOW_GRIB_DIR
+
+        filepath = os.path.join(grib2_dir, 'US-current{}.grib2'.format(self.FILE_SUFFIX[param]))
+        csv_filepath = os.path.join(grib2_dir, 'US-current{}.csv'.format(self.FILE_SUFFIX[param]))
         subprocess.check_call(['/usr/local/bin/wgrib2', filepath, '-csv', csv_filepath])
 
-    def wgrib_ij(self, lat, lon):
+    @staticmethod
+    def wgrib_ij(lat, lon):
         """ Calculate i and j coordinates using wgrib from lat/lon """
         import subprocess
         output = subprocess.check_output(['wgrib2', '-ll2ij', lon, lat, '/tmp/grib3/US-current.grib2'])
@@ -144,15 +157,17 @@ class AirNowGrib():
         import csv
         import os
         import time
-        import sys
 
         import redis
+
+        from django.conf import settings
+        grib2_dir = settings.AIRNOW_GRIB_DIR
 
         # Setup redis
         r = redis.StrictRedis(host='localhost', port=6379, db=0)
 
         # CSV path
-        csv_filepath = os.path.join(self.GRIB_DIR, 'US-current{}.csv'.format(self.FILE_SUFFIX[param]))
+        csv_filepath = os.path.join(grib2_dir, 'US-current{}.csv'.format(self.FILE_SUFFIX[param]))
 
         # Parameter
         param_name = self.GRIBDATA_PARAMS[param]
@@ -163,8 +178,6 @@ class AirNowGrib():
 
             reader = csv.reader(f)
 
-            last_x = None
-            last_y = None
             rowcount = 0
 
             # Create redis pipeline
@@ -273,42 +286,42 @@ if __name__ == '__main__':
     #a.process_csv(AirNowGrib.OZONE)
 
     print()
-    lat, lon = 40.7500, -111.8833
-    print(lat, lon)
-    x, y = a.grid_xy(lat, lon)
+    latitude, longitude = 40.7500, -111.8833
+    print(latitude, longitude)
+    x, y = a.grid_xy(latitude, longitude)
     print(x, y)
     print(a.grid_latlon(x, y))
-    print(os.system('wgrib2 /tmp/grib3/US-current_combined.grib2 -lon {} {}'.format(lon, lat)))
-    print(os.system('wgrib2 /tmp/grib3/US-current-ForecastToday.grib2 -lon {} {}'.format(lon, lat)))
-    print(os.system('wgrib2 /tmp/grib3/US-current-ForecastTomorrow.grib2 -lon {} {}'.format(lon, lat)))
+    print(os.system('wgrib2 /tmp/grib3/US-current_combined.grib2 -lon {} {}'.format(longitude, latitude)))
+    print(os.system('wgrib2 /tmp/grib3/US-current-ForecastToday.grib2 -lon {} {}'.format(longitude, latitude)))
+    print(os.system('wgrib2 /tmp/grib3/US-current-ForecastTomorrow.grib2 -lon {} {}'.format(longitude, latitude)))
 
     print()
-    lat, lon = 20.0000, 227.0000
-    print(lat, lon)
-    x, y = a.grid_xy(lat, lon)
+    latitude, longitude = 20.0000, 227.0000
+    print(latitude, longitude)
+    x, y = a.grid_xy(latitude, longitude)
     print(x, y)
     print(a.grid_latlon(x, y))
-    print(os.system('wgrib2 /tmp/grib3/US-current_combined.grib2 -lon {} {}'.format(lon, lat)))
+    print(os.system('wgrib2 /tmp/grib3/US-current_combined.grib2 -lon {} {}'.format(longitude, latitude)))
 
     print()
 
-    lat, lon = 60.004999, 310.250000
-    print(lat, lon)
-    x, y = a.grid_xy(lat, lon)
+    latitude, longitude = 60.004999, 310.250000
+    print(latitude, longitude)
+    x, y = a.grid_xy(latitude, longitude)
     print(x, y)
     print(a.grid_latlon(x, y))
-    print(os.system('wgrib2 /tmp/grib3/US-current_combined.grib2 -lon {} {}'.format(lon, lat)))
+    print(os.system('wgrib2 /tmp/grib3/US-current_combined.grib2 -lon {} {}'.format(longitude, latitude)))
     
     print()
 
-    lat, lon = 40.7762, -111.8786
-    print(lat, lon)
-    x, y = a.grid_xy(lat, lon)
+    latitude, longitude = 40.7762, -111.8786
+    print(latitude, longitude)
+    x, y = a.grid_xy(latitude, longitude)
     print('grid_xy')
     print(x, y)
     print('grid_latlon')
     print(a.grid_latlon(x, y))
-    print(os.system('wgrib2 /tmp/grib3/US-current_combined.grib2 -lon {} {}'.format(lon, lat)))
+    print(os.system('wgrib2 /tmp/grib3/US-current_combined.grib2 -lon {} {}'.format(longitude, latitude)))
 
     """
     lat = '40.524671'

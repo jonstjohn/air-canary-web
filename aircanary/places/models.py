@@ -64,6 +64,12 @@ class Place(models.Model):
 
         return self.icon_css_map[icon] if icon in self.icon_css_map else 'sun'
 
+    def _aqi2css(self):
+
+        from airnow import models
+        for d in self.aqi_ranges:
+
+
     def _load_name(self):
         
         from geopy import geocoders
