@@ -70,7 +70,7 @@ class Place(models.Model):
 
         from airnow import models
         for d in self.aqi_ranges:
-
+            pass # TODO
 
     def _load_name(self):
         
