@@ -16,7 +16,7 @@ class Place(models.Model):
     today = None
     tomorrow = None
 
-    icon_css_map = {'clear-day': 'sun',
+    icon_class_map = {'clear-day': 'sun',
                       'clear-night': 'moon',
                       'rain': 'rain',
                       'snow': 'snow',
@@ -65,12 +65,6 @@ class Place(models.Model):
     def _icon_to_css(self, icon):
 
         return self.icon_css_map[icon] if icon in self.icon_css_map else 'sun'
-
-    def _aqi2css(self):
-
-        from airnow import models
-        for d in self.aqi_ranges:
-
 
     def _load_name(self):
         
