@@ -88,6 +88,15 @@ class Place(models.Model):
             return '{}, {}'.format(city, state)
         return place
 
+    @staticmethod
+    def from_name(name):
+        """ Get a place instance from name
+        Geeocdes the place """
+        from geopy import geocoders
+        g = geocoders.GoogleV3()
+        place, (lat, lng) = g.geocode(name)
+        return Place(lat, lng)
+
     def __str__(self):
 
         return "{} ({},{})\nOzone: {}\nPM25: {}\nCombined: {}\nToday: {}\nTomorrow: {}\nTemperature: {}\nIcon: {}".format(self.name, self.latitude, self.longitude, self.ozone, self.pm25, self.combined, self.today, self.tomorrow, self.temperature, self.icon)

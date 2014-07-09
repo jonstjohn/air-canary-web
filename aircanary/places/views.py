@@ -34,3 +34,21 @@ class HomeView(TemplateView):
         response = Response(json.dumps(response_data), status=200, mimetype='text/html')
         return response
     """
+
+class DesktopView(TemplateView):
+    """
+    Home page view
+    """
+    template_name = 'places/desktop.html'
+
+    def get_context_data(self, **kwargs):
+
+        context = super(DesktopView, self).get_context_data(**kwargs)
+        lat = float(self.request.GET.get('lat', 40.7500))
+        lon = float(self.request.GET.get('lon', -111.8833))
+
+        from places.models import Place
+        p = Place(lat, lon)
+        context['place'] = p
+
+        return context
