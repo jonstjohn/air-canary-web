@@ -2,7 +2,9 @@ from django.db import models
 
 
 class Place(models.Model):
-
+    """A place, identified by latitude and longitude, includes
+    a name, air quality data and current weather conditions
+    """
     name = None
     latitude = None
     longitude = None
@@ -28,7 +30,8 @@ class Place(models.Model):
                       'partly-cloudy-night': 'cloud moon'}
 
     def __init__(self, latitude, longitude):
-
+        """Loads airnow data, forecast and place name
+        """
         self.latitude = latitude
         self.longitude = longitude
 
@@ -37,20 +40,25 @@ class Place(models.Model):
         self._load_name()
 
     def _load_airnow(self):
-
+        """Load air quality data
+        """
         # Load ozone, pm25
+        import airnow
         from airnow.grib import AirNowGrib
+
         a = AirNowGrib()
         r = a.data_latlon(self.latitude, self.longitude)
         if 'ozone' in r:
             self.combined = r['ozone'] if float(r['ozone']) > float(r['pm25']) else r['pm25']
         self.pm25 = r['pm25']
         self.ozone = r['ozone']
-        self.today = r['today']
-        self.tomorrow = r['tomorrow']
+        self.today = airnow.models.Aqi(r['today'])
+        print(self.today)
+        self.tomorrow = airnow.models.Aqi(r['tomorrow'])
 
     def _load_forecast(self):
-
+        """Load forecast
+        """
         import os
         from places import Forecast
         key = os.environ['FORECAST_IO_KEY']
@@ -60,15 +68,18 @@ class Place(models.Model):
         self.temperature = int(c['currently']['temperature'])
         self.icon = c['currently']['icon']
         self.summary = c['currently']['summary']
-        self.icon_class = self._icon_to_css(self.icon)
+        self.icon_class = self._icon2css(self.icon)
 
-    def _icon_to_css(self, icon):
-
+    def _icon2css(self, icon):
+        """Convert forecast icon to css class
+        """
         return self.icon_css_map[icon] if icon in self.icon_css_map else 'sun'
 
     def _aqi2css(self):
-
+        """Convert AQI to css class
+        """
         from airnow import models
+
         for d in self.aqi_ranges:
             pass # TODO
 

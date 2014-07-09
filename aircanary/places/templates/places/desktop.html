@@ -120,20 +120,20 @@
             </div>
         </div>
     </div>
-    <div class="row aqi-red" style="height: 20%">
+    <div class="row {{ place.today.css }}" style="height: 20%; border-bottom: 1px solid #333">
         <div class="col-xs-6 vcontainer">
             <div class="vcontent" style="font-size: 150%">Today</div>
         </div>
         <div class="col-xs-6 text-right vcontainer">
-            <div class="vcontent">Unhealthy {{ place.today }}</div>
+            <div class="vcontent">{{ place.today.label }}</div>
         </div>
     </div>
-    <div class="row aqi-maroon" style="height: 20%">
+    <div class="row {{ place.tomorrow.css }}" style="height: 20%">
         <div class="col-xs-6 vcontainer">
             <div class="vcontent" style="font-size: 150%">Tomorrow</div>
         </div>
         <div class="col-xs-6 text-right vcontainer">
-            <div class="vcontent">Very Unhealthy {{ place.tomorrow }}</div>
+            <div class="vcontent">{{ place.tomorrow.label }}</div>
         </div>
     </div>
 </div>
