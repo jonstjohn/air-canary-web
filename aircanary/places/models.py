@@ -123,4 +123,3 @@ class Place(models.Model):
                     "Icon: {}".format(self.icon)
                 )
             )
-#return "{} ({},{})\nOzone: {}\nPM25: {}\nCombined: {}\nToday: {}\nTomorrow: {}\nTemperature: {}\nIcon: {}".format(self.name, self.latitude, self.longitude, self.ozone, self.pm25, self.combined, self.today, self.tomorrow, self.temperature, self.icon)
