@@ -53,7 +53,6 @@ class Place(models.Model):
         self.pm25 = r['pm25']
         self.ozone = r['ozone']
         self.today = airnow.models.Aqi(r['today'])
-        print(self.today)
         self.tomorrow = airnow.models.Aqi(r['tomorrow'])
 
     def _load_forecast(self):
@@ -110,4 +109,18 @@ class Place(models.Model):
 
     def __str__(self):
 
-        return "{} ({},{})\nOzone: {}\nPM25: {}\nCombined: {}\nToday: {}\nTomorrow: {}\nTemperature: {}\nIcon: {}".format(self.name, self.latitude, self.longitude, self.ozone, self.pm25, self.combined, self.today, self.tomorrow, self.temperature, self.icon)
+        return "\n".join(
+                (
+                    self.name,
+                    "Latitude: {}".format(self.latitude),
+                    "Longitude: {}".format(self.longitude),
+                    "Ozone: {}".format(self.ozone),
+                    "PM2.5: {}".format(self.pm25),
+                    "Combined: {}".format(self.combined),
+                    "Today: {}".format(self.today),
+                    "Tomorrow: {}".format(self.tomorrow),
+                    "Temperature: {}".format(self.temperature),
+                    "Icon: {}".format(self.icon)
+                )
+            )
+#return "{} ({},{})\nOzone: {}\nPM25: {}\nCombined: {}\nToday: {}\nTomorrow: {}\nTemperature: {}\nIcon: {}".format(self.name, self.latitude, self.longitude, self.ozone, self.pm25, self.combined, self.today, self.tomorrow, self.temperature, self.icon)
