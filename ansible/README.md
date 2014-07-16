@@ -28,9 +28,28 @@ Modify sudoers
 
 `ac    ALL=(ALL:ALL) ALL`
 
+### Change to ac user
+
+`su - ac`
+
 ### Generate SSH key
 
 `ssh-keygen -t rsa -C "email@email.com"`
 
 Add to github repository as deploy key
+
+### Create directories
+
+    mkdir ~/ac
+    mkdir ~/ac/logs
+    
+### Install git
+
+`sudo apt-get install git`
+    
+### Checkout code
+
+    cd ~/ac
+    git clone git@github.com:jonstjohn/air-canary-web.git
+    
 
