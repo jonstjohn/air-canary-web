@@ -11,8 +11,11 @@ Ubuntu 14.04
 ### Configure SSH
 Disable root ssh access and limit to ac user
 `vim /etc/ssh/sshd_config`
+
 `PermitRootLogin No`
+
 `AllowUsers ac`
+
 `service ssh restart`
 
 ### Add ac to sudoers
@@ -31,5 +34,3 @@ Modify sudoers
 
 Add to github repository as deploy key
 
-
-- 
