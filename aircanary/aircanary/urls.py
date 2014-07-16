@@ -14,6 +14,6 @@ urlpatterns = patterns('',
 )
 
 urlpatterns += patterns('places.views',
-    url(r'^$', HomeView.as_view(), name='home'),
-    url(r'^d$', DesktopView.as_view(), name='desktop')
+    url(r'^m$', HomeView.as_view(), name='home'),
+    url(r'^$', DesktopView.as_view(), name='desktop')
 )
