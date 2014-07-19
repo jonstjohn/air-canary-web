@@ -1,0 +1,18 @@
+env: prod
+is_dev: false
+git_branch: master
+force_checkout: yes
+server_domain: www.aircanary.com
+username: ac
+project_name: air-canary-web
+django_project_name: aircanary
+virtualenv_name: ac
+num_wsgi_processes: 10
+
+home_dir: "/home/{{ username }}"
+python_path: "{{ home_dir }}/Envs/{{ virtualenv_name }}"
+project_path: "{{ home_dir }}/{{ project_name }}"
+django_path: "{{ project_path }}/{{django_project_name}}"
+
+sock_path: "/tmp/{{ project_name }}.sock"
+wsgi_log_path: "/var/log/nginx/{{ project_name }}_uwsgi.log"

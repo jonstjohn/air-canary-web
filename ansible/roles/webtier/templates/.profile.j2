@@ -1,0 +1,5 @@
+{% for var_name, value in env_vars.iteritems() %}
+export {{ var_name }}={{ value }}
+{% endfor %}
+
+. {{ python_path }}/bin/activate

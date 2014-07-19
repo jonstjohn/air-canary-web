@@ -1,0 +1,33 @@
+# mysite_uwsgi.ini file
+[uwsgi]
+
+# Django-related settings
+# the base directory (full path)
+chdir           = {{ django_path }}
+# Django's wsgi file
+module          = {{ django_project_name }}.wsgi
+# the virtualenv (full path)
+home            = {{ python_path }}
+
+# process-related settings
+# master
+master          = true
+# maximum number of worker processes
+processes       = {{ num_wsgi_processes }}
+# the socket (use the full path to be safe)
+socket          = {{ sock_path }}
+# ... with appropriate permissions - may be needed
+
+#chmod-socket    = 664
+
+# clear environment on exit
+vacuum          = true
+
+{% for var_name, value in env_vars.iteritems() %}
+env = {{ var_name }}={{ value }}
+{% endfor %}
+
+daemonize = {{ wsgi_log_path }}
+
+# reload when python modules change DEV ONLY
+py-autoreload   = 1

@@ -1,1 +1,9 @@
+[webservers]
 prod ansible_ssh_port=22 ansible_ssh_host=74.207.233.201
+
+[dbservers]
+prod ansible_ssh_port=22 ansible_ssh_host=74.207.233.201
+
+[prod:children]
+webservers
+dbservers

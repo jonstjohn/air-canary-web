@@ -1,0 +1,35 @@
+upstream {{ project_name }} {
+    server unix://{{ sock_path }};
+}
+
+server {
+    listen      80;
+
+    server_name {{ server_domain }};
+    charset     utf-8;
+
+    client_max_body_size 75M;   # adjust to taste
+
+    {% if not is_dev %}
+        location /media  {
+            alias {{ project_path }}/media/;
+        }
+
+        location /static {
+            alias {{ project_path }}/static/;
+        }
+
+        # Needed for AWS Elastic Load Balancer Health Checks
+        location /index.html {
+            alias /usr/share/nginx/www/index.html;
+        }
+    {% endif %}
+
+    location / {
+        uwsgi_pass  {{ project_name }};
+        include     {{ project_path }}/uwsgi_params; # the uwsgi_params file you installed
+        proxy_set_header X-Forwarded-Host $server_name;
+        proxy_set_header X-Real-IP $remote_addr;
+        add_header P3P 'CP="ALL DSP COR PSAa PSDa OUR NOR ONL UNI COM NAV"';
+    }
+}

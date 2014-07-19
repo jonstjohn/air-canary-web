@@ -1,0 +1,3 @@
+is_dev: False
+django_settings_module: aircanary.settings.prod
+venv_requirements_path: "{{ project_path }}/requirements/prod.txt"
