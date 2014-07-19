@@ -3,3 +3,6 @@ server_domain: www.aircanary.com
 env_vars:
   DJANGO_SETTINGS_MODULE: '{{ django_settings_module }}'
   WORKON_HOME: '{{ home_dir }}/Envs'
+  FORECAST_IO_KEY: "{{ lookup('env','FORECAST_IO_KEY') }}"
+  AIRNOW_USERNAME: "{{ lookup('env', 'AIRNOW_USERNAME') }}"
+  AIRNOW_PASSWORD: "{{ lookup('env', 'AIRNOW_PASSWORD') }}"
