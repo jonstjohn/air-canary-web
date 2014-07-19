@@ -7,17 +7,20 @@
 - name: Add postgres repository
   apt_repository: repo='deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main' state='present'
 
-- name: Install postgresql 9.3 server
-  apt: pkg=postgresql-9.3 force=yes state=latest update_cache=yes
+- name: Install postgresql server
+  apt: pkg=postgresql force=yes state=latest update_cache=yes
 
-- name: Install postgresql 9.3 server
-  apt: pkg=postgresql-server-dev-9.3 force=yes state=present
+- name: Install postgresql contrib
+  apt: pkg=postgresql-contrib force=yes state=present
 
 - name: postgresql - install psycopg2
   apt: pkg=python-psycopg2
 
-- name: postgresql - install postgis
-  apt: pkg=postgresql-9.3-postgis
+#- name: postgis
+#  apt: pkg=postgis
+
+#- name: postgresql - install postgis
+#  apt: pkg=postgresql-9.3-postgis-2.1
 
 - name: Restart postgresql server
   service: name=postgresql state=started enabled=yes
