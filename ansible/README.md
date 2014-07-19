@@ -95,3 +95,21 @@ and reload `. ~/.bashrc`
     if has("autocmd")
       au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
       endif
+
+## Get requirements
+
+    pip install -r requirements/production.txt
+
+## Add .acrc
+
+     set default settings module
+     DJANGO_SETTINGS_MODULE=aircanary.settings.dev; export DJANGO_SETTINGS_MODULE
+
+     AIRNOW_USERNAME=jonstjohn; export AIRNOW_USERNAME
+     AIRNOW_PASSWORD=XXXXXXXX; export AIRNOW_PASSWORD
+
+     FORECAST_IO_KEY=XXXXXX; export FORECAST_IO_KEY
+
+then in .bashrc add
+
+    source ~/.acrc

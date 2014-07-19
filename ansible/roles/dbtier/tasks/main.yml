@@ -10,6 +10,9 @@
 - name: Install postgresql server
   apt: pkg=postgresql force=yes state=latest update_cache=yes
 
+- name: Install postgresql dev
+  apt: pkg=libpq-dev
+
 - name: Install postgresql contrib
   apt: pkg=postgresql-contrib force=yes state=present
 
@@ -43,3 +46,6 @@
 
 #- name: postgresql - install postgresql-contrib-9.3 --needed for fulltextsearch
 #  apt: pkg=postgresql-contrib-9.3 state=latest update_cache=yes
+
+- name: Redis
+  apt: pkg=redis-server
