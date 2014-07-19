@@ -16,6 +16,9 @@
 - name: postgresql client
   apt: pkg=postgresql-client
 
+- name: lib32z1-dev
+  apt: lib32z1-dev
+
 - name: uwsgi
   pip: name=uwsgi
 
