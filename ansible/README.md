@@ -62,9 +62,9 @@ Add to github repository as deploy key
 
 run it
 
-### Post-ansible
+## Post-ansible
 
-## Modify .bashrc
+### Modify .bashrc
 Add to .bashrc
 
     source /usr/local/bin/virtualenvwrapper.sh
@@ -72,11 +72,11 @@ Add to .bashrc
 
 and reload `. ~/.bashrc`
 
-## Create ac virtualenv
+### Create ac virtualenv
 
 `mkvirtualenv ac`
 
-## Update /etc/vim/vimrc.local
+### Update /etc/vim/vimrc.local
 
     colo evening
     "set noswapfile
@@ -96,11 +96,11 @@ and reload `. ~/.bashrc`
       au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
       endif
 
-## Get requirements
+### Get requirements
 
     pip install -r requirements/production.txt
 
-## Add .acrc
+### Add .acrc
 
      set default settings module
      DJANGO_SETTINGS_MODULE=aircanary.settings.dev; export DJANGO_SETTINGS_MODULE
@@ -113,3 +113,20 @@ and reload `. ~/.bashrc`
 then in .bashrc add
 
     source ~/.acrc
+
+### Install wgrib2
+
+http://www.cpc.noaa.gov/products/wesley/wgrib2/
+
+    cd ~
+    mkdir install
+    cd install
+    mkdir wgrib2
+    cd wgrib2/
+    wget http://www.ftp.cpc.ncep.noaa.gov/wd51we/wgrib2/wgrib2.tgz.v2.0.1
+    tar -zxf wgrib2.tgz.v2.0.1
+    cd grib2
+    export CC=gcc
+    make
+    wgrib2/wgrib2 -config ; verify if works
+    sudo cp wgrib2/wgrib2 /usr/local/bin/wgrib2

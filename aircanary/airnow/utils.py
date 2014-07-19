@@ -57,6 +57,9 @@ class Ftp:
         from django.conf import settings
         grib2_dir = settings.AIRNOW_GRIB_DIR
 
+        if not os.path.exists(grib2_dir):
+            os.makedirs(grib2_dir)
+
         files = self.grib2_recent()
         self.ftp.cwd('GRIB2')
         for file in files.values():
