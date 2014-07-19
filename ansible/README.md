@@ -130,3 +130,31 @@ http://www.cpc.noaa.gov/products/wesley/wgrib2/
     make
     wgrib2/wgrib2 -config ; verify if works
     sudo cp wgrib2/wgrib2 /usr/local/bin/wgrib2
+
+### Create database, user
+
+    su - postgres
+    psql
+    > CREATE DATABASE air_canary template=template0 encoding='UTF-8' lc_ctype='en_US.UTF-8' lc_collate='en_US.UTF-8';
+    > CREATE USER ac_web WITH PASSWORD '[password]';
+    > GRANT ALL PRIVILEGES ON DATABASE air_canary TO ac_web
+    > \q
+
+### Setup celery
+
+Add to .bashrc
+
+    alias startceleryd="cd /home/ac/air-canary-web/aircanary; python manage.py celeryd_detach -f /home/ac/logs/celeryd.log --pidfile /home/ac/celeryd.pid --concurrency=2"
+    alias startcelerybeat="cd /home/ac/air-canary-web/aircanary; python manage.py celerybeat --detach -f /home/ac/logs/celerybeat.log -s /home/ac/logs/celery-schedule --pidfile=/home/ac/logs/celerybeat.pid --workdir /home/ac/air-canary-web/aircanary"
+
+    alias startcelery="startceleryd && startcelerybeat"
+    alias stopcelery="kill \$(cat /home/ac/celeryd.pid); kill \$(cat /home/ac/logs/celerybeat.pid)"
+
+Then run
+
+    startceleryd
+    startcelerybeat
+
+or just
+
+    startcelery

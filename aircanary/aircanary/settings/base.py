@@ -17,6 +17,7 @@ from unipath import Path
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+ROOT_DIR = Path(__file__).ancestor(5)
 PROJECT_DIR = Path(__file__).ancestor(4)
 DJANGO_DIR = Path(__file__).ancestor(3)
 
@@ -43,9 +44,9 @@ path.append(DJANGO_ROOT)
 SECRET_KEY = '0!j$b7231ew)^9j&!*3o&pfw-$uhz=j9o*7r4ht3f+$6yph=1a'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -86,7 +87,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'ac',
         'USER': 'ac_web',
-        'PASSWORD': 'Xd2!3g',
+        'PASSWORD': os.environ['DATABASE_PASSWORD'],
         'HOST': 'localhost',
         'PORT': '',
     }
@@ -123,7 +124,7 @@ USE_TZ = True
 #STATIC_URL = '/static/'
 ########## STATIC FILE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
-STATIC_ROOT = normpath(join(SITE_ROOT, 'assets'))
+STATIC_ROOT = normpath(join(ROOT_DIR, 'static'))
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-url
 STATIC_URL = '/static/'

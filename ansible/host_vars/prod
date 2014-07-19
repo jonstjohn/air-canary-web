@@ -6,3 +6,4 @@ env_vars:
   FORECAST_IO_KEY: "{{ lookup('env','FORECAST_IO_KEY') }}"
   AIRNOW_USERNAME: "{{ lookup('env', 'AIRNOW_USERNAME') }}"
   AIRNOW_PASSWORD: "{{ lookup('env', 'AIRNOW_PASSWORD') }}"
+  DATABASE_PASSWORD: "{{ lookup('env', 'DATABASE_PASSWORD') }}"

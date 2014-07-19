@@ -12,11 +12,11 @@ server {
 
     {% if not is_dev %}
         location /media  {
-            alias {{ project_path }}/media/;
+            alias {{ home_dir }}/media/;
         }
 
         location /static {
-            alias {{ project_path }}/static/;
+            alias {{ home_dir }}/static/;
         }
 
         # Needed for AWS Elastic Load Balancer Health Checks
