@@ -60,7 +60,38 @@ Add to github repository as deploy key
     
 ## Run ansible
 
+run it
 
+### Post-ansible
 
+## Modify .bashrc
+Add to .bashrc
 
+    source /usr/local/bin/virtualenvwrapper.sh
+    export WORKON_HOME=~/Envs
 
+and reload `. ~/.bashrc`
+
+## Create ac virtualenv
+
+`mkvirtualenv ac`
+
+## Update /etc/vim/vimrc.local
+
+    colo evening
+    "set noswapfile
+    "set nobackup
+    "set nowritebackup
+    set ai
+    set tabstop=4
+    set softtabstop=4
+    set shiftwidth=4
+    set expandtab
+
+    set viminfo='10,\"100,:20,%,n~/.viminfo
+
+    " Uncomment the following to have Vim jump to the last position when
+    " reopening a file
+    if has("autocmd")
+      au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+      endif

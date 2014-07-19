@@ -25,20 +25,21 @@
 - name: Restart postgresql server
   service: name=postgresql state=started enabled=yes
 
-- name: postgresql - create db
-  sudo_user: postgres
-  sudo: yes
-  postgresql_db: name="air_canary" encoding="UTF-8" lc_collate="en_US.UTF-8" lc_ctype="en_US.UTF-8" template='template0'
+#- name: postgresql - create db
+#  sudo_user: postgres
+#  sudo: yes
+#  postgresql_db: name="air_canary" encoding="UTF-8" lc_collate="en_US.UTF-8" lc_ctype="en_US.UTF-8" template='template0'
+#  tags: debug
 
-- name: postgresql - create user
-  sudo_user: postgres
-  sudo: yes
-  postgresql_user: db=air_canary user=ac_web password=test1234
+#- name: postgresql - create user
+#  sudo_user: postgres
+#  sudo: yes
+#  postgresql_user: db=air_canary user=ac_web password=test1234
 
-- name: postgresql - apply privileges
-  sudo_user: postgres
-  sudo: yes
-  postgresql_privs: db=air_canary privs=ALL type=database role=ac_web
+#- name: postgresql - apply privileges
+#  sudo_user: postgres
+#  sudo: yes
+#  postgresql_privs: db=air_canary privs=ALL type=database role=ac_web
 
-- name: postgresql - install postgresql-contrib-9.3 --needed for fulltextsearch
-  apt: pkg=postgresql-contrib-9.3 state=latest update_cache=yes
+#- name: postgresql - install postgresql-contrib-9.3 --needed for fulltextsearch
+#  apt: pkg=postgresql-contrib-9.3 state=latest update_cache=yes
