@@ -63,6 +63,7 @@ INSTALLED_APPS = (
     'djcelery',
     'places',
     'airnow',
+    'deploy',
 )
 
 MIDDLEWARE_CLASSES = (
