@@ -1,0 +1,41 @@
+{% load staticfiles %}
+{% load place_extras %}
+<!DOCTYPE html>
+<html style="height: 100%">
+<head>
+    <title>Air Canary</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static "css/bootstrap.css" %}"/>
+    <link href="{% static "css/main.css" %}" rel="stylesheet" media="screen"/> 
+    <link href="{% static "css/climacons-font.css" %}" rel="stylesheet" media="screen"/>
+    <link href='http://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
+
+    <style>
+        * { color: #fff }
+        .vcontainer { display: table !important; height: 100% }
+        .vcontent { display: table-cell; vertical-align: middle; height: 100% }
+        .rounded-border { border: 1px solid #60bd22; padding: 3px 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; }
+    </style>
+</head>
+<body style="height: 100%">
+    <div style="height: 20%; width: 100%; text-align: center; display: table" class="aqi-green">
+        <div style="display: table-cell; vertical-align: middle">AirCanary - Coming Soon!</div>
+    </div>
+    <div style="height: 20%; width: 100%; text-align: center; display: table" class="aqi-yellow">
+        <div style="display: table-cell; vertical-align: middle">Instantly Access Air Quality Data</div>
+    </div>
+    <div style="height: 20%; width: 100%; text-align: center; display: table" class="aqi-red">
+        <div style="display: table-cell; vertical-align: middle">Any Location in the US</div>
+    </div>
+    <div style="height: 20%; width: 100%; text-align: center; display: table" class="aqi-maroon">
+        <div style="display: table-cell; vertical-align: middle">PM2.5 and Ozone</div>
+    </div>
+    <div style="height: 20%; width: 100%; text-align: center; display: table" class="aqi-purple">
+        <div style="display: table-cell; vertical-align: middle">Mobile Optimized</div>
+    </div>
+</body>
+</html>

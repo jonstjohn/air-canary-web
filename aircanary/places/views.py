@@ -2,15 +2,20 @@ from django.shortcuts import render
 
 from django.views.generic import TemplateView
 
-class HomeView(TemplateView):
+class ComingView(TemplateView):
+    """ Coming soon view
     """
-    Home page view
+    template_name = 'places/coming.html'
+
+class MobileView(TemplateView):
     """
-    template_name = 'places/home.html'
+    Mobile page view
+    """
+    template_name = 'places/mobile.html'
 
     def get_context_data(self, **kwargs):
 
-        context = super(HomeView, self).get_context_data(**kwargs)
+        context = super(MobileView, self).get_context_data(**kwargs)
         lat = float(self.request.GET.get('lat', 40.7500))
         lon = float(self.request.GET.get('lon', -111.8833))
 

@@ -3,7 +3,7 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 admin.autodiscover()
 
-from places.views import HomeView, DesktopView
+from places.views import MobileView, DesktopView, ComingView
 
 urlpatterns = patterns('',
     # Examples:
@@ -14,6 +14,7 @@ urlpatterns = patterns('',
 )
 
 urlpatterns += patterns('places.views',
-    url(r'^m$', HomeView.as_view(), name='home'),
-    url(r'^$', DesktopView.as_view(), name='desktop')
+    url(r'^$', ComingView.as_view(), name='coming'),
+    url(r'^m$', MobileView.as_view(), name='mobile'),
+    url(r'^d$', DesktopView.as_view(), name='desktop')
 )
