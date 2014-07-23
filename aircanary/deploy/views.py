@@ -9,24 +9,22 @@ from deploy.models import Push
 
 class PushView(View):
 
-    def get(self, request, *args, **kwargs):
-
-        return HttpResponse('')
-
     def post(self, request, *args, **kwargs):
 
         import json
-        print(request.body)
-        obj = json.loads(request.body)
+        data = json.loads(request.body)
 
         p = Push()
-        p.branch = obj.ref
-        #p.tag = obj.head
+        p.branch = data['ref']
+        p.tag = data['head_commit']['id']
         p.content = request.body
         p.save()
 
-        print(obj)
-        return HttpResponse('')
+        if data['ref'] == 'refs/head/master':
+
+            print('Master!!!')
+
+        return HttpResponse('Groovy')
 
     @csrf_exempt
     def dispatch(self, *args, **kwargs):
