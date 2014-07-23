@@ -20,7 +20,7 @@ class PushView(View):
         p.content = request.body
         p.save()
 
-        if data['ref'] == 'refs/head/master':
+        if data['ref'] == 'refs/heads/master':
 
             print('Master!!!')
 
