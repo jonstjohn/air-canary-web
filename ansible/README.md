@@ -140,6 +140,10 @@ http://www.cpc.noaa.gov/products/wesley/wgrib2/
     > GRANT ALL PRIVILEGES ON DATABASE air_canary TO ac_web
     > \q
 
+Update pg_hba.conf
+
+    local   all             ac_web                                  md5
+
 ### Setup celery
 
 Add to .bashrc
