@@ -62,6 +62,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'raven.contrib.django.raven_compat',
     'djcelery',
     'places',
     'airnow',
@@ -152,3 +153,9 @@ CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
 CELERY_RESULT_BACKEND = 'redis://'
 import djcelery
 djcelery.setup_loader()
+
+# Raven config
+RAVEN_CONFIG = {
+    'dsn': os.environ['SENTRY_DSN'],
+}
+
