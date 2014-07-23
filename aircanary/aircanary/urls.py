@@ -4,6 +4,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 from places.views import MobileView, DesktopView, ComingView
+from deploy.views import PushView
 
 urlpatterns = patterns('',
     # Examples:
@@ -16,5 +17,6 @@ urlpatterns = patterns('',
 urlpatterns += patterns('places.views',
     url(r'^$', ComingView.as_view(), name='coming'),
     url(r'^m$', MobileView.as_view(), name='mobile'),
-    url(r'^d$', DesktopView.as_view(), name='desktop')
+    url(r'^d$', DesktopView.as_view(), name='desktop'),
+    url(r'^gitpush$', PushView.as_view(), name='gitpush'),
 )
