@@ -5,7 +5,7 @@ from django.http import HttpResponse
 
 from django.core import serializers
 
-from deploy.models import Push
+from deploy.models import Push, Deploy
 
 class PushView(View):
 
@@ -24,6 +24,24 @@ class PushView(View):
 
             print('Master!!!')
 
+        import os
+        deploy_path = '/home/ac/deploy.sh'
+        if os.path.exists(deploy_path):
+
+            d = Deploy()
+            d.ref = p.branch
+            d.rev = p.tag
+
+            import subprocess
+            try:
+                output = subprocess.check_output(['sudo', '-u', 'ac', deploy_path])
+                d.output = output
+                d.success = True
+                d.save()
+            except subprocess.CalledProcessorError as e:
+                d.success = False 
+                d.save()
+                raise e
         return HttpResponse('Groovy')
 
     @csrf_exempt

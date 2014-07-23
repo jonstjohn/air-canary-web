@@ -162,3 +162,18 @@ Then run
 or just
 
     startcelery
+
+### Setup deploy.sh
+
+    cd /home/ac/air-canary-web
+    git pull
+    pip install -r requirements/production.txt
+    cd /home/ac/air-canary-web/aircanary
+    python manage.py migrate
+    python manage.py collectstatic --noinput
+    sudo service uwsgi restart
+    sudo service nginx restart
+
+Modify sudoers file:
+    ac    ALL=(ALL:ALL) NOPASSWD: /usr/sbin/service uwsgi restart,/usr/sbin/service nginx restart
+    www-data    ALL=(ac) NOPASSWD: /home/ac/deploy.sh
