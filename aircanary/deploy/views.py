@@ -21,7 +21,7 @@ class PushView(View):
 
         p = Push()
         p.branch = obj.ref
-        p.tag = obj.head
+        #p.tag = obj.head
         p.content = request.body
         p.save()
 
