@@ -7,3 +7,4 @@ env_vars:
   AIRNOW_USERNAME: "{{ lookup('env', 'AIRNOW_USERNAME') }}"
   AIRNOW_PASSWORD: "{{ lookup('env', 'AIRNOW_PASSWORD') }}"
   DATABASE_PASSWORD: "{{ lookup('env', 'DATABASE_PASSWORD') }}"
+  SENTRY_DSN: "{{ lookup('env', 'SENTRY_DSN') }}"
