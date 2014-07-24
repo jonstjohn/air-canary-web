@@ -25,7 +25,7 @@ class PushView(View):
 
             print('Master!!!')
 
-        # TODO
+        # TODO - fix this
         import os
         deploy_path = '/home/ac/deploy.sh'
         if os.path.exists(deploy_path):
