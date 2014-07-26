@@ -2,10 +2,10 @@ from django.core.management import call_command
 #from aircanary.utils import cd
 
 
-def deploy_production():
+def deploy_prod():
 
     import subprocess
-    subprocess.call(['sudo', '-u', 'ac', '/home/ac/git.sh'])
+    #subprocess.call(['sudo', '-u', 'ac', '/home/ac/git.sh'])
     subprocess.call(['git', '-C', '/home/ac/air-canary-web', 'reset', '--hard', 'HEAD'])
     subprocess.call(['git', '-C', '/home/ac/air-canary-web', 'pull'])
     subprocess.call(['/home/ac/Envs/ac/bin/pip', 'install', '-r', '/home/ac/air-canary-web/requirements/production.txt'])

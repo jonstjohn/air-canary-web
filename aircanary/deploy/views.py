@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.core import serializers
 
 from deploy.models import Push, Deploy
-from deploy.utils import deploy_production
+from deploy.tasks import deploy_prod
 
 class PushView(View):
 
@@ -30,7 +30,7 @@ class PushView(View):
         deploy_path = '/home/ac/deploy.sh'
         if os.path.exists(deploy_path):
 
-            deploy_production()
+            deploy_prod.delay()
             d = Deploy()
             d.ref = p.branch
             d.rev = p.tag
