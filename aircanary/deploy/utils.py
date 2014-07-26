@@ -5,7 +5,6 @@ from django.core.management import call_command
 def deploy_prod():
 
     import subprocess
-    #subprocess.call(['sudo', '-u', 'ac', '/home/ac/git.sh'])
     print(subprocess.check_output(['git', '-C', '/home/ac/air-canary-web', 'reset', '--hard', 'HEAD'])
     print(subprocess.check_output(['git', '-C', '/home/ac/air-canary-web', 'pull'])
     print(subprocess.check_output(['/home/ac/Envs/ac/bin/pip', 'install', '-r', '/home/ac/air-canary-web/requirements/production.txt'])
