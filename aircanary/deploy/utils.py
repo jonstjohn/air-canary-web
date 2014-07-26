@@ -3,7 +3,7 @@ from django.core.management import call_command
 
 
 def deploy_prod():
-
+    """ Deploy to production """
     import subprocess
     print(subprocess.check_output(['git', '-C', '/home/ac/air-canary-web', 'reset', '--hard', 'HEAD']))
     print(subprocess.check_output(['git', '-C', '/home/ac/air-canary-web', 'pull']))
