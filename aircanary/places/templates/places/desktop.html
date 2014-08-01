@@ -21,7 +21,7 @@
         .rounded-border { border: 1px solid #60bd22; padding: 3px 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; }
     </style>
 </head>
-<body class="aqi-green" style="height: 100%">
+<body class="{{ place.combined.css }}" style="height: 100%">
 
 
 <nav class="navbar navbar-default aqi-yellow" role="navigation" style="margin-bottom: 0">
@@ -101,12 +101,12 @@
             <div class="row" style="height: 100%; font-size: 1.1em">
                 <div class="col-xs-4 vcontainer">
                     <div class="vcontent">
-                        <div>PM2.5 <span class="rounded-border">{{ place.pm25 }}</span></div>
+                        <div>PM2.5 <span class="rounded-border">{{ place.pm25.value }}</span></div>
                     </div>
                 </div>
                 <div class="col-xs-4 vcontainer">
                     <div class="vcontent">
-                        <div>Ozone <span class="rounded-border">{{ place.ozone }}</span></div>
+                        <div>Ozone <span class="rounded-border">{{ place.ozone.value }}</span></div>
                     </div>
                 </div>
                 <div class="col-xs-4 text-right vcontainer">

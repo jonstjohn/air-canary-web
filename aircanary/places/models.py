@@ -17,6 +17,7 @@ class Place(models.Model):
     temperature = None
     today = None
     tomorrow = None
+    current = None
 
     icon_css_map = {'clear-day': 'sun',
                       'clear-night': 'moon',
@@ -48,10 +49,12 @@ class Place(models.Model):
 
         a = AirNowGrib()
         r = a.data_latlon(self.latitude, self.longitude)
+        commbined = r['pm25']
         if 'ozone' in r:
-            self.combined = r['ozone'] if float(r['ozone']) > float(r['pm25']) else r['pm25']
-        self.pm25 = r['pm25']
-        self.ozone = r['ozone']
+            combined = r['ozone'] if float(r['ozone']) > float(r['pm25']) else r['pm25']
+        self.combined = airnow.models.Aqi(combined)
+        self.pm25 = airnow.models.Aqi(r['pm25'])
+        self.ozone = airnow.models.Aqi(r['ozone'])
         self.today = airnow.models.Aqi(r['today'])
         self.tomorrow = airnow.models.Aqi(r['tomorrow'])
 
