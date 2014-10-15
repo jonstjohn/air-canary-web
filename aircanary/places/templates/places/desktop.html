@@ -26,9 +26,18 @@
 
 <div class="container" style="background: #fff">
     <div class="row" style="color: #333; padding: 10px">
-        <div class="col-xs-3" style="color: #333">AirCanary</div>
-        <div class="col-xs-3" style="color: #333"><input type="text"></div>
-        <div class="col-xs-6" style="color: #333">About API Contact</div>
+        <div class="col-xs-3">
+            <div style="text-align: center; color: #333; padding-top: 5px"><strong style="color: #333">Air</strong><span style="color: #60bd22">C</span><span style="color: #f4bd00">a</span><span style="color: #f69721">n<span style="color: #c44812">a<span style="color: #980046">r</span><span style="color: #7c0020">y</span></div>
+        </div>
+        <div class="col-xs-3" style="color: #333">
+            <div class="input-group">
+                <input type="text" class="form-control input-sm" placeholder="Choose location">
+                <span class="input-group-btn">
+                    <button class="btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-search" style="color: #666"></span></button>
+                </span>
+            </div>
+        </div>
+        <div class="col-xs-6" style="color: #333; text-align: right; padding-top: 5px"><small style="color: #333">About</small></div>
     </div>
 </div>
 
@@ -73,9 +82,28 @@
                 <div class="col-xs-3"></div>
                 <div class="col-xs-6 {{ place.tomorrow.css }}-light" style="padding: 20px; text-align: center">Tomorrow</div>
             </div>
+            <div class="row">
+                <div class="col-xs-3"></div>
+                <div class="col-xs-6" style="padding-right: 0">
+                    <div style="border: 1px solid #ccc; height: 17px; width: 92px; float: right">
+                        <div style="width: 15px; height: 15px; float: left" class="legend-box aqi-green" data-toggle="tooltip" data-placement="top" title="Good"></div>
+                        <div style="width: 15px; height: 15px; float: left" class="legend-box aqi-yellow" data-toggle="tooltip" data-placement="top" title="Moderate"></div>
+                        <div style="width: 15px; height: 15px; float: left" class="legend-box aqi-orange" data-toggle="tooltip" data-placement="top" title="Unhealthy for Sensitive Groups"></div>
+                        <div style="width: 15px; height: 15px; float: left" class="legend-box aqi-red" data-toggle="tooltip" data-placement="top" title="Unhealthy"></div>
+                        <div style="width: 15px; height: 15px; float: left" class="legend-box aqi-purple" data-toggle="tooltip" data-placement="top" title="Very Unhealth"></div>
+                        <div style="width: 15px; height: 15px; float: left" class="legend-box aqi-maroon" data-toggle="tooltip" data-placement="top" title="Hazardous"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+$(function() {
+    $('.legend-box').tooltip();
+});
+</script>
 
 </body>
 </html>
