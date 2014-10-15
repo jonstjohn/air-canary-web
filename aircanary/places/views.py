@@ -48,12 +48,20 @@ class DesktopView(TemplateView):
 
     def get_context_data(self, **kwargs):
 
-        context = super(DesktopView, self).get_context_data(**kwargs)
-        lat = float(self.request.GET.get('lat', 40.7500))
-        lon = float(self.request.GET.get('lon', -111.8833))
-
         from places.models import Place
-        p = Place(lat, lon)
+
+        context = super(DesktopView, self).get_context_data(**kwargs)
+
+        if self.request.GET.get('srch'):
+            from urllib import unquote
+            srch = unquote(self.request.GET.get('srch'))
+            p = Place.from_name(srch) 
+            context['srch'] = srch
+        else:
+            lat = float(self.request.GET.get('lat', 40.7500))
+            lon = float(self.request.GET.get('lon', -111.8833))
+            p = Place(lat, lon)
+
         context['place'] = p
 
         return context

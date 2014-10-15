@@ -1,10 +1,25 @@
-/*.forecast-green { background-color: #5E8C6F }
-.forecast-yellow { background-color: #F0C866 }
-.forecast-red { background-color: #DC4358 }
-*/
+.aqi-none {
+    background-color: #ccc;
+}
+
+.aqi-none-light {
+    background-color: #e6e6e6;
+}
+
+.aqi-none-dark {
+    background-color: #b3b3b3;
+}
+
+.aqi-none-border {
+    border-color: #ccc !important;
+}
 
 .aqi-green {
-    background-color: #60bd22
+    background-color: #60bd22;
+}
+
+.aqi-green-border {
+    border-color: #60bd22 !important;
 }
 
 .aqi-green-light {
@@ -19,6 +34,10 @@
     background-color: #f4bd00;
 }
 
+.aqi-yellow-border {
+    border-color: #f4bd00 !important;
+}
+
 .aqi-yellow-light {
     background-color: #ffd71a;
 }
@@ -30,6 +49,10 @@
 .aqi-orange {
     background-color:#f69721;
     color:#FFFFFF;
+}
+
+.aqi-orange-border {
+    border-color: #f69721 !important;
 }
 
 
@@ -48,6 +71,10 @@
     color:#FFFFFF;
 }
 
+.aqi-red-border {
+    border-color: #c44812 !important;
+}
+
 .aqi-red-light {
     background-color:#de622c;
     color:#FFFFFF;
@@ -63,6 +90,10 @@
     color:#FFFFFF;
 }
 
+.aqi-maroon-border {
+    border-color: #980046 !important;
+}
+
 .aqi-maroon-light {
     background-color:#B21A60;
     color:#FFFFFF;
@@ -76,6 +107,10 @@
 .aqi-purple {
     background-color:#7c0020;
     color:#FFFFFF;
+}
+
+.aqi-purple-border {
+    border-color: #7c0020 !important;
 }
 
 .aqi-purple-light {

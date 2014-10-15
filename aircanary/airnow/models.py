@@ -23,13 +23,21 @@ class Aqi(models.Model):
     def __init__(self, value):
         """Constructor with an integer value
         """
-        self.value = int(value)
 
-        for r in self.ranges:
-            if self.value <= r['high']:
-                self.label = r['label']
-                self.css = r['css']
-                break
+        if not value:
+            self.value = None
+            self.css = 'aqi-none'
+            self.label = 'n/a'
+
+        else:
+
+            self.value = int(value)
+
+            for r in self.ranges:
+                if self.value <= r['high']:
+                    self.label = r['label']
+                    self.css = r['css']
+                    break
 
     def __str__(self):
 

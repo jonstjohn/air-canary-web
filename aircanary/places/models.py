@@ -47,16 +47,36 @@ class Place(models.Model):
         import airnow
         from airnow.grib import AirNowGrib
 
+        combined = None
+        pm25 = None
+        ozone = None
+        today = None
+        tomorrow = None
+
         a = AirNowGrib()
         r = a.data_latlon(self.latitude, self.longitude)
-        commbined = r['pm25']
-        if 'ozone' in r:
-            combined = r['ozone'] if float(r['ozone']) > float(r['pm25']) else r['pm25']
+
+        if r:
+            if 'pm25' in r:
+                pm25 = r['pm25']
+                combined = pm25
+
+            if 'ozone' in r:
+                ozone = r['ozone']
+                if float(ozone) > float(pm25):
+                    combined = ozone
+
+            if 'today' in r:
+                today = r['today']
+
+            if 'tomorrow' in r:
+                tomorrow = r['tomorrow']
+
         self.combined = airnow.models.Aqi(combined)
-        self.pm25 = airnow.models.Aqi(r['pm25'])
-        self.ozone = airnow.models.Aqi(r['ozone'])
-        self.today = airnow.models.Aqi(r['today'])
-        self.tomorrow = airnow.models.Aqi(r['tomorrow'])
+        self.pm25 = airnow.models.Aqi(pm25)
+        self.ozone = airnow.models.Aqi(ozone)
+        self.today = airnow.models.Aqi(today)
+        self.tomorrow = airnow.models.Aqi(tomorrow)
 
     def _load_forecast(self):
         """Load forecast
