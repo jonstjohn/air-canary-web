@@ -1,0 +1,12 @@
+<html>
+<head>
+</head>
+<body>
+{% for city in cities %}
+    <div style="clear: both">
+        <div style="width: 450px; float: left">{{ city.name }}, {{ city.state }}</div>
+        <div style="float: left">{{ city.current }}</div> 
+    </div>
+{% endfor %}
+</body>
+</html>

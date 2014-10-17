@@ -65,3 +65,22 @@ class DesktopView(TemplateView):
         context['place'] = p
 
         return context
+
+class CompareView(TemplateView):
+    """
+    Compare AirNow w/ AirCanary data
+    """
+    template_name = 'places/compare.html'
+
+    def get_context_data(self, **kwargs):
+
+        import redis
+        context = super(CompareView, self).get_context_data(**kwargs)
+
+        r = redis.StrictRedis(host='localhost', port=6379, db=0)
+
+        city_ids = r.lrange('anc-ids', 0, 99999)
+        context['cities'] = []
+        for id in city_ids:
+            context['cities'].append(r.hgetall('anc-{}'.format(id)))
+        return context
