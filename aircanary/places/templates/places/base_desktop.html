@@ -1,0 +1,62 @@
+{% load staticfiles %}
+{% load place_extras %}
+<!DOCTYPE html>
+<html style="height: 100%">
+<head>
+    <title>Air Canary</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static "css/bootstrap.css" %}"/>
+    <link href="{% static "css/main.css" %}" rel="stylesheet" media="screen"/>
+    <link href="{% static "css/climacons-font.css" %}" rel="stylesheet" media="screen"/>
+    <link href='http://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
+
+    <style>
+        * { color: #fff }
+        .vcontainer { display: table !important; height: 100% }
+        .vcontent { display: table-cell; vertical-align: middle; height: 100% }
+        .rounded-border { border: 1px solid #60bd22; padding: 3px 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; }
+    </style>
+</head>
+<body style="background: #eee">
+
+
+<div class="container" style="background: #fff">
+    <div class="row" style="color: #333; padding: 10px">
+        <div class="col-xs-3">
+            <div style="text-align: center; color: #333; padding-top: 5px"><strong style="color: #333">Air</strong><span style="color: #60bd22">C</span><span style="color: #f4bd00">a</span><span style="color: #f69721">n</span><span style="color: #c44812">a</span><span style="color: #980046">r</span><span style="color: #7c0020">y</span></div>
+        </div>
+        <div class="col-xs-3" style="color: #333">
+            <form action="/d" method="get" id="srchForm">
+            <div class="input-group">
+                <input type="text" id="srch" name="srch" value="{{ srch }}"  class="form-control input-sm" placeholder="Choose location">
+                <span class="input-group-btn">
+                    <button id=srchButton" class="btn btn-default btn-sm" type="button"><span id="srchButtonSpan" class="glyphicon glyphicon-search" style="color: #666"></span></button>
+                </span>
+            </div>
+            </form>
+        </div>
+        <div class="col-xs-6" style="color: #333; text-align: right; padding-top: 5px"><small style="color: #333">About</small></div>
+    </div>
+</div>
+
+{% block content %}
+
+{% endblock %}
+
+<script>
+$(function() {
+    $('.legend-box').tooltip();
+
+    $('#srchButtonSpan').on('click', function() {
+        $('#srchForm').submit();
+    });
+});
+</script>
+
+</body>
+</html>
+

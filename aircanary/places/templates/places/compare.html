@@ -1,12 +1,15 @@
-<html>
-<head>
-</head>
-<body>
+{% extends 'places/base_desktop.html' %}
+
+{% block content %}
+
+<div class="container">
 {% for city in cities %}
-    <div style="clear: both">
-        <div style="width: 450px; float: left">{{ city.name }}, {{ city.state }}</div>
-        <div style="float: left">{{ city.current }}</div> 
+    <div style="clear: both; color: #333">
+        <div style="width: 450px; float: left; color: #333">{{ city.name }}, {{ city.state }}</div>
+        <div style="float: left; color: #333">{{ city.current }}</div> 
     </div>
 {% endfor %}
-</body>
-</html>
+</div>
+
+{% endblock %}
+
