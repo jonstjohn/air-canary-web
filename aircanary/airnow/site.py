@@ -8,16 +8,17 @@ def parse():
     """ Parse airnow national page for city ids and AQIs """
     import redis
     import re
+    from geopy import geocoders
+    import time
 
     download_national()
     fh = open(national_tmp, 'r')
     soup = BeautifulSoup(fh)
 
     r = redis.StrictRedis(host='localhost', port=6379, db=0)
-    pipe = r.pipeline()
 
     rows = soup.find('table').find_next_sibling().find_all('tr')
-    pipe.delete('anc-ids')
+    r.delete('anc-ids')
     for row in rows:
        
         # Handle state block
@@ -41,12 +42,21 @@ def parse():
                 
                 current = tds[2].find('td').text.strip()
                 k = 'anc-{}'.format(city_id)
-                pipe.rpush('anc-ids', city_id)
-                pipe.hmset(k, {'name': city, 'state': state_abbr, 'current': current})
+                r.rpush('anc-ids', city_id)
+
+                # Check for lat/lon
+                if not r.hget(k, 'lat'):
+                    print('  Getting lat/lon')
+                    g = geocoders.GoogleV3()
+                    name = "{}, {}".format(city, state_abbr)
+                    place, (lat, lng) = g.geocode(name)
+                    r.hmset(k, {'lat': lat, 'lon': lng})
+                    time.sleep(1)
+
+                r.hmset(k, {'name': city, 'state': state_abbr, 'current': current})
                 print('  {} ({}) {}, {}'.format(current, city_id, city, state_abbr))
 
-    pipe.execute()
-            
+
 def download_national():
     """ Download national file """
     import os.path, time

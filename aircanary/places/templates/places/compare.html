@@ -6,7 +6,7 @@
 {% for city in cities %}
     <div style="clear: both; color: #333">
         <div style="width: 450px; float: left; color: #333">{{ city.name }}, {{ city.state }}</div>
-        <div style="float: left; color: #333">{{ city.current }}</div> 
+        <div style="float: left; color: #333">{{ city.current }} - {{ city.lat }} - {{ city.lon }}</div> 
     </div>
 {% endfor %}
 </div>
