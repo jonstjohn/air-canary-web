@@ -12,6 +12,7 @@
     <link href='http://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
     <script src="http://code.jquery.com/jquery.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <script src="{% static "js/geoPosition.js" %}"></script>
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
 
     <style>
@@ -21,59 +22,29 @@
         .rounded-border { border: 1px solid #60bd22; padding: 3px 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; }
     </style>
 </head>
-<body class="{{ place.combined.css }}" style="height: 100%">
+<body class="{{ place.combined.css }}" style="height: 100%; background: #eee">
 
-
-    <nav class="navbar navbar-default {{ place.combined.css }}" role="navigation" style="margin-bottom: 0">
-    <div class="container-fluid">
-
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-            <div style="float: left; width: 25%">
-                <div style="padding-left: 10px">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#menu-navbar-collapse" style="float: left; border-width: 0">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar" style="background-color: #eee"></span>
-                        <span class="icon-bar" style="background-color: #eee"></span>
-                        <span class="icon-bar" style="background-color: #eee"></span>
-                    </button>
-                </div>
-            </div>
-
-            <div style="float: left; width: 50%; text-align: center"><a class="navbar-brand" href="#" style="width: 100%; font-size: 200%; color: #fff">AirCanary</a></div>
-
-            <div style="float: left; width: 25%; text-align: right">
-                <div style="float: right">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#search-navbar-collapse" style="border-width: 0; float: left">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="glyphicon glyphicon-search" style="font-size: 150%"></span>
-                    </button>
-                </div>
-            </div>
-
+<div class="container" style="background: #fff">
+    <div class="row" style="color: #333; padding: 10px">
+        <div class="col-xs-3">
+            <div style="text-align: center; color: #333; padding-top: 5px"><strong style="color: #333">Air</strong><span style="color: #60bd22">C</span><span style="color: #f4bd00">a</span><span style="color: #f69721">n</span><span style="color: #c44812">a</span><span style="color: #980046">r</span><span style="color: #7c0020">y</span></div>
         </div>
-
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="search-navbar-collapse">
-            <form class="navbar-form navbar-left" role="search">
-                <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Search">
-                </div>
-                <button type="submit" class="btn btn-default">Submit</button>
+        <div class="col-xs-7" style="color: #333">
+            <form action="/m" method="get" id="srchForm">
+            <div class="input-group">
+                <input type="text" id="srch" name="srch" value="{{ srch }}"  class="form-control input-sm" placeholder="Choose location">
+                <span class="input-group-btn">
+                    <button id=srchButton" class="btn btn-default btn-sm" type="button"><span id="srchButtonSpan" class="glyphicon glyphicon-search" style="color: #666"></span></button>
+                </span>
+                <span class="input-group-btn">
+                    <button id="hereButton" class="btn btn-default btn-sm" type="button"><span id="hereButtonSpan" class="glyphicon glyphicon-screenshot" style="color: #666"></span></button>
+                </span>
+            </div>
             </form>
-        </div><!-- /.navbar-collapse -->
-
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="menu-navbar-collapse">
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="#">About</a></li>
-                <li><a href="#">Api</a></li>
-                <li><a href="#">Contact</a></li>
-            </ul>
-        </div><!-- /.navbar-collapse -->
-    </div><!-- /.container-fluid -->
-</nav>
-
+        </div>
+        <div class="col-xs-2" style="color: #333; text-align: right; padding-top: 5px"><a href="#" data-toggle="modal" data-target="#myModal"><small style="color: #333">About</small></a></div>
+    </div>
+</div>
 
 <div class="container" style="height: 89%">
     <div class="row {{ place.combined.css }}" style="height: 48%">
@@ -84,7 +55,7 @@
                 <div class="col-xs-7">
                     <div class="row">&nbsp;</div>
                     <div class="row" style="font-size: 120%">
-                        <div class="col-xs-12 text-right">{{ place.name }}</div>
+                        <div class="col-xs-12 text-right">{{ place.name|slice:":25" }}</div>
                     </div>
                     <div class="row">
                         <div class="col-xs-12 text-right">
@@ -99,16 +70,17 @@
     <div class="row" style="background-color: #333; height: 12%">
         <div class="col-xs-12" style="height: 100%">
             <div class="row" style="height: 100%; font-size: 1.1em">
-                <div class="col-xs-4 vcontainer">
+                <div class="col-xs-6 vcontainer">
                     <div class="vcontent">
-                        <div>PM2.5 <span class="rounded-border">{{ place.pm25.value }}</span></div>
+                        <div style="text-align: center">PM2.5 <span class="rounded-border">{{ place.pm25.value }}</span></div>
                     </div>
                 </div>
-                <div class="col-xs-4 vcontainer">
+                <div class="col-xs-6 vcontainer">
                     <div class="vcontent">
-                        <div>Ozone <span class="rounded-border">{{ place.ozone.value }}</span></div>
+                        <div style="text-align: center">Ozone <span class="rounded-border">{{ place.ozone.value }}</span></div>
                     </div>
                 </div>
+                <!--
                 <div class="col-xs-4 text-right vcontainer">
                     <div class="vcontent">
                         <div style="display: inline-block; text-align: center">
@@ -117,6 +89,7 @@
                         </div>
                     </div>
                 </div>
+                -->
             </div>
         </div>
     </div>
@@ -137,6 +110,77 @@
         </div>
     </div>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel" style="color: #333">About AirCanary.com</h4>
+      </div>
+      <div class="modal-body" style="color: #333">
+        <p style="color: #333">AirCanary.com displays real-time air quality data from the <a href="http://airnowapi.org" target="_blank">AirNow data API</a>.  Air quality data presented is preliminary data and may be subject to change.</p>
+        <p style="color: #333">AirCanary.com is currently in an open beta.  The site has been designed to give location-specific air quality data and forecasts for the United States.</p>
+
+        <p style="color: #333">Feel free to send feedback and suggestions to jonstjohn - at - gmail.</p>
+
+        <div style="margin: 10px 0 10px 0; height: 50px">
+            <div style="width: 50px; height: 50px; float: left" class="legend-box aqi-green" data-toggle="tooltip" data-placement="top" title="Good"></div>
+            <div style="width: 50px; height: 50px; float: left" class="legend-box aqi-yellow" data-toggle="tooltip" data-placement="top" title="Moderate"></div>
+            <div style="width: 50px; height: 50px; float: left" class="legend-box aqi-orange" data-toggle="tooltip" data-placement="top" title="Unhealthy for Sensitive Groups"></div>
+            <div style="width: 50px; height: 50px; float: left" class="legend-box aqi-red" data-toggle="tooltip" data-placement="top" title="Unhealthy"></div>
+            <div style="width: 50px; height: 50px; float: left" class="legend-box aqi-purple" data-toggle="tooltip" data-placement="top" title="Very Unhealthy"></div>
+            <div style="width: 50px; height: 50px; float: left" class="legend-box aqi-maroon" data-toggle="tooltip" data-placement="top" title="Hazardous"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+function geoPositionSuccess(p) {
+    // p.latitude
+    // p.longitude
+    console.log(p);
+    window.location.href = '?lat=' + p.coords.latitude + '&lon=' + p.coords.longitude;
+}
+
+function geoPositionFailure(p) {
+    // p.message
+    console.log(p);
+}
+
+$(function() {
+    $('.legend-box').tooltip();
+
+    $('#srchButtonSpan').on('click', function() {
+    //$('body').on('click', '#srchButton', function() {
+        $('#srchForm').submit();
+    });
+
+    $('#hereButtonSpan').on('click', function() {
+    //$('body').on('click', '#hereButton', function(event) {
+
+        console.log('Here button clicked');
+        if (geoPosition.init()) {  // Geolocation Initialisation
+
+            console.log('Getting current position');
+            geoPosition.getCurrentPosition(geoPositionSuccess, geoPositionFailure, {enableHighAccuracy: true});
+
+        } else {
+
+            console.log('Unable to use geolocation on this device');
+
+        }
+    });
+});
+
+</script>
 
 </body>
 </html>
