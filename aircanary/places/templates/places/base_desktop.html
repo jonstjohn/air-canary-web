@@ -39,13 +39,34 @@
             </div>
             </form>
         </div>
-        <div class="col-xs-6" style="color: #333; text-align: right; padding-top: 5px"><small style="color: #333">About</small></div>
+        <div class="col-xs-6" style="color: #333; text-align: right; padding-top: 5px"><a href="#" data-toggle="modal" data-target="#myModal"><small style="color: #333">About</small></a></div>
     </div>
 </div>
 
 {% block content %}
 
 {% endblock %}
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel" style="color: #333">About AirCanary.com</h4>
+      </div>
+      <div class="modal-body" style="color: #333">
+        <p style="color: #333">AirCanary.com displays real-time air quality data from the <a href="http://airnowapi.org" target="_blank">AirNow data API</a>.  Air quality data presented is preliminary data and may be subject to change.</p>
+        <p style="color: #333">AirCanary.com is currently in an open beta.  The site has been designed to give location-specific air quality data and forecasts for the United States.</p>
+
+        <p style="color: #333">Feel free to send feedback and suggestions to jonstjohn - at - gmail.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
 $(function() {

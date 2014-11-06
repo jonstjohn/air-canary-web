@@ -30,15 +30,18 @@ class Place(models.Model):
                       'partly-cloudy-day': 'cloud sun',
                       'partly-cloudy-night': 'cloud moon'}
 
-    def __init__(self, latitude, longitude):
+    def __init__(self, latitude, longitude, name=True):
         """Loads airnow data, forecast and place name
         """
         self.latitude = latitude
         self.longitude = longitude
 
         self._load_airnow()
+
         self._load_forecast()
-        self._load_name()
+
+        if name:
+            self._load_name()
 
     def _load_airnow(self):
         """Load air quality data
@@ -53,24 +56,25 @@ class Place(models.Model):
         today = None
         tomorrow = None
 
-        a = AirNowGrib()
-        r = a.data_latlon(self.latitude, self.longitude)
+        if self.latitude and self.longitude:
+            a = AirNowGrib()
+            r = a.data_latlon(self.latitude, self.longitude)
 
-        if r:
-            if 'pm25' in r:
-                pm25 = r['pm25']
-                combined = pm25
+            if r:
+                if 'pm25' in r:
+                    pm25 = r['pm25']
+                    combined = pm25
 
-            if 'ozone' in r:
-                ozone = r['ozone']
-                if float(ozone) > float(pm25):
-                    combined = ozone
+                if 'ozone' in r:
+                    ozone = r['ozone']
+                    if float(ozone) > float(pm25):
+                        combined = ozone
 
-            if 'today' in r:
-                today = r['today']
+                if 'today' in r:
+                    today = r['today']
 
-            if 'tomorrow' in r:
-                tomorrow = r['tomorrow']
+                if 'tomorrow' in r:
+                    tomorrow = r['tomorrow']
 
         self.combined = airnow.models.Aqi(combined)
         self.pm25 = airnow.models.Aqi(pm25)
@@ -83,14 +87,17 @@ class Place(models.Model):
         """
         import os
         from places import Forecast
-        key = os.environ['FORECAST_IO_KEY']
-        f = Forecast.Forecast(key, self.latitude, self.longitude)
-        c = f.current()
-        
-        self.temperature = int(c['currently']['temperature'])
-        self.icon = c['currently']['icon']
-        self.summary = c['currently']['summary']
-        self.icon_class = self._icon2css(self.icon)
+
+        if self.latitude and self.longitude:
+
+            key = os.environ['FORECAST_IO_KEY']
+            f = Forecast.Forecast(key, self.latitude, self.longitude)
+            c = f.current()
+            
+            self.temperature = int(c['currently']['temperature'])
+            self.icon = c['currently']['icon']
+            self.summary = c['currently']['summary']
+            self.icon_class = self._icon2css(self.icon)
 
     def _icon2css(self, icon):
         """Convert forecast icon to css class
@@ -122,13 +129,26 @@ class Place(models.Model):
         return place
 
     @staticmethod
+    def empty_place():
+        p = Place(0, 0, name=False)
+        p.name = 'Not Found'
+        return p
+
+    @staticmethod
     def from_name(name):
         """ Get a place instance from name
         Geeocdes the place """
         from geopy import geocoders
         g = geocoders.GoogleV3()
-        place, (lat, lng) = g.geocode(name)
-        return Place(lat, lng)
+
+        response = g.geocode(name)
+
+        if response:
+            place, (lat, lng) = response
+            p = Place(lat, lng)
+        else:
+            p = Place.empty_place()
+        return p
 
     def __str__(self):
 

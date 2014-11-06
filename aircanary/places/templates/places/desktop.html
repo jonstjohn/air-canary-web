@@ -17,8 +17,8 @@
                     <div style="text-align:right; color: #eee">Currently</div>
                     <div style="text-align: right; font-size: 1.8em">{{ place.name }}</div>
                     <div style="text-align: right">
-                        <span style="font-size: 3em">{{ place.temperature }}&deg;</span>
-                        <span style="font-size: 1.1em; width: 65px; display: inline-block; text-tranform: uppercase">{{ place.summary|space2br }}</span>
+                        <span style="font-size: 3em">{% if place.temperature %}{{ place.temperature }}&deg;{% endif %}</span>
+                        <span style="font-size: 1.1em; width: 65px; display: inline-block; text-tranform: uppercase">{% if place.summary %}{{ place.summary|space2br }}{% endif %}</span>
                     </div>
                     <div class="row">
                         <div class="col-xs-2">&nbsp;</div>
@@ -60,12 +60,6 @@
             </div>
         </div>
     </div>
-</div>
-
-<div class="container" style="margin-top: 10px; color: #333">
-    <div><a href="/d?lat=34.05&amp;lon=-118.25">Los Angeles, CA</a></div>
-    <div><a href="/d?lat=34.1&amp;lon=-117.30">San Bernadino, CA</a></div>
-    <div><a href="/d?lat=29.97&amp;lon=-95.35">Houston, TX</a></div>
 </div>
 
 {% endblock %}
