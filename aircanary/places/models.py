@@ -116,8 +116,12 @@ class Place(models.Model):
         
         from geopy import geocoders
         g = geocoders.GoogleV3()
-        place, (lat, lng) = g.reverse((self.latitude, self.longitude), exactly_one=True)
-        self.name = self._parse_place(place)
+
+        try:
+            place, (lat, lng) = g.reverse((self.latitude, self.longitude), exactly_one=True)
+            self.name = self._parse_place(place)
+        except geopy.exc.GeocoderServiceError, e:
+            self.name = 'Error' 
 
     def _parse_place(self, place):
 

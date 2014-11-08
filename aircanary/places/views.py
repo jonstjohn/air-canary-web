@@ -92,3 +92,22 @@ class CompareView(TemplateView):
         for id in city_ids:
             context['cities'].append(r.hgetall('anc-{}'.format(id)))
         return context
+
+class StatsView(TemplateView):
+    """ Stats View """
+    template_name = 'places/stats.html'
+
+    def get_context_data(self, **kwargs):
+
+        import redis
+        context = super(StatsView, self).get_context_data(**kwargs)
+
+        r = redis.StrictRedis(host='localhost', port=6379, db=0)
+
+        #city_ids = r.lrange('anc-ids', 0, 99999)
+        #context['cities'] = []
+        #for id in city_ids:
+        #    context['cities'].append(r.hgetall('anc-{}'.format(id)))
+
+        context['rstats'] = r.info()
+        return context 

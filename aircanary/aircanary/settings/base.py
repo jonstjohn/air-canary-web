@@ -40,7 +40,8 @@ path.append(DJANGO_ROOT)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
-ADMINS = (('Jon St John', 'jonstjohn@gmail.com'))
+#ADMINS = (('Jon St John', 'jonstjohn@gmail.com'))
+ADMINS = ()
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '0!j$b7231ew)^9j&!*3o&pfw-$uhz=j9o*7r4ht3f+$6yph=1a'

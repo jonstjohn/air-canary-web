@@ -1,0 +1,27 @@
+{% extends 'places/base_desktop.html' %}
+
+{% block content %}
+
+<div class="container">
+    <h1>Redis stats</h1>
+    <table class="table table-striped">
+    <tr>
+        <th>Stat</th>
+        <th>Value</th>
+    </tr>
+    <tr>
+        <td>Memory usage</td>
+        <td>{{ rstats.used_memory_human }}</td>
+    </tr>
+    <tr>
+        <td>Memory usage, peak</td>
+        <td>{{ rstats.used_memory_peak_human }}</td>
+    </tr>
+    <tr>
+        <td>Clients connected</td>
+        <td>{{ rstats.connected_clients }}</td>
+    </tr>
+    </table>
+</div>
+
+{% endblock %}
