@@ -1,7 +1,7 @@
 air-canary-web
 ==============
 
-Air Canary website
+[Air Canary website](http://www.aircanary.com)
 
 Air quality reports for Utah and beyond!
 
