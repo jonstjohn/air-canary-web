@@ -1,4 +1,4 @@
-Django==1.7c1
+Django==1.7
 Flask==0.10.1
 Flask-SQLAlchemy==1.0
 Flask-Script==0.6.2
