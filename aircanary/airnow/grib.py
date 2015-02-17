@@ -1,5 +1,10 @@
 from __future__ import print_function
 
+import subprocess
+import datetime
+import os
+
+from django.conf import settings
 
 class AirNowGrib():
 
@@ -62,11 +67,6 @@ class AirNowGrib():
         """ Get airnow parameter data from latitude and longitude using wgrib2
             Runs external call to wgrib2
         """
-        import subprocess
-        import datetime
-        import os
-
-        from django.conf import settings
         grib2_dir = settings.AIRNOW_GRIB_DIR
 
         # Get file path, either current or based on data
@@ -106,10 +106,8 @@ class AirNowGrib():
 
     def recent_filepath(self, param):
 
-        import os
         import glob
 
-        from django.conf import settings
         grib2_dir = settings.AIRNOW_GRIB_DIR
 
         numbers = 8 if param < 6 else 6
@@ -121,10 +119,6 @@ class AirNowGrib():
 
     def csv(self, param):
         """ Generate CSV for param """
-        import subprocess
-        import os
-
-        from django.conf import settings
         grib2_dir = settings.AIRNOW_GRIB_DIR
 
         filepath = os.path.join(grib2_dir, 'US-current{}.grib2'.format(self.FILE_SUFFIX[param]))
@@ -134,7 +128,6 @@ class AirNowGrib():
     @staticmethod
     def wgrib_ij(lat, lon):
         """ Calculate i and j coordinates using wgrib from lat/lon """
-        import subprocess
         output = subprocess.check_output(['wgrib2', '-ll2ij', lon, lat, '/tmp/grib3/US-current.grib2'])
         latpart, ijpart = output.split('->')
         j, i = ijpart.strip().strip('()').split(',')
@@ -155,12 +148,10 @@ class AirNowGrib():
     def process_csv(self, param, exists_only=False):
         """ Process CSV file for param """ 
         import csv
-        import os
         import time
 
         import redis
 
-        from django.conf import settings
         grib2_dir = settings.AIRNOW_GRIB_DIR
 
         # Setup redis
@@ -179,6 +170,7 @@ class AirNowGrib():
             reader = csv.reader(f)
 
             rowcount = 0
+            pcount = 0 # processed count
 
             # Create redis pipeline
             pipe = r.pipeline()
@@ -191,21 +183,24 @@ class AirNowGrib():
 
                 x, y = self.grid_xy(float(lat), float(lon))
 
-                # Key - lat/lon translated to integers, key would be something like 1:2
-                k = '{}:{}'.format(x,y)
+                if self.track_grid(x, y):
 
-                # Key w/ param, e.g., 1:2:pm25
-                kparam = '{}:{}'.format(k, param_name)
+                    # Key - lat/lon translated to integers, key would be something like 1:2
+                    k = '{}:{}'.format(x,y)
 
-                # If key not doing replace only or key exists, save to redis
-                if not exists_only or r.exists(k):
-                   
-                    pipe.hmset(k, {param_name: val, '{}_start'.format(param_name): start})
+                    # Key w/ param, e.g., 1:2:pm25
+                    kparam = '{}:{}'.format(k, param_name)
+
+                    # If key not doing replace only or key exists, save to redis
+                    if not exists_only or r.exists(k):
+               
+                        pipe.hmset(k, {param_name: val, '{}_start'.format(param_name): start})
+                        pcount += 1
 
                     # List for parameter history
                     #pipe.lpush(kparam, val).ltrim(kparam, 0, 71) # 3 days
                     #pipe.delete(kparam)
-                   
+               
                 if rowcount % 100 == 0:
                     pipe.execute()
                     pipe = r.pipeline()
@@ -214,11 +209,24 @@ class AirNowGrib():
                     print()
                     print('{} rows processed in {} seconds'.format(rowcount, time.time() - started))
 
-        pipe.execute()
-        ended = time.time()
+            pipe.execute()
+            ended = time.time()
 
-        elapsed = ended-started
-        print("{} seconds".format(elapsed))
+            elapsed = ended-started
+            print("{} seconds, {} rows stored".format(elapsed, pcount))
+
+    def track_grid(self, x, y):
+        """ Check to see if grid location should be tracked """
+        if not hasattr(settings, 'GRIB_LIMIT_BOXES'):
+            return True
+
+        boxes = settings.GRIB_LIMIT_BOXES
+        for box in boxes:
+            (min_x, max_x), (min_y, max_y) = box
+            if x >= min_x and x <= max_x and y >= min_y and y <= max_y:
+                return True
+
+        return False
 
     def grid_xy(self, lat, lon):
 
@@ -278,8 +286,6 @@ def run(async=True):
             a.process_csv(param)
 
 if __name__ == '__main__':
-
-    import datetime, os
 
     a = AirNowGrib()
     #a.csv(AirNowGrib.OZONE)
